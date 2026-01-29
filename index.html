@@ -86,6 +86,72 @@
         .toggle-checkbox:checked + .toggle-label {
             background-color: #2563eb;
         }
+
+        /* Search Bar Animation */
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-input {
+            width: 0;
+            opacity: 0;
+            transition: all 0.4s ease-in-out;
+            border: 1px solid transparent;
+            padding: 0;
+            visibility: hidden;
+        }
+        .search-container.active .search-input {
+            width: 200px;
+            opacity: 1;
+            padding: 0.5rem 1rem;
+            border-color: #cbd5e1; /* slate-300 */
+            visibility: visible;
+            margin-right: 0.5rem;
+        }
+        @media (min-width: 768px) {
+            .search-container.active .search-input {
+                width: 300px;
+            }
+        }
+
+        /* Notification Popup */
+        #notification-popup {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+        .dark #notification-popup {
+            background: #1e293b;
+            border-color: #334155;
+            color: white;
+        }
+        #notification-popup.active { display: block; animation: fadeIn 0.2s ease-out; }
+
+        /* Profile Section Cards */
+        .profile-section-card {
+            background: white; border: 1px solid var(--reg-slate-200); 
+            border-radius: 16px; padding: 20px; margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        .profile-section-card:hover { box-shadow: var(--reg-shadow-lg); transform: translateY(-2px); }
+        .profile-header { font-weight: 700; font-size: 1.1rem; color: var(--reg-slate-800); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .profile-link {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; background: var(--reg-slate-50); border-radius: 12px;
+            color: var(--reg-slate-700); font-weight: 500; cursor: pointer; text-decoration: none;
+            margin-bottom: 8px; transition: background 0.2s;
+        }
+        .profile-link:hover { background: var(--reg-slate-100); color: var(--reg-primary); }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
@@ -93,19 +159,26 @@
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- 1. Logo -->
-                <div class="flex items-center cursor-pointer" onclick="scrollToSection('home')">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg mr-3">
-                        N
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT</h1>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">COMPUTER ACADEMY</p>
+            <div class="flex justify-between items-center h-20 px-4 lg:px-0">
+                <!-- LEFT SIDE: Menu + Logo -->
+                <div class="flex items-center gap-4">
+                    <!-- Menu Trigger -->
+                    <button onclick="toggleMenu()" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <i data-lucide="menu" class="w-7 h-7"></i>
+                    </button>
+                    <!-- 1. Logo -->
+                    <div class="flex items-center cursor-pointer" onclick="scrollToSection('home')">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg mr-3">
+                            N
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT</h1>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">COMPUTER ACADEMY</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Right Side: Auth Buttons + Menu Trigger -->
+                <!-- Right Side: Auth Buttons + Menu Trigger
                 <div class="flex items-center gap-3">
                     <button onclick="openModal('signupModal')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 whitespace-nowrap">
                         Sign Up
@@ -116,7 +189,61 @@
                     <button onclick="toggleMenu()" class="ml-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <i data-lucide="menu" class="w-7 h-7"></i>
                     </button>
+                </div> -->
+
+                <!-- RIGHT SIDE: Search + Auth/Profile -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    
+                    <!-- Search Bar -->
+                    <div class="search-container" id="searchBar">
+                        <input type="text" id="searchInput" class="search-input rounded-full bg-slate-100 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search courses...">
+                        <button onclick="toggleSearch()" class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                            <i data-lucide="search" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+
+                    <!-- Logged Out View -->
+                    <div id="auth-buttons" class="flex items-center gap-3">
+                        <button onclick="openModal('signupModal')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 whitespace-nowrap">
+                            Sign Up
+                        </button>
+                        <button onclick="openModal('loginModal')" class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all whitespace-nowrap">
+                            Login
+                        </button>
+                    </div>
+
+                    <!-- Logged In View (Hidden by default) -->
+                    <div id="user-controls" class="hidden flex items-center gap-3">
+                        <!-- Notification -->
+                        <div class="relative">
+                            <button onclick="toggleNotification()" class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
+                                <i data-lucide="bell" class="w-6 h-6"></i>
+                                <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+                            </button>
+                            <!-- Notification Popup -->
+                            <div id="notification-popup">
+                                <h4 class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">Notifications</h4>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                        <span class="font-semibold block text-blue-600">New Schedule</span>
+                                        Tally Batch starts tomorrow at 10 AM.
+                                    </li>
+                                    <li class="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
+                                        <span class="font-semibold block">Exam Result</span>
+                                        Basics of Computer marks published.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Profile Button -->
+                        <button onclick="openProfile()" class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold border-2 border-blue-200 dark:border-blue-800 overflow-hidden">
+                            <img id="nav-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="User" class="w-full h-full object-cover">
+                        </button>
+                    </div>
+
                 </div>
+
             </div>
         </div>
 
@@ -158,6 +285,12 @@
                                 </label>
                             </div>
                         </div>
+
+                        <!-- LOGOUT IN MENU (Only if logged in) -->
+                        <button id="menu-logout-btn" onclick="handleLogout()" class="hidden w-full text-left text-lg font-medium text-red-600 hover:text-red-700 hover:pl-2 transition-all flex items-center gap-2">
+                            <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                        </button>
+
                     </div>
 
                     <!-- Action Buttons Column -->
@@ -724,7 +857,7 @@
             </div>
 
             <!-- Grid -->
-            <div class="grid lg:grid-cols-12 gap-12 mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
                 
                 <!-- 1. Contact Info -->
                 <div class="lg:col-span-4 space-y-6">
@@ -799,6 +932,71 @@
     <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-2xl transition-all transform hover:-translate-y-1">
         <i data-lucide="arrow-up" class="w-6 h-6"></i>
     </button>
+
+    <!-- NEW: PROFILE OVERLAY -->
+    <div id="profile-overlay">
+        <div class="bg-pattern"></div>
+        <div class="main-wrapper">
+            <div class="glass-card">
+                <div class="user-profile-bar">
+                    <h3 class="text-xl font-bold text-slate-800">My Profile</h3>
+                    <button onclick="closeProfile()" class="btn-secondary-sm">Go Back</button>
+                </div>
+
+                <div class="profile-section-card">
+                    <h4 class="profile-header"><i data-lucide="user" class="w-5 h-5 text-blue-600"></i> The Basics</h4>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-16 h-16 rounded-full bg-blue-100 overflow-hidden">
+                            <img id="profile-avatar-lg" src="" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h2 id="profile-name" class="text-xl font-bold text-slate-800">Student Name</h2>
+                            <p id="profile-email" class="text-sm text-slate-500">student@example.com</p>
+                        </div>
+                    </div>
+                    <div class="profile-link">
+                        <span class="flex items-center gap-3"><i data-lucide="qr-code" class="w-5 h-5"></i> Digital ID Card</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="profile-section-card">
+                    <h4 class="profile-header"><i data-lucide="map-pin" class="w-5 h-5 text-emerald-600"></i> Offline Hub</h4>
+                    <div class="profile-link">
+                        <span class="flex items-center gap-3"><i data-lucide="calendar" class="w-5 h-5"></i> My Schedule</span>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Mon-Wed 10AM</span>
+                    </div>
+                    <div class="profile-link">
+                        <span class="flex items-center gap-3"><i data-lucide="check-circle" class="w-5 h-5"></i> Attendance Tracker</span>
+                        <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">85% Present</span>
+                    </div>
+                </div>
+
+                <div class="profile-section-card">
+                    <h4 class="profile-header"><i data-lucide="lock" class="w-5 h-5 text-purple-600"></i> Digital Vault</h4>
+                    <div class="profile-link">
+                        <span class="flex items-center gap-3"><i data-lucide="file-text" class="w-5 h-5"></i> Results / Marksheet</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <div class="profile-link opacity-50 cursor-not-allowed">
+                        <span class="flex items-center gap-3"><i data-lucide="award" class="w-5 h-5"></i> Download Certificate</span>
+                        <span class="text-xs text-slate-400">Course In Progress</span>
+                    </div>
+                </div>
+
+                <div class="profile-section-card">
+                    <h4 class="profile-header"><i data-lucide="life-buoy" class="w-5 h-5 text-orange-600"></i> Support & Exit</h4>
+                    <div class="profile-link">
+                        <span class="flex items-center gap-3"><i data-lucide="help-circle" class="w-5 h-5"></i> Help Center</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <div onclick="handleLogout()" class="profile-link text-red-600 hover:bg-red-50 hover:text-red-700">
+                        <span class="flex items-center gap-3"><i data-lucide="log-out" class="w-5 h-5"></i> Logout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modals (Login/Signup - Dark Mode ready) -->
     <!-- Login Modal -->
@@ -982,6 +1180,45 @@
 
     <!-- Scripts -->
     <script>
+
+        // Search
+        function toggleSearch() {
+            document.getElementById('searchBar').classList.toggle('active');
+            if(document.getElementById('searchBar').classList.contains('active')) {
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        // Notification
+        function toggleNotification() {
+            document.getElementById('notification-popup').classList.toggle('active');
+        }
+
+        // Profile
+        function openProfile() {
+            document.getElementById('profile-overlay').classList.add('active');
+            document.getElementById('notification-popup').classList.remove('active');
+        }
+        function closeProfile() {
+            document.getElementById('profile-overlay').classList.remove('active');
+        }
+
+        // Search Filter Logic
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const term = e.target.value.toLowerCase();
+            const courses = document.querySelectorAll('.course-card');
+            courses.forEach(card => {
+                const title = card.querySelector('.course-title').textContent.toLowerCase();
+                if(title.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            // Auto scroll to courses if typing
+            if(term.length > 2) scrollToSection('courses');
+        });
+
         // --- 1. Theme Logic ---
         const html = document.documentElement;
         const checkbox = document.getElementById('theme-toggle');
@@ -1138,30 +1375,61 @@
             openModal('courseDetailsModal');
         }
 
-        // --- 8. REGISTER LOGIC (FIXED) ---
+        // --- 8. AUTH & REGISTER LOGIC (MERGED) ---
         
-        // 1. Define global variables to hold state and email
         let isUserLoggedIn = false; 
         let userEmail = ""; 
 
-        // 2. This function is called by the Firebase module below
+        // Global function called by Firebase when auth state changes
         window.updateAuthState = function(user) {
+            isUserLoggedIn = !!user;
+            
+            // Elements to toggle
+            const authBtns = document.getElementById('auth-buttons');
+            const userControls = document.getElementById('user-controls');
+            const menuLogout = document.getElementById('menu-logout-btn');
+
             if(user) {
-                isUserLoggedIn = true;
-                userEmail = user.email; // Capture the email!
+                // --- STATE: LOGGED IN ---
+                userEmail = user.email; // Capture email for the form
+                
+                // Toggle UI Buttons
+                if(authBtns) authBtns.classList.add('hidden');
+                if(userControls) userControls.classList.remove('hidden');
+                if(menuLogout) menuLogout.classList.remove('hidden');
+                
+                // Update Avatars & Profile Text
+                const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'User'}&background=2563eb&color=fff`;
+                
+                const navAvatar = document.getElementById('nav-avatar');
+                const profileAvatar = document.getElementById('profile-avatar-lg');
+                const profileName = document.getElementById('profile-name');
+                const profileEmail = document.getElementById('profile-email');
+
+                if(navAvatar) navAvatar.src = avatarUrl;
+                if(profileAvatar) profileAvatar.src = avatarUrl;
+                if(profileName) profileName.textContent = user.displayName || 'Student';
+                if(profileEmail) profileEmail.textContent = user.email;
+
             } else {
-                isUserLoggedIn = false;
+                // --- STATE: LOGGED OUT ---
                 userEmail = "";
+                
+                // Toggle UI Buttons
+                if(authBtns) authBtns.classList.remove('hidden');
+                if(userControls) userControls.classList.add('hidden');
+                if(menuLogout) menuLogout.classList.add('hidden');
             }
         };
 
         function handleRegister(courseName = null) {
-            // Check Login Status
+            // 1. Check Login Status
             if (!isUserLoggedIn) {
                 alert("Please Login or Sign Up to Register.");
                 openModal('signupModal');
             } else {
-                // Now userEmail is defined and has a value
+                // 2. Redirect to the separate Registration Page
+                // (We do NOT open a popup here because the form is on a different page)
                 let targetUrl = `registrationForm.html?email=${encodeURIComponent(userEmail)}`; 
         
                 if (courseName) {
@@ -1174,6 +1442,7 @@
 
     </script>
 
+    <!-- FIREBASE AUTH LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
@@ -1217,6 +1486,20 @@
         } catch (error) {
             console.error("Firebase Config Error:", error);
         }
+
+        // --- LOGOUT FUNCTION ---
+        window.handleLogout = async () => {
+            if (!auth) return;
+            try {
+                await signOut(auth);
+                alert("Logged Out Successfully");
+                // UI updates automatically via onAuthStateChanged
+                if(typeof closeProfile === 'function') closeProfile(); 
+                if(typeof toggleMenu === 'function') toggleMenu();   
+            } catch (error) {
+                console.error("Logout Error:", error);
+            }
+        };
 
         // --- EMAIL SIGN UP ---
         const signupForm = document.getElementById('signupForm');
@@ -1270,8 +1553,5 @@
         if(googleSignupBtn) googleSignupBtn.addEventListener('click', handleGoogleLogin);
 
     </script>
-    
 </body>
-
 </html>
-
