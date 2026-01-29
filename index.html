@@ -1006,8 +1006,11 @@
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
         function switchModal(currentId, targetId) { closeModal(currentId); openModal(targetId); }
         function scrollToSection(id) { 
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); 
-            document.getElementById('mainMenu').classList.add('hidden'); 
+            const el = document.getElementById(id);
+            if(el) {
+                el.scrollIntoView({ behavior: 'smooth' }); 
+                document.getElementById('mainMenu').classList.add('hidden'); 
+            }
         }
         
         // --- 4. Scroll Top ---
@@ -1098,12 +1101,14 @@
 
         // Populate Dropdown
         const regSelect = document.getElementById('regCourseSelect');
-        Object.keys(coursesDB).forEach(course => {
-            const option = document.createElement('option');
-            option.value = course;
-            option.textContent = course;
-            regSelect.appendChild(option);
-        });
+        if(regSelect) {
+            Object.keys(coursesDB).forEach(course => {
+                const option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                regSelect.appendChild(option);
+            });
+        }
 
         // Open Details Modal
         function openCourseDetails(courseName) {
@@ -1124,7 +1129,7 @@
                 li.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-500"></i> ${mod}`;
                 modulesList.appendChild(li);
             });
-            lucide.createIcons(); // Refresh icons
+            lucide.createIcons(); 
 
             // Update Register Button in Modal
             const regBtn = document.getElementById('detailRegisterBtn');
@@ -1133,105 +1138,41 @@
             openModal('courseDetailsModal');
         }
 
-        // --- 8. REGISTER LOGIC ---
-        // Mock Auth State (Replace with real Firebase state)
+        // --- 8. REGISTER LOGIC (FIXED) ---
+        
+        // 1. Define global variables to hold state and email
         let isUserLoggedIn = false; 
+        let userEmail = ""; 
 
-        // Update UI based on auth (Call this inside onAuthStateChanged)
-        function updateAuthState(user) {
-            isUserLoggedIn = !!user;
-            // Optional: Update Navbar buttons here (e.g., Hide Login, Show Logout)
-        }
+        // 2. This function is called by the Firebase module below
+        window.updateAuthState = function(user) {
+            if(user) {
+                isUserLoggedIn = true;
+                userEmail = user.email; // Capture the email!
+            } else {
+                isUserLoggedIn = false;
+                userEmail = "";
+            }
+        };
 
         function handleRegister(courseName = null) {
-            // 1. Check Login Status FIRST
+            // Check Login Status
             if (!isUserLoggedIn) {
                 alert("Please Login or Sign Up to Register.");
                 openModal('signupModal');
             } else {
-                // 2. Prepare the URL (Use Backticks ` ` for variables)
-                // We assume 'userEmail' is a global variable you have defined elsewhere
+                // Now userEmail is defined and has a value
                 let targetUrl = `registrationForm.html?email=${encodeURIComponent(userEmail)}`; 
         
-                // 3. Pass the Course Name in the URL too!
-                // (You cannot set document.getElementById values here because you are leaving this page)
                 if (courseName) {
                     targetUrl += `&course=${encodeURIComponent(courseName)}`;
                 }
         
-                // 4. Redirect the user (Fixed spelling of 'href')
                 window.location.href = targetUrl;
             }
         }
 
     </script>
-
-    <!-- FIREBASE AUTH LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-
-        // REPLACE WITH YOUR CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
-            authDomain: "niat-admission-form.firebaseapp.com",
-            projectId: "niat-admission-form",
-            storageBucket: "niat-admission-form.firebasestorage.app",
-            messagingSenderId: "907218345703",
-            appId: "1:907218345703:web:57e6dd3d74baab2f190c42",
-            measurementId: "G-YPCVGYS7L9"
-        };
-
-        let auth;
-        try {
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            
-            // Listen for Auth Changes to update global state
-            onAuthStateChanged(auth, (user) => {
-                // Access global function to update state
-                window.updateAuthState(user);
-                if(user) {
-                    console.log("User Logged In:", user.email);
-                    // You could hide Login/Signup buttons here
-                } else {
-                    console.log("User Signed Out");
-                }
-            });
-
-        } catch (error) {
-            console.error("Firebase Config Missing.");
-        }
-
-        // --- SIGN UP ---
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            if (!auth) { alert("Firebase not configured."); return; }
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                alert("Account Created! You are now logged in.");
-                closeModal('signupModal');
-                // Proceed to registration if that was the intent?
-            } catch (error) { alert("Error: " + error.message); }
-        });
-
-        // --- LOGIN ---
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            if (!auth) { alert("Firebase not configured."); return; }
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert("Login Successful!");
-                closeModal('loginModal');
-            } catch (error) { alert("Login Failed: " + error.message); }
-        });
-
-        // --- GOOGLE ---
-        // (Add event listeners for Google buttons similar to prev code)
-    </script>
 </body>
+
 </html>
