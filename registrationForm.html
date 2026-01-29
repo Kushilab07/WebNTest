@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIAT Registration Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="registrationForm.css">
+</head>
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <div class="main-wrapper">
+      
+      <div class="glass-card">
+
+          <!--
+        <div class="institute-header">
+            <h1 class="inst-name">NIAT</h1>
+            <p class="inst-sub">Computer Academy & Vocational Training Institute</p>
+            <div class="badge-verified">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                ISO 9001:2015 CERTIFIED
+            </div>
+            <div class="inst-meta">
+                <span>Regd. Under MSME Govt. of India</span> • <span>No-AS-23-0000097</span>
+            </div>
+            <div class="inst-branch">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Branch: Arikuchi & Bagals Road Chowk, Nalbari
+            </div>
+        </div>
+          -->
+
+        <!-- <div id="login-section" class="center-content">
+            <p class="text-slate-500">Please sign in with your Google Account to begin your registration.</p>
+            <button id="google-login-btn" class="btn-google">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Sign in with Google
+            </button>
+        </div> -->
+
+        <div id="form-section">
+            
+            <!-- <div class="user-profile-bar">
+                <div class="user-info">
+                    <div class="avatar-circle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <div>
+                        <span id="user-display-name">User</span>
+                        <span class="status-badge">Logged In</span>
+                    </div>
+                </div>
+                <button id="logout-btn-top" class="btn-secondary-sm">Sign Out</button>
+            </div> -->
+
+            <form id="admissionForm">
+                
+                <div class="form-group-highlight">
+                    <label class="input-label-lg">Select Institute Branch</label>
+                    <div class="select-wrapper">
+                        <select name="branch" id="branch-select" required class="input-field-lg">
+                            <option value="">-- Select Branch --</option>
+                            <option value="Arikuchi">Arikuchi</option>
+                            <option value="Bagals Road">Bagals Road</option>
+                        </select>
+                        <div class="select-arrow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">1</span>
+                    <h3>Personal Information</h3>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label class="input-label">Student Name</label>
+                        <input type="text" name="studentName" class="input-field" placeholder="Enter full name" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Father's/Guardian's Name</label>
+                        <input type="text" name="fatherName" class="input-field" placeholder="Enter Father's/Guardian's name" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label class="input-label">Email Address</label>
+                        <input type="email" id="email-field" name="email" class="input-field" placeholder="Enter Email Address" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Contact Number</label>
+                        <input type="tel" name="contact" class="input-field" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                    </div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">2</span>
+                    <h3>Address Details</h3>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group"><label class="input-label">Village/Town</label><input type="text" name="village" class="input-field" required></div>
+                    <div class="input-group"><label class="input-label">Post Office</label><input type="text" name="po" class="input-field" required></div>
+                </div>
+                <div class="grid-2">
+                    <div class="input-group"><label class="input-label">District</label><input type="text" name="district" class="input-field" required></div>
+                    <div class="input-group"><label class="input-label">PIN Code</label><input type="number" name="pin" class="input-field" required></div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">3</span>
+                    <h3>Education & Occupation</h3>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group"><label class="input-label">Last Qualification</label><input type="text" name="qualification" class="input-field" placeholder="e.g. 12th Pass, Graduate" required></div>
+                    <div class="input-group"><label class="input-label">Present Activity</label><input type="text" name="activity" class="input-field" placeholder="e.g. Student, Job" required></div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">4</span>
+                    <h3>Select Course</h3>
+                </div>
+                
+                <div class="course-group">
+                    <div class="input-group">
+                        <label class="input-label text-blue-600">Three Month Course</label>
+                        <div class="select-wrapper">
+                            <select name="course3m" class="course-select input-field border-l-4 border-l-blue-500">
+                                <option value="">-- Select Course --</option>
+                                <option value="Basic Of Computer">Basic Of Computer</option>
+                                <option value="DTP">DTP</option>
+                                <option value="Tally Prime & Accounting">Tally Prime & Accounting</option>
+                                <option value="Advance Excel with MIS Report">Advance Excel with MIS Report</option>
+                                <option value="AI/ML using Python">AI/ML using Python</option>
+                                <option value="Digital Marketing">Digital Marketing</option>
+                                <option value="Communication skill & Personality Dev">Communication skill & Personality Dev</option>
+                                <option value="Office management with Google workspace">Office management with Google workspace</option>
+                                <option value="SDP(Skill Development Programme)">SDP(Skill Development Programme)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label text-emerald-600">Six Month Course</label>
+                        <div class="select-wrapper">
+                            <select name="course6m" class="course-select input-field border-l-4 border-l-emerald-500">
+                                <option value="">-- Select Course --</option>
+                                <option value="Diploma in Computer Application">Diploma in Computer Application</option>
+                                <option value="Advance Tally Prime with GST">Advance Tally Prime with GST</option>
+                                <option value="Diploma in Computer Application in Business (CAB)">Diploma in Computer Application in Business (CAB)</option>
+                                <option value="Personal Financial Literacy & Stock Market">Personal Financial Literacy & Stock Market</option>
+                                <option value="Back office Management & MIS Report">Back office Management & MIS Report</option>
+                                <option value="Data Analyst with Al Technology">Data Analyst with Al Technology</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label text-purple-600">One Year Course</label>
+                        <div class="select-wrapper">
+                            <select name="course1y" class="course-select input-field border-l-4 border-l-purple-500">
+                                <option value="">-- Select Course --</option>
+                                <option value="Advance Diploma in Computer Application">Advance Diploma in Computer Application</option>
+                                <option value="Post Graduate Diploma in Computer Application">Post Graduate Diploma in Computer Application</option>
+                                <option value="Advance Diploma in Financial Accounting with Taxation">Advance Diploma in Financial Accounting with Taxation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label text-orange-600">Special Course</label>
+                        <div class="select-wrapper">
+                            <select name="courseSp" class="course-select input-field border-l-4 border-l-orange-500">
+                                <option value="">-- Select Course --</option>
+                                <option value="Advance Diploma in Computer Application with Al Technology">Advance Diploma in Computer Application with Al Technology</option>
+                                <option value="Diploma in Computer Teacher Training">Diploma in Computer Teacher Training</option>
+                                <option value="Master Diploma in Computer Application">Master Diploma in Computer Application</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">5</span>
+                    <h3>Upload Documents</h3>
+                </div>
+
+                <div class="grid-2">
+                    <div class="file-upload-card">
+                        <label>Passport Photo</label>
+                        <p>Max 1MB (Image)</p>
+                        <input type="file" id="photoFile" accept="image/*" class="hidden-input">
+                        <button type="button" class="btn-file" onclick="document.getElementById('photoFile').click()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            Add File
+                        </button>
+                        <span id="photoFile-name" class="file-name">No file added</span>
+                    </div>
+
+                    <div class="file-upload-card">
+                        <label>Last Qualification Doc</label>
+                        <p>Max 1MB (PDF/Image)</p>
+                        <input type="file" id="docFile" accept="image/*,.pdf" class="hidden-input">
+                        <button type="button" class="btn-file" onclick="document.getElementById('docFile').click()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            Add File
+                        </button>
+                        <span id="docFile-name" class="file-name">No file added</span>
+                    </div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">6</span>
+                    <h3>Payment</h3>
+                </div>
+                
+                <div class="payment-box">
+                    <p class="fee-text">Admission/Registration Fee: <span class="amount">₹ 1000/-</span></p>
+                    
+                    <div class="payment-options">
+                        <label class="radio-card">
+                            <input type="radio" name="payMode" value="Online" checked>
+                            <div class="radio-content">
+                                <span class="radio-title">Online Payment</span>
+                                <span class="radio-sub">Via UPI / GPay</span>
+                            </div>
+                            <div class="radio-check"></div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="payMode" value="Cash">
+                            <div class="radio-content">
+                                <span class="radio-title">Cash Payment </span>
+                                <span class="radio-sub">Pay at Office</span>
+                            </div>
+                            <div class="radio-check"></div>
+                        </label>
+                    </div>
+                    
+
+
+                    <div id="online-payment-section" class="mt-4">
+                        <a href="upi://pay?pa=prasantasarma.niat@oksbi&pn=Prasanta%20Sarma&am=1000&cu=INR&tn=Admission/Registration%20Fee" class="btn-upi">
+                            Pay via UPI App
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                        </a>
+                        
+                        <div class="file-upload-card mt-3" style="border-style: dashed;">
+                            <label>Payment Screenshot</label>
+                            <p>Max 1MB (Image)</p>
+                            <input type="file" id="payFile" accept="image/*" class="hidden-input">
+                            <button type="button" class="btn-file" onclick="document.getElementById('payFile').click()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                Upload Screenshot
+                            </button>
+                            <span id="payFile-name" class="file-name">No file added</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">7</span>
+                    <h3>Additional Notes</h3>
+                </div>
+                <textarea name="notes" class="input-field" placeholder="Any message for the administrator? (Optional)"></textarea>
+
+                <div class="section-title-wrapper">
+                    <span class="step-num">8</span>
+                    <h3>Declaration</h3>
+                </div>
+                <div class="declaration-box">
+                    <label class="flex-start">
+                        <input type="checkbox" id="declaration" required>
+                        <span>I hereby declare that all the information provided above and the documents uploaded are correct and latest to the best of my knowledge. I understand that any false information may lead to cancellation of my admission.</span>
+                    </label>
+                </div>
+
+                <div class="submit-area">
+                  <button type="submit" id="preview-btn" class="btn-primary-lg">
+                    PREVIEW & SUBMIT
+                  </button>
+                </div>
+            </form>
+        </div>
+        
+      </div>
+    </div>
+
+    <div id="success-view" class="hidden center-content">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Registration Successful!</h2>
+            <p class="text-slate-500 mb-6">Thank you for registering.</p>
+            
+            <p class="text-sm uppercase font-bold text-slate-400">Your Registration Number</p>
+            <div id="serial-display" class="serial-badge">
+                Generating...
+            </div>
+            
+            <p class="text-sm text-slate-400 mt-6">A confirmation email has been sent to your inbox.</p>
+            
+            <button id="go-back-btn" onclick="window.location.href='index.html'" class="btn-secondary mt-8">Go Back to Home</button>
+            
+    </div>
+
+    <div id="preview-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Details</h2>
+                <button id="edit-btn" class="modal-close-icon">✕</button>
+            </div>
+            
+            <div id="preview-data" class="preview-scroll-area">
+                </div>
+
+            <div class="modal-actions">
+                <button id="edit-btn-action" class="btn-secondary">Edit</button>
+                <button id="final-submit-btn" class="btn-primary">
+                    <span class="btn-text">SUBMIT</span>
+                    <div id="final-spinner" class="spinner hidden-spinner"></div>
+                    <svg id="btn-check" class="hidden-check" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="registrationForm.js"></script>
+    
+</body>
+</html>

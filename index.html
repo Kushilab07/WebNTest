@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIAT Computer Academy</title>
+    
+    <!-- Tailwind CSS (with Dark Mode Config) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .animate-bounce-slow { animation: bounce 3s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-5%); }
+            50% { transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Carousel Styles */
+        .carousel-track {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .carousel-track::-webkit-scrollbar {
+            display: none;
+        }
+        .dot {
+            transition: all 0.3s ease;
+        }
+        .dot.active {
+            width: 24px;
+            background-color: #2563eb; /* blue-600 */
+        }
+        /* Hidden Dots Logic */
+        #carouselDots {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        #carouselDots.visible {
+            opacity: 1;
+        }
+        
+        /* Scroll to Top Button */
+        #scrollTopBtn {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        #scrollTopBtn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2563eb;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- 1. Logo -->
+                <div class="flex items-center cursor-pointer" onclick="scrollToSection('home')">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg mr-3">
+                        N
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">COMPUTER ACADEMY</p>
+                    </div>
+                </div>
+
+                <!-- Right Side: Auth Buttons + Menu Trigger -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openModal('signupModal')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 whitespace-nowrap">
+                        Sign Up
+                    </button>
+                    <button onclick="openModal('loginModal')" class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all whitespace-nowrap">
+                        Login
+                    </button>
+                    <button onclick="toggleMenu()" class="ml-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <i data-lucide="menu" class="w-7 h-7"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- THE MENU -->
+        <div id="mainMenu" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-40 animate-in slide-in-from-top-2 duration-200">
+            <div class="container mx-auto px-4 py-6">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Links Column -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Navigation</h4>
+                        <button onclick="scrollToSection('home')" class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Home</button>
+                        <button onclick="scrollToSection('about')" class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">About Us</button>
+                        <button onclick="scrollToSection('courses')" class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Courses</button>
+                        <button onclick="scrollToSection('contact')" class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Contact</button>
+                        
+                        <div class="pt-4 flex items-center gap-4">
+                            <a href="#" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors">
+                                <i data-lucide="facebook" class="w-5 h-5"></i> <span class="text-sm">Facebook</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-pink-600 transition-colors">
+                                <i data-lucide="instagram" class="w-5 h-5"></i> <span class="text-sm">Instagram</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-700 transition-colors">
+                                <i data-lucide="linkedin" class="w-5 h-5"></i> <span class="text-sm">LinkedIn</span>
+                            </a>
+                        </div>
+
+                        <!-- THEME SETTINGS TOGGLE -->
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Appearance</h4>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                    <i data-lucide="moon" class="w-4 h-4"></i> Dark Mode
+                                </span>
+                                <label for="theme-toggle" class="flex items-center cursor-pointer relative">
+                                    <input type="checkbox" id="theme-toggle" class="sr-only" onchange="toggleTheme()">
+                                    <div class="w-11 h-6 bg-slate-200 dark:bg-slate-700 rounded-full border border-slate-300 dark:border-slate-600 toggle-label transition-colors"></div>
+                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform translate-x-0 dark:translate-x-5"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Column -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Student Actions</h4>
+                        
+                        <!-- Register Button (FIXED: Now triggers handleRegister) -->
+                        <button onclick="handleRegister(); toggleMenu()" class="w-full flex items-center justify-center px-5 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition-all font-bold">
+                            Register
+                        </button>
+
+                        <!-- Download Certificate Button -->
+                        <button onclick="openModal('marksheetModal'); toggleMenu()" class="w-full flex items-center justify-center gap-3 px-5 py-4 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 rounded-xl transition-all font-bold">
+                            <i data-lucide="download" class="w-5 h-5"></i> Download Certificate
+                        </button>
+                        
+                        <!-- Download Marksheet Button -->
+                        <button onclick="openModal('marksheetModal'); toggleMenu()" class="w-full flex items-center justify-center gap-3 px-5 py-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 rounded-xl transition-all font-bold">
+                            <i data-lucide="file-text" class="w-5 h-5"></i> Download Marksheet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-12 pb-20 lg:pt-24 lg:pb-28 overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-12 items-start">
+                <div class="max-w-2xl pt-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800">
+                        <span class="flex h-2 w-2 rounded-full bg-blue-600"></span> Admissions Open for 2024
+                    </div>
+                    <h1 class="text-4xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
+                        Build Your Future with <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Digital Skills</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+                        NIAT Computer Academy provides top-tier vocational training in computer basics, accounting, and design. Empowering students with practical skills for the modern workforce.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="scrollToSection('courses')" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            Explore Courses <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                        <!-- FIXED: Register Button triggers handleRegister -->
+                        <button onclick="handleRegister()" class="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2">
+                            Register
+                        </button>
+                    </div>
+                </div>
+                <div class="relative lg:ml-6 flex flex-col gap-8">
+                    <!-- Carousel Container with onClick -->
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 aspect-[4/3] group bg-slate-200 dark:bg-slate-800" onclick="showDots()">
+                        <div id="carouselTrack" class="flex h-full transition-transform duration-500 ease-out cursor-grab active:cursor-grabbing">
+                            <div class="min-w-full h-full relative"><img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Students" class="w-full h-full object-cover"></div>
+                            <div class="min-w-full h-full relative"><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Coding" class="w-full h-full object-cover"></div>
+                            <div class="min-w-full h-full relative"><img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Class" class="w-full h-full object-cover"></div>
+                            <div class="min-w-full h-full relative"><img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Account" class="w-full h-full object-cover"></div>
+                        </div>
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10" id="carouselDots"></div>
+                        <button onclick="prevSlide(); showDots()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                        <button onclick="nextSlide(); showDots()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-100 dark:border-slate-800 grid grid-cols-4 divide-x divide-slate-100 dark:divide-slate-800">
+                        <div class="text-center px-1 flex flex-col items-center">
+                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="users" class="w-4 h-4"></i></div>
+                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">5k+</p>
+                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Students</p>
+                        </div>
+                        <div class="text-center px-1 flex flex-col items-center">
+                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="calendar" class="w-4 h-4"></i></div>
+                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">10+</p>
+                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Years Exp</p>
+                        </div>
+                        <div class="text-center px-1 flex flex-col items-center">
+                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="book-open" class="w-4 h-4"></i></div>
+                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">20+</p>
+                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Courses</p>
+                        </div>
+                        <div class="text-center px-1 flex flex-col items-center">
+                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">100%</p>
+                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Placement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-16 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 transition-colors">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80" alt="About NIAT" class="rounded-3xl shadow-2xl w-full object-cover h-80">
+                </div>
+                <div class="md:w-1/2">
+                    <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">Who We Are</span>
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-6">Empowering Education Since 2014</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                        At NIAT Computer Academy, our mission is to bridge the digital divide by providing affordable, high-quality technical education. We believe in practical learning that translates directly to employability.
+                    </p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500"></i><span class="text-slate-700 dark:text-slate-300 font-medium">ISO 9001:2015 Certified Institute</span></li>
+                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500"></i><span class="text-slate-700 dark:text-slate-300 font-medium">Industry-standard Curriculum</span></li>
+                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500"></i><span class="text-slate-700 dark:text-slate-300 font-medium">Dedicated Placement Cell</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-slate-50 dark:bg-slate-950 transition-colors">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-lg transition-all group">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300"><i data-lucide="users" class="w-6 h-6 text-orange-500"></i></div>
+                    <div><h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Expert Instructors</h3><p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Learn from industry veterans.</p></div>
+                </div>
+                <div class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-lg transition-all group">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300"><i data-lucide="award" class="w-6 h-6 text-blue-500"></i></div>
+                    <div><h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Recognized Certification</h3><p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Value across the industry.</p></div>
+                </div>
+                <div class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-lg transition-all group">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300"><i data-lucide="check-circle" class="w-6 h-6 text-green-500"></i></div>
+                    <div><h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Practical Training</h3><p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">100% Hands-on lab sessions.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-20 bg-white dark:bg-slate-900 transition-colors">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Our Popular Courses</h2>
+                <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Choose from our wide range of industry-oriented courses designed to make you job-ready.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="courseGrid">
+                
+                <!-- 1. Basics -->
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                    <div class="h-2 w-full bg-blue-500"></div>
+                    <div class="p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="monitor" class="w-8 h-8 text-blue-500 dark:text-blue-400"></i></div>
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Basics of Computer</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Master the fundamentals of computing, OS navigation, MS Office suite, and internet essentials.</p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 120+</div>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0 mt-auto space-y-3">
+                        <button onclick="openCourseDetails('Basics of Computer')" class="w-full py-3 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all text-sm">See Details</button>
+                        <button onclick="handleRegister('Basics of Computer')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <!-- 2. DTP -->
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                    <div class="h-2 w-full bg-purple-500"></div>
+                    <div class="p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="book-open" class="w-8 h-8 text-purple-500 dark:text-purple-400"></i></div>
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in DTP</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker.</p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 85+</div>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0 mt-auto space-y-3">
+                        <button onclick="openCourseDetails('Diploma in DTP')" class="w-full py-3 px-6 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-semibold rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all text-sm">See Details</button>
+                        <button onclick="handleRegister('Diploma in DTP')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <!-- 3. Tally -->
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                    <div class="h-2 w-full bg-emerald-500"></div>
+                    <div class="p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="bar-chart" class="w-8 h-8 text-emerald-500 dark:text-emerald-400"></i></div>
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Tally Prime & Accounting</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Complete financial accounting training using Tally Prime. Covers GST & Payroll.</p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 4 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 200+</div>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0 mt-auto space-y-3">
+                        <button onclick="openCourseDetails('Tally Prime & Accounting')" class="w-full py-3 px-6 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-semibold rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all text-sm">See Details</button>
+                        <button onclick="handleRegister('Tally Prime & Accounting')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <!-- 4. Advance Excel -->
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                    <div class="h-2 w-full bg-green-600"></div>
+                    <div class="p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="sheet" class="w-8 h-8 text-green-600 dark:text-green-400"></i></div>
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Excel with MIS</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Master advanced formulas, pivot tables, macros, and creating professional MIS reports.</p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 2 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 150+</div>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0 mt-auto space-y-3">
+                        <button onclick="openCourseDetails('Advance Excel with MIS Report')" class="w-full py-3 px-6 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-semibold rounded-xl hover:bg-green-100 dark:hover:bg-green-900/50 transition-all text-sm">See Details</button>
+                        <button onclick="handleRegister('Advance Excel with MIS Report')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <!-- 5. AI/ML -->
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                    <div class="h-2 w-full bg-indigo-600"></div>
+                    <div class="p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="brain" class="w-8 h-8 text-indigo-600 dark:text-indigo-400"></i></div>
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">AI/ML using Python</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Dive into Artificial Intelligence and Machine Learning concepts using Python.</p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 60+</div>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0 mt-auto space-y-3">
+                        <button onclick="openCourseDetails('AI/ML using Python')" class="w-full py-3 px-6 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm">See Details</button>
+                        <button onclick="handleRegister('AI/ML using Python')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <!-- HIDDEN COURSES (The other 16 courses are here, hidden by default) -->
+                <div id="moreCourses" class="contents hidden">
+                    
+                    <!-- 6. Digital Marketing -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-orange-500"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="megaphone" class="w-8 h-8 text-orange-500"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Digital Marketing</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Learn SEO, Social Media Marketing, Content Strategy, and Online Advertising.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 90+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Digital Marketing')" class="w-full py-3 px-6 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-semibold rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Digital Marketing')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 7. Communication -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-pink-500"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="message-circle" class="w-8 h-8 text-pink-500"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Communication Skill & PD</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Enhance soft skills, public speaking confidence, and overall personality.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 2 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 75+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Communication Skill & Personality Development')" class="w-full py-3 px-6 bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 font-semibold rounded-xl hover:bg-pink-100 dark:hover:bg-pink-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Communication Skill & Personality Development')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 8. Office Management -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-yellow-500"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="briefcase" class="w-8 h-8 text-yellow-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.6</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Google Workspace Management</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Efficiently manage office tasks using Google Docs, Sheets, Slides, and Drive.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 2 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 50+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Office Management with Google workspace')" class="w-full py-3 px-6 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 font-semibold rounded-xl hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Office Management with Google workspace')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 9. SDP -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-teal-500"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="lightbulb" class="w-8 h-8 text-teal-500"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Skill Development Programme</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Comprehensive program focused on enhancing various vocational skills.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 100+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('SDP(Skill Development Programme)')" class="w-full py-3 px-6 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 font-semibold rounded-xl hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('SDP(Skill Development Programme)')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 10. Diploma Computer App -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-blue-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="monitor" class="w-8 h-8 text-blue-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in Computer App</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Extensive diploma covering fundamental to intermediate computer applications.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 110+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Diploma in Computer Application')" class="w-full py-3 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Diploma in Computer Application')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 11. Advance Tally GST -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-emerald-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="bar-chart-3" class="w-8 h-8 text-emerald-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Tally Prime with GST</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">In-depth Tally training focusing on Goods and Services Tax implementation.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 80+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Advance Tally Prime with GST')" class="w-full py-3 px-6 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-semibold rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Advance Tally Prime with GST')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 12. CAB -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-slate-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="building" class="w-8 h-8 text-slate-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.6</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in CAB</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Computer Application in Business - bridging technology with business needs.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 70+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Diploma in Computer Application in Business (CAB)')" class="w-full py-3 px-6 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all text-sm">See Details</button><button onclick="handleRegister('Diploma in Computer Application in Business (CAB)')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-slate-600 hover:bg-slate-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 13. Financial Literacy -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-green-500"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="trending-up" class="w-8 h-8 text-green-500"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Financial Literacy</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Understand personal finance, investing, and the basics of stock market.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 1 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 40+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Personal Financial Literacy & Stock Market')" class="w-full py-3 px-6 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-semibold rounded-xl hover:bg-green-100 dark:hover:bg-green-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Personal Financial Literacy & Stock Market')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 14. Back Office -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-gray-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="database" class="w-8 h-8 text-gray-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.5</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Back Office Management</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Skills for backend operations, data handling, and management reporting.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 55+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Back office Management & MIS Report')" class="w-full py-3 px-6 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-sm">See Details</button><button onclick="handleRegister('Back office Management & MIS Report')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 15. Data Analyst -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-violet-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="pie-chart" class="w-8 h-8 text-violet-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Data Analyst with AI Tech</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Comprehensive data analysis using Advance Excel, SQL, Python, and Power BI.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 95+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Data Analyst with Al Technology')" class="w-full py-3 px-6 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 font-semibold rounded-xl hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Data Analyst with Al Technology')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 16. Advance Diploma CA -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-cyan-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="cpu" class="w-8 h-8 text-cyan-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Diploma in Comp App</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Advanced level diploma covering specialized computer application topics.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 130+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Advance Diploma in Computer Application')" class="w-full py-3 px-6 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 font-semibold rounded-xl hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Advance Diploma in Computer Application')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 17. PGDCA -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-rose-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="graduation-cap" class="w-8 h-8 text-rose-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">PGDCA</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Post-graduate level certification in computer applications for advanced career roles.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 45+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Post Graduate Diploma in Computer Application')" class="w-full py-3 px-6 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 font-semibold rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Post Graduate Diploma in Computer Application')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 18. ADFAT -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-emerald-700"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="calculator" class="w-8 h-8 text-emerald-700"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in Accounting & Tax</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Specialized diploma focusing on advanced financial accounting and taxation.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 60+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Advance Diploma in Financial Accounting with Taxation')" class="w-full py-3 px-6 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 font-semibold rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Advance Diploma in Financial Accounting with Taxation')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 19. ADCA with AI -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-indigo-500"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="circuit-board" class="w-8 h-8 text-indigo-500"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">ADCA with AI Technology</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Advance Diploma integrating traditional computer apps with modern AI technologies.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 15 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 85+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Advance Diploma in Computer Application with Al Technology')" class="w-full py-3 px-6 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-semibold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Advance Diploma in Computer Application with Al Technology')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 20. Teacher Training -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-orange-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="presentation" class="w-8 h-8 text-orange-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Computer Teacher Training</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Prepare for a career in teaching computer science and applications.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 70+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Diploma in Computer Teacher Training')" class="w-full py-3 px-6 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-semibold rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Diploma in Computer Teacher Training')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                    <!-- 21. Master Diploma -->
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
+                        <div class="h-2 w-full bg-yellow-600"></div>
+                        <div class="p-8 flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-colors"><i data-lucide="award" class="w-8 h-8 text-yellow-600"></i></div>
+                                <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-200">5.0</span></div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Master Diploma in Comp App</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">The ultimate certification for mastering all aspects of computer applications.</p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400"><div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 18 Mo</div><div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 40+</div></div>
+                        </div>
+                        <div class="p-8 pt-0 mt-auto space-y-3"><button onclick="openCourseDetails('Master Diploma in Computer Application')" class="w-full py-3 px-6 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 font-semibold rounded-xl hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-all text-sm">See Details</button><button onclick="handleRegister('Master Diploma in Computer Application')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+                    </div>
+
+                </div> <!-- End Hidden Courses -->
+
+            </div>
+
+            <!-- View All Button -->
+            <div class="mt-16 text-center">
+                <button id="viewAllBtn" onclick="toggleCourses()" class="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                    View All Courses
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Student Portal Section (Modified) -->
+    <section class="py-20 bg-slate-900 text-white overflow-hidden relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-12">
+                <div class="md:w-1/2">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Manage Your Academic Journey Online</h2>
+                    <p class="text-slate-300 text-lg mb-8 leading-relaxed">NIAT is upgrading! Register online, track attendance, and download certified e-marksheets directly from our portal.</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <!-- Register Button (No Icon) -->
+                        <button onclick="handleRegister()" class="px-6 py-3 bg-white text-slate-900 rounded-lg font-bold hover:bg-slate-100 transition-colors text-center">
+                            Register
+                        </button>
+                        
+                        <!-- Download Certificate -->
+                        <button onclick="openModal('marksheetModal')" class="px-6 py-3 border border-slate-600 text-white rounded-lg font-semibold hover:border-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="download" class="w-5 h-5"></i> Download Certificate
+                        </button>
+                        
+                        <!-- Download Marksheet -->
+                        <button onclick="openModal('marksheetModal')" class="px-6 py-3 border border-slate-600 text-white rounded-lg font-semibold hover:border-purple-500 hover:text-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5"></i> Download Marksheet
+                        </button>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-all duration-500">
+                        <div class="flex items-center gap-4 mb-6 border-b border-slate-700 pb-4">
+                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                                <i data-lucide="file-check" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Verified Documents</h4>
+                                <p class="text-xs text-slate-400">Secure & Verifiable</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="h-2 bg-slate-700 rounded w-3/4"></div>
+                            <div class="h-2 bg-slate-700 rounded w-full"></div>
+                            <div class="h-2 bg-slate-700 rounded w-5/6"></div>
+                        </div>
+                        <div class="mt-6 p-4 bg-slate-900 rounded-xl border border-dashed border-slate-600 flex items-center justify-center text-slate-500 text-sm">
+                            Document Preview Area
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Layout (Unchanged) -->
+    <footer id="contact" class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pt-16 pb-8 transition-colors">
+        <div class="container mx-auto px-4">
+            
+            <div class="mb-12">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">N</div>
+                    <span class="font-bold text-xl text-slate-900 dark:text-white">NIAT</span>
+                </div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Empowering the youth with cutting-edge computer education and vocational skills.</p>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid lg:grid-cols-12 gap-12 mb-16">
+                
+                <!-- 1. Contact Info -->
+                <div class="lg:col-span-4 space-y-6">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-lg border-b border-slate-100 dark:border-slate-800 pb-2">Contact Information</h4>
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400"><i data-lucide="map-pin" class="w-5 h-5"></i></div>
+                        <div><p class="text-sm font-bold text-slate-900 dark:text-white">Location</p><p class="text-sm text-slate-500 dark:text-slate-400">123 Education Lane, Knowledge City,<br>State, Zip - 400001</p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400"><i data-lucide="mail" class="w-5 h-5"></i></div>
+                        <div><p class="text-sm font-bold text-slate-900 dark:text-white">Email</p><p class="text-sm text-slate-500 dark:text-slate-400">admissions@niat.edu</p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400"><i data-lucide="phone" class="w-5 h-5"></i></div>
+                        <div><p class="text-sm font-bold text-slate-900 dark:text-white">Call Us</p><p class="text-sm text-slate-500 dark:text-slate-400">+91 98765 43210</p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400"><i data-lucide="clock" class="w-5 h-5"></i></div>
+                        <div><p class="text-sm font-bold text-slate-900 dark:text-white">Working Time</p><p class="text-sm text-slate-500 dark:text-slate-400">Mon - Sat: 9:00 AM - 7:00 PM</p></div>
+                    </div>
+                </div>
+
+                <!-- 2. Send Message -->
+                <div class="lg:col-span-5 bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-4">Send Us Message</h4>
+                    <form class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" placeholder="Full Name" class="w-full px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-sm text-slate-900 dark:text-white">
+                            <input type="email" placeholder="Email Address" class="w-full px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-sm text-slate-900 dark:text-white">
+                        </div>
+                        <input type="text" placeholder="Subject" class="w-full px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-sm text-slate-900 dark:text-white">
+                        <textarea rows="3" placeholder="Your Message" class="w-full px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-sm text-slate-900 dark:text-white"></textarea>
+                        <button type="button" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors text-sm w-full">Send Message</button>
+                    </form>
+                </div>
+
+                <!-- 3. Quick Links -->
+                <div class="lg:col-span-3">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-lg border-b border-slate-100 dark:border-slate-800 pb-2 mb-6">Quick Links</h4>
+                    <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                        <li><button onclick="scrollToSection('home')" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i> Home</button></li>
+                        <li><button onclick="scrollToSection('about')" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i> About Us</button></li>
+                        <li><button onclick="scrollToSection('courses')" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i> Courses</button></li>
+                        <li><button onclick="scrollToSection('contact')" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i> Contact</button></li>
+                        <li><a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i> Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i> Terms & Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Socials & Map -->
+            <div class="mb-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Follow Us On:</span>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 hover:text-white transition-all"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-pink-600 hover:text-white transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-800 hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                </div>
+                
+                <div class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner">
+                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.447551066042!2d77.123456!3d28.567890!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd5b347eb62d%3A0x52c2b7494e204dce!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1709282345678!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                <p>&copy; 2026 NIAT Computer Academy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-2xl transition-all transform hover:-translate-y-1">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Modals (Login/Signup - Dark Mode ready) -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Welcome Back</h3>
+                <button onclick="closeModal('loginModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8">
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                        <input type="email" id="loginEmail" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
+                        <input type="password" id="loginPassword" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-2">Login</button>
+                    <div class="relative my-6"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-700"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-slate-900 text-slate-500">Or continue with</span></div></div>
+                    <button type="button" id="googleLoginBtn" class="w-full py-3 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google
+                    </button>
+                    <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">Don't have an account? <button type="button" onclick="switchModal('loginModal', 'signupModal')" class="text-blue-600 font-bold hover:underline">Sign Up</button></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signupModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden fade-in max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900 z-10">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create Account</h3>
+                <button onclick="closeModal('signupModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8">
+                <form id="signupForm" class="space-y-4">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-1"><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">First Name</label><input type="text" id="firstName" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required></div>
+                        <div class="col-span-1"><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Middle</label><input type="text" id="middleName" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                        <div class="col-span-1"><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Last Name</label><input type="text" id="lastName" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required></div>
+                    </div>
+                    <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label><input type="email" id="signupEmail" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label><input type="password" id="signupPassword" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required></div>
+                        <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirm</label><input type="password" id="confirmPassword" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required></div>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-4">Create Account</button>
+                    <div class="relative my-6"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-700"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-slate-900 text-slate-500">Or sign up with</span></div></div>
+                    <button type="button" id="googleSignupBtn" class="w-full py-3 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google
+                    </button>
+                    <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">Already have an account? <button type="button" onclick="switchModal('signupModal', 'loginModal')" class="text-blue-600 font-bold hover:underline">Login</button></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Marksheet Modal -->
+    <div id="marksheetModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in">
+            <div class="bg-slate-900 p-6 flex justify-between items-center text-white">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="download" class="w-5 h-5"></i> Download Document</h3>
+                <button onclick="closeModal('marksheetModal')" class="hover:bg-slate-800 p-1 rounded"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8">
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Enter details to access your verified Certificate/Marksheet.</p>
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Registration No.</label>
+                        <input type="text" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="NIAT/2024/XXX">
+                    </div>
+                    <button type="button" onclick="closeModal('marksheetModal')" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-lg hover:bg-emerald-700 transition-all mt-2 flex justify-center items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> Verify & Download
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Registration Form Modal (Detailed Form)
+    <div id="registrationFormModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in max-h-[90vh] overflow-y-auto">
+            <div class="bg-blue-600 p-6 flex justify-between items-center text-white sticky top-0 z-10">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Course Registration Form</h3>
+                <button onclick="closeModal('registrationFormModal')" class="hover:bg-blue-700 p-1 rounded"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8">
+                <form id="courseRegForm" class="space-y-6">
+                    <!- - Personal Details -- >
+                    <div>
+                        <h4 class="text-sm uppercase tracking-wide text-blue-600 dark:text-blue-400 font-bold mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">Personal Information</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label><input type="text" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Father's Name</label><input type="text" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date of Birth</label><input type="date" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Gender</label>
+                                <select class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <option>Male</option><option>Female</option><option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!- - Contact Details -- >
+                    <div>
+                        <h4 class="text-sm uppercase tracking-wide text-blue-600 dark:text-blue-400 font-bold mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">Contact Details</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone Number</label><input type="tel" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label><input type="email" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                            <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Address</label><textarea rows="2" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea></div>
+                        </div>
+                    </div>
+
+                    <!- - Course Selection -- >
+                    <div>
+                        <h4 class="text-sm uppercase tracking-wide text-blue-600 dark:text-blue-400 font-bold mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">Course Selection</h4>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Course</label>
+                            <select id="regCourseSelect" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                <!- - Options populated by JS - ->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="closeModal('registrationFormModal')" class="flex-1 py-3 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Cancel</button>
+                        <button type="submit" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- NEW: Course Details Modal -->
+    <div id="courseDetailsModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in max-h-[90vh] overflow-y-auto">
+            <div class="relative">
+                <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-700"></div>
+                <button onclick="closeModal('courseDetailsModal')" class="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-1 rounded-full backdrop-blur-sm transition-all"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <div class="px-8 -mt-10 mb-6 flex justify-between items-end">
+                    <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-lg"><i id="detailIcon" data-lucide="book-open" class="w-10 h-10 text-blue-600 dark:text-blue-400"></i></div>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Certified</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">Job Ready</span>
+                    </div>
+                </div>
+            </div>
+            <div class="px-8 pb-8">
+                <h2 id="detailTitle" class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Course Title</h2>
+                <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-6">
+                    <span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> <span id="detailDuration">3 Months</span></span>
+                    <span class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> <span id="detailStudents">120+ Students</span></span>
+                    <span class="flex items-center gap-1"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i> <span id="detailRating">4.8</span></span>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Description</h4>
+                        <p id="detailDesc" class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">Course description goes here.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">What You'll Learn</h4>
+                        <ul id="detailModules" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-600 dark:text-slate-300">
+                            <!-- Modules injected via JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <button id="detailRegisterBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        Register Now <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // --- 1. Theme Logic ---
+        const html = document.documentElement;
+        const checkbox = document.getElementById('theme-toggle');
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            if(checkbox) checkbox.checked = true;
+        } else {
+            html.classList.remove('dark');
+            if(checkbox) checkbox.checked = false;
+        }
+        function toggleTheme() {
+            if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.theme = 'light'; } 
+            else { html.classList.add('dark'); localStorage.theme = 'dark'; }
+        }
+
+        // --- 2. Icons ---
+        lucide.createIcons();
+
+        // --- 3. UI Helpers ---
+        function toggleMenu() { document.getElementById('mainMenu').classList.toggle('hidden'); }
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        function switchModal(currentId, targetId) { closeModal(currentId); openModal(targetId); }
+        function scrollToSection(id) { 
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); 
+            document.getElementById('mainMenu').classList.add('hidden'); 
+        }
+        
+        // --- 4. Scroll Top ---
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) scrollTopBtn.classList.add('show');
+            else scrollTopBtn.classList.remove('show');
+        });
+
+        // --- 5. Carousel ---
+        const track = document.getElementById('carouselTrack');
+        const dotsContainer = document.getElementById('carouselDots');
+        const slides = track.children;
+        const totalSlides = slides.length;
+        let currentSlide = 0, slideInterval, dotTimer;
+
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('w-2', 'h-2', 'bg-white/50', 'rounded-full', 'cursor-pointer', 'dot');
+            dot.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(i); resetTimer(); });
+            dotsContainer.appendChild(dot);
+        }
+        function updateDots() {
+            const dots = dotsContainer.children;
+            for (let i = 0; i < dots.length; i++) {
+                if (i === currentSlide) { dots[i].classList.add('active', 'bg-white'); dots[i].classList.remove('bg-white/50'); } 
+                else { dots[i].classList.remove('active', 'bg-white'); dots[i].classList.add('bg-white/50'); }
+            }
+        }
+        function goToSlide(index) {
+            currentSlide = index;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            track.style.transform = `translateX(${currentSlide * -100}%)`;
+            updateDots();
+        }
+        function nextSlide() { goToSlide(currentSlide + 1); }
+        function prevSlide() { goToSlide(currentSlide - 1); }
+        function resetTimer() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 5000); }
+        function showDots() {
+            dotsContainer.classList.add('visible');
+            clearTimeout(dotTimer);
+            dotTimer = setTimeout(() => dotsContainer.classList.remove('visible'), 3000);
+        }
+        updateDots(); resetTimer();
+        
+        // Touch
+        let touchStartX = 0, touchEndX = 0;
+        track.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+        track.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) { nextSlide(); resetTimer(); }
+            if (touchEndX - touchStartX > 50) { prevSlide(); resetTimer(); }
+        });
+
+        // --- 6. View All ---
+        function toggleCourses() {
+            const more = document.getElementById('moreCourses');
+            const btn = document.getElementById('viewAllBtn');
+            if (more.classList.contains('hidden')) { more.classList.remove('hidden'); btn.textContent = "View Less Courses"; } 
+            else { more.classList.add('hidden'); btn.textContent = "View All Courses"; document.getElementById('courses').scrollIntoView({ behavior: 'smooth' }); }
+        }
+
+        // --- 7. COURSE DATABASE & DETAILS LOGIC ---
+        const coursesDB = {
+            "Basics of Computer": { desc: "Master the fundamentals of computing, OS navigation, MS Office suite, and internet essentials.", modules: ["Computer Fundamentals", "Windows OS", "MS Word, Excel, PowerPoint", "Internet & Email"], duration: "3 Months", students: "120+", rating: "4.8" },
+            "Diploma in DTP": { desc: "Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker. Create stunning designs.", modules: ["CorelDraw", "Adobe Photoshop", "Adobe PageMaker", "Printing Technology"], duration: "6 Months", students: "85+", rating: "4.9" },
+            "Tally Prime & Accounting": { desc: "Complete financial accounting training using Tally Prime. Covers GST, payroll, and reporting.", modules: ["Accounting Concepts", "Tally Prime Interface", "GST Implementation", "Payroll Management"], duration: "4 Months", students: "200+", rating: "4.7" },
+            "Advance Excel with MIS Report": { desc: "Master advanced formulas, pivot tables, macros, and creating professional MIS reports.", modules: ["Advanced Formulas", "Pivot Tables & Charts", "Macros & VBA", "MIS Dashboard Creation"], duration: "2 Months", students: "150+", rating: "4.8" },
+            "AI/ML using Python": { desc: "Dive into Artificial Intelligence and Machine Learning concepts using Python programming.", modules: ["Python Programming", "Data Science Libraries", "Machine Learning Algorithms", "Neural Networks"], duration: "6 Months", students: "60+", rating: "4.9" },
+            "Digital Marketing": { desc: "Learn SEO, Social Media Marketing, Content Strategy, and Online Advertising.", modules: ["SEO & SEM", "Social Media Marketing", "Content Marketing", "Email Marketing"], duration: "3 Months", students: "90+", rating: "4.7" },
+            "Communication Skill & Personality Development": { desc: "Enhance your soft skills, public speaking confidence, and overall personality.", modules: ["Public Speaking", "Interview Skills", "Body Language", "Professional Etiquette"], duration: "2 Months", students: "75+", rating: "4.8" },
+            "Office Management with Google workspace": { desc: "Efficiently manage office tasks using Google Docs, Sheets, Slides, and Drive.", modules: ["Google Docs", "Google Sheets", "Google Slides", "Cloud Collaboration"], duration: "2 Months", students: "50+", rating: "4.6" },
+            "SDP(Skill Development Programme)": { desc: "Comprehensive program focused on enhancing various vocational skills for employment.", modules: ["Soft Skills", "Basic IT Skills", "Workplace Readiness", "Communication"], duration: "3 Months", students: "100+", rating: "4.7" },
+            "Diploma in Computer Application": { desc: "Extensive diploma covering fundamental to intermediate computer applications.", modules: ["IT Basics", "MS Office", "Internet", "Basic Accounting"], duration: "6 Months", students: "110+", rating: "4.8" },
+            "Advance Tally Prime with GST": { desc: "In-depth Tally training focusing on Goods and Services Tax implementation.", modules: ["Advanced Tally", "GST Laws & Returns", "E-Way Bill", "Taxation"], duration: "3 Months", students: "80+", rating: "4.9" },
+            "Diploma in Computer Application in Business (CAB)": { desc: "Computer Application in Business - bridging technology with business needs.", modules: ["Business Computing", "Tally", "Advanced Excel", "E-Commerce"], duration: "6 Months", students: "70+", rating: "4.6" },
+            "Personal Financial Literacy & Stock Market": { desc: "Understand personal finance, investing, and the basics of stock market trading.", modules: ["Financial Planning", "Stock Market Basics", "Technical Analysis", "Investment Strategies"], duration: "1 Month", students: "40+", rating: "4.8" },
+            "Back office Management & MIS Report": { desc: "Skills for backend operations, data handling, and management reporting.", modules: ["Data Entry", "Advanced Excel", "MIS Reporting", "Office Admin"], duration: "3 Months", students: "55+", rating: "4.5" },
+            "Data Analyst with Al Technology": { desc: "Comprehensive data analysis using Advance Excel, SQL, Python, and Power BI.", modules: ["SQL", "Python for Data", "Power BI", "AI Tools for Analysis"], duration: "6 Months", students: "95+", rating: "4.9" },
+            "Advance Diploma in Computer Application": { desc: "Advanced level diploma covering specialized computer application topics.", modules: ["Programming (C/C++)", "Web Design", "Database Management", "Advanced Office"], duration: "12 Months", students: "130+", rating: "4.7" },
+            "Post Graduate Diploma in Computer Application": { desc: "Post-graduate level certification in computer applications for advanced career roles.", modules: ["Software Engineering", "Java/Python", "DBMS", "Project Management"], duration: "12 Months", students: "45+", rating: "4.9" },
+            "Advance Diploma in Financial Accounting with Taxation": { desc: "Specialized diploma focusing on advanced financial accounting and taxation.", modules: ["Financial Accounting", "Direct & Indirect Tax", "Auditing", "Corporate Laws"], duration: "12 Months", students: "60+", rating: "4.8" },
+            "Advance Diploma in Computer Application with Al Technology": { desc: "Advance Diploma integrating traditional computer apps with modern AI technologies.", modules: ["ADCA Syllabus", "Intro to AI", "AI Tools in Business", "Future Tech"], duration: "15 Months", students: "85+", rating: "4.9" },
+            "Diploma in Computer Teacher Training": { desc: "Prepare for a career in teaching computer science and applications.", modules: ["Teaching Methodology", "Child Psychology", "Computer Science", "Lesson Planning"], duration: "12 Months", students: "70+", rating: "4.7" },
+            "Master Diploma in Computer Application": { desc: "The ultimate certification for mastering all aspects of computer applications.", modules: ["Full Stack Dev", "Advanced Programming", "Cloud Computing", "Cyber Security Basics"], duration: "18 Months", students: "40+", rating: "5.0" }
+        };
+
+        // Populate Dropdown
+        const regSelect = document.getElementById('regCourseSelect');
+        Object.keys(coursesDB).forEach(course => {
+            const option = document.createElement('option');
+            option.value = course;
+            option.textContent = course;
+            regSelect.appendChild(option);
+        });
+
+        // Open Details Modal
+        function openCourseDetails(courseName) {
+            const data = coursesDB[courseName];
+            if (!data) return;
+
+            document.getElementById('detailTitle').textContent = courseName;
+            document.getElementById('detailDesc').textContent = data.desc;
+            document.getElementById('detailDuration').textContent = data.duration;
+            document.getElementById('detailStudents').textContent = data.students + " Students";
+            document.getElementById('detailRating').textContent = data.rating;
+            
+            const modulesList = document.getElementById('detailModules');
+            modulesList.innerHTML = '';
+            data.modules.forEach(mod => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center gap-2';
+                li.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-500"></i> ${mod}`;
+                modulesList.appendChild(li);
+            });
+            lucide.createIcons(); // Refresh icons
+
+            // Update Register Button in Modal
+            const regBtn = document.getElementById('detailRegisterBtn');
+            regBtn.onclick = () => handleRegister(courseName);
+
+            openModal('courseDetailsModal');
+        }
+
+        // --- 8. REGISTER LOGIC ---
+        // Mock Auth State (Replace with real Firebase state)
+        let isUserLoggedIn = false; 
+
+        // Update UI based on auth (Call this inside onAuthStateChanged)
+        function updateAuthState(user) {
+            isUserLoggedIn = !!user;
+            // Optional: Update Navbar buttons here (e.g., Hide Login, Show Logout)
+        }
+
+        function handleRegister(courseName = null) {
+            // 1. Check Login Status FIRST
+            if (!isUserLoggedIn) {
+                alert("Please Login or Sign Up to Register.");
+                openModal('signupModal');
+            } else {
+                // 2. Prepare the URL (Use Backticks ` ` for variables)
+                // We assume 'userEmail' is a global variable you have defined elsewhere
+                let targetUrl = `registrationForm.html?email=${encodeURIComponent(userEmail)}`; 
+        
+                // 3. Pass the Course Name in the URL too!
+                // (You cannot set document.getElementById values here because you are leaving this page)
+                if (courseName) {
+                    targetUrl += `&course=${encodeURIComponent(courseName)}`;
+                }
+        
+                // 4. Redirect the user (Fixed spelling of 'href')
+                window.location.href = targetUrl;
+            }
+        }
+
+    </script>
+
+    <!-- FIREBASE AUTH LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+        // REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
+            authDomain: "niat-admission-form.firebaseapp.com",
+            projectId: "niat-admission-form",
+            storageBucket: "niat-admission-form.firebasestorage.app",
+            messagingSenderId: "907218345703",
+            appId: "1:907218345703:web:57e6dd3d74baab2f190c42",
+            measurementId: "G-YPCVGYS7L9"
+        };
+
+        let auth;
+        try {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            
+            // Listen for Auth Changes to update global state
+            onAuthStateChanged(auth, (user) => {
+                // Access global function to update state
+                window.updateAuthState(user);
+                if(user) {
+                    console.log("User Logged In:", user.email);
+                    // You could hide Login/Signup buttons here
+                } else {
+                    console.log("User Signed Out");
+                }
+            });
+
+        } catch (error) {
+            console.error("Firebase Config Missing.");
+        }
+
+        // --- SIGN UP ---
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            if (!auth) { alert("Firebase not configured."); return; }
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                alert("Account Created! You are now logged in.");
+                closeModal('signupModal');
+                // Proceed to registration if that was the intent?
+            } catch (error) { alert("Error: " + error.message); }
+        });
+
+        // --- LOGIN ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if (!auth) { alert("Firebase not configured."); return; }
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert("Login Successful!");
+                closeModal('loginModal');
+            } catch (error) { alert("Login Failed: " + error.message); }
+        });
+
+        // --- GOOGLE ---
+        // (Add event listeners for Google buttons similar to prev code)
+    </script>
+</body>
+</html>
