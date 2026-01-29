@@ -1173,6 +1173,105 @@
         }
 
     </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+        // REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
+            authDomain: "niat-admission-form.firebaseapp.com",
+            projectId: "niat-admission-form",
+            storageBucket: "niat-admission-form.firebasestorage.app",
+            messagingSenderId: "907218345703",
+            appId: "1:907218345703:web:57e6dd3d74baab2f190c42",
+            measurementId: "G-YPCVGYS7L9"
+        };
+
+        let auth;
+        let provider; // Google Provider
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            provider = new GoogleAuthProvider(); // Initialize Google Provider
+            
+            // Listen for Auth Changes to update global state
+            onAuthStateChanged(auth, (user) => {
+                // Access global function to update state
+                if (window.updateAuthState) {
+                    window.updateAuthState(user);
+                }
+                
+                if(user) {
+                    console.log("User Logged In:", user.email);
+                    // Optional: Auto-close modals if open
+                    closeModal('loginModal');
+                    closeModal('signupModal');
+                } else {
+                    console.log("User Signed Out");
+                }
+            });
+
+        } catch (error) {
+            console.error("Firebase Config Error:", error);
+        }
+
+        // --- EMAIL SIGN UP ---
+        const signupForm = document.getElementById('signupForm');
+        if(signupForm) {
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+                if (!auth) { alert("Firebase not configured."); return; }
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("Account Created! You are now logged in.");
+                    closeModal('signupModal');
+                } catch (error) { alert("Error: " + error.message); }
+            });
+        }
+
+        // --- EMAIL LOGIN ---
+        const loginForm = document.getElementById('loginForm');
+        if(loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                if (!auth) { alert("Firebase not configured."); return; }
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alert("Login Successful!");
+                    closeModal('loginModal');
+                } catch (error) { alert("Login Failed: " + error.message); }
+            });
+        }
+
+        // --- GOOGLE LOGIN LOGIC (FIXED) ---
+        const handleGoogleLogin = async () => {
+            if (!auth) { alert("Firebase not configured."); return; }
+            try {
+                await signInWithPopup(auth, provider);
+                // Success is handled by onAuthStateChanged above
+                alert("Google Sign-In Successful!");
+            } catch (error) {
+                alert("Google Sign-In Error: " + error.message);
+            }
+        };
+
+        // Attach to Buttons
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const googleSignupBtn = document.getElementById('googleSignupBtn');
+
+        if(googleLoginBtn) googleLoginBtn.addEventListener('click', handleGoogleLogin);
+        if(googleSignupBtn) googleSignupBtn.addEventListener('click', handleGoogleLogin);
+
+    </script>
+    
 </body>
 
 </html>
+
