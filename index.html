@@ -87,31 +87,40 @@
             background-color: #2563eb;
         }
 
-        /* Search Bar Animation */
+        /* Search Bar Animation (Fixed Position) */
         .search-container {
             position: relative;
             display: flex;
             align-items: center;
+            justify-content: flex-end; /* Align button to the right */
+            height: 40px; /* Define height to match button */
         }
+        
         .search-input {
-            width: 0;
+            position: absolute; /* Take out of flow */
+            right: 0;           /* Anchor to the right side (where icon is) */
+            width: 40px;        /* Start small (hidden behind button) */
             opacity: 0;
             transition: all 0.4s ease-in-out;
             border: 1px solid transparent;
             padding: 0;
-            visibility: hidden;
+            border-radius: 9999px;
+            z-index: 10;        /* Sit behind the icon button */
+            height: 100%;
+            pointer-events: none; /* Prevent clicks when hidden */
         }
+
         .search-container.active .search-input {
-            width: 200px;
+            width: 260px;       /* Expand to the Left */
             opacity: 1;
-            padding: 0.5rem 1rem;
-            border-color: #cbd5e1; /* slate-300 */
-            visibility: visible;
-            margin-right: 0.5rem;
+            padding: 0.5rem 3rem 0.5rem 1rem; /* Right padding makes room for icon */
+            border-color: #cbd5e1;
+            pointer-events: auto; /* Enable typing */
         }
+
         @media (min-width: 768px) {
             .search-container.active .search-input {
-                width: 300px;
+                width: 350px;   /* Wider on Desktop */
             }
         }
 
@@ -196,8 +205,9 @@
                     
                     <!-- Search Bar -->
                     <div class="search-container" id="searchBar">
-                        <input type="text" id="searchInput" class="search-input rounded-full bg-slate-100 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search courses...">
-                        <button onclick="toggleSearch()" class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <input type="text" id="searchInput" class="search-input bg-slate-100 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search courses...">
+                        
+                        <button onclick="toggleSearch()" class="relative z-20 p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                             <i data-lucide="search" class="w-6 h-6"></i>
                         </button>
                     </div>
@@ -297,7 +307,7 @@
                     <div class="space-y-4">
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Student Actions</h4>
 
-                        <div class="md:hidden grid grid-cols-2 gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-6">
+                        <div id="mobile-auth-buttons" class="md:hidden grid grid-cols-2 gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-6">
                             <button onclick="openModal('signupModal'); toggleMenu()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md">
                                 Sign Up
                             </button>
@@ -1394,20 +1404,24 @@
             isUserLoggedIn = !!user;
             
             // Elements to toggle
-            const authBtns = document.getElementById('auth-buttons');
+            const authBtns = document.getElementById('auth-buttons');       // Desktop Navbar Buttons
+            const mobileAuthBtns = document.getElementById('mobile-auth-buttons'); // Mobile Menu Buttons (The ID you just added)
             const userControls = document.getElementById('user-controls');
             const menuLogout = document.getElementById('menu-logout-btn');
 
             if(user) {
                 // --- STATE: LOGGED IN ---
-                userEmail = user.email; // Capture email for the form
+                userEmail = user.email; 
                 
-                // Toggle UI Buttons
-                if(authBtns) authBtns.classList.add('hidden');
+                // 1. Hide Auth Buttons using Inline Styles (Overrides CSS)
+                if(authBtns) authBtns.style.display = 'none';
+                if(mobileAuthBtns) mobileAuthBtns.style.display = 'none';
+
+                // 2. Show User Controls
                 if(userControls) userControls.classList.remove('hidden');
                 if(menuLogout) menuLogout.classList.remove('hidden');
                 
-                // Update Avatars & Profile Text
+                // 3. Update Profile Data
                 const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'User'}&background=2563eb&color=fff`;
                 
                 const navAvatar = document.getElementById('nav-avatar');
@@ -1424,8 +1438,12 @@
                 // --- STATE: LOGGED OUT ---
                 userEmail = "";
                 
-                // Toggle UI Buttons
-                if(authBtns) authBtns.classList.remove('hidden');
+                // 1. Show Auth Buttons (Clear inline style so CSS classes take over)
+                // This is the FIX: It restores 'hidden md:flex' behavior
+                if(authBtns) authBtns.style.display = '';       
+                if(mobileAuthBtns) mobileAuthBtns.style.display = ''; 
+
+                // 2. Hide User Controls
                 if(userControls) userControls.classList.add('hidden');
                 if(menuLogout) menuLogout.classList.add('hidden');
             }
@@ -1564,5 +1582,4 @@
     </script>
 </body>
 </html>
-
 
