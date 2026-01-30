@@ -130,26 +130,26 @@
         #search-overlay {
             position: fixed;
             inset: 0;
-            z-index: 300; 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(12px); 
+            z-index: 300;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            padding-top: 15vh; 
-            
+            padding-top: 15vh;
+
             /* Default: Hidden */
             opacity: 0;
             visibility: hidden;
-            
+
             /* Smooth Fade for background */
             /* Delay visibility hide until opacity is done (0.3s) */
             transition: opacity 0.3s ease, visibility 0s linear 0.3s;
         }
-        
+
         .dark #search-overlay {
-            background: rgba(15, 23, 42, 0.6); 
+            background: rgba(15, 23, 42, 0.6);
         }
 
         #search-overlay.active {
@@ -162,7 +162,7 @@
         /* The Search Box Container */
         .search-box-wrapper {
             /* Fixed Size - No shrinking width anymore */
-            width: 90%; 
+            width: 90%;
             max-width: 600px;
             background: white;
             border-radius: 99px;
@@ -170,15 +170,15 @@
             display: flex;
             align-items: center;
             overflow: hidden;
-            
+
             /* Start State: Slightly smaller, moved up, and invisible */
             transform: scale(0.95) translateY(-10px);
             opacity: 0;
-            
+
             /* Smooth Pop Animation with a slight bounce */
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        
+
         .dark .search-box-wrapper {
             background: #1e293b;
             border: 1px solid #334155;
@@ -373,6 +373,95 @@
             background: #334155;
             color: white;
         }
+
+        /* --- MOBILE MENU OVERLAY (Slide & Blur) --- */
+        #mainMenu {
+            position: fixed;
+            top: 80px;
+            /* Below Navbar */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 40;
+
+            /* Start: Transparent & No Blur */
+            background: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+
+            /* Hidden State */
+            opacity: 0;
+            visibility: hidden;
+
+            /* Animate Opacity and Blur */
+            transition:
+                opacity 0.4s ease,
+                backdrop-filter 0.4s ease,
+                visibility 0s linear 0.4s;
+            /* Delay hiding until fade finishes */
+        }
+
+        #mainMenu.active {
+            /* End: Dark & Blurry */
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            /* The Blurry Animation */
+            -webkit-backdrop-filter: blur(8px);
+
+            /* Visible State */
+            opacity: 1;
+            visibility: visible;
+
+            /* Instant visibility on open */
+            transition:
+                opacity 0.4s ease,
+                backdrop-filter 0.4s ease,
+                visibility 0s linear 0s;
+        }
+
+        /* The Menu Box (White part) */
+        .menu-content {
+            background: white;
+            width: 100%;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+            /* Start: Slide Up slightly */
+            transform: translateY(-20px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .dark .menu-content {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+
+        /* End: Slide Down */
+        #mainMenu.active .menu-content {
+            transform: translateY(0);
+        }
+
+        /* --- ACTIVE LINK HIGHLIGHT --- */
+        .nav-link.active-section {
+            color: #2563eb;
+            /* Blue-600 */
+            font-weight: 700;
+            padding-left: 0.5rem;
+            /* Slight indentation */
+            border-left: 3px solid #2563eb;
+            /* Blue border indicator */
+        }
+
+        .dark .nav-link.active-section {
+            color: #60a5fa;
+            /* Blue-400 (Lighter for Dark Mode) */
+            border-left-color: #60a5fa;
+        }
+
+        
     </style>
 </head>
 
@@ -382,7 +471,7 @@
     <nav
         class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
         <div class="w-full max-w-screen-2xl mx-auto px-0 sm:px-6 lg:px-12">
-            <div class="flex justify-between items-center h-20 px-1 lg:px-0">
+            <div class="flex justify-between items-center h-20 px-1.5 lg:px-0">
                 <!-- <div class="flex justify-between items-center h-20"> -->
                 <!-- LEFT SIDE: Menu + Logo -->
                 <div class="flex items-center gap-4">
@@ -441,7 +530,7 @@
                             Sign Up
                         </button>
                         <button onclick="openModal('loginModal')"
-                            class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all whitespace-nowrap">
+                            class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all transform hover:-translate-y-0.5 whitespace-nowrap">
                             Login
                         </button>
                     </div>
@@ -485,17 +574,21 @@
 
             </div>
         </div>
+    </nav>
 
-        <!-- THE MENU -->
-        <div id="mainMenu"
+    <!-- THE MENU -->
+    <!-- <div id="mainMenu"
             class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-40 animate-in slide-in-from-top-2 duration-200">
+            <div class="container mx-auto px-4 py-6"> -->
+    <div id="mainMenu" onclick="toggleMenu()">
+        <div class="menu-content" onclick="event.stopPropagation()">
             <div class="container mx-auto px-4 py-6">
                 <!-- <div class="w-full max-w-screen-2xl mx-auto px-2 sm:px-6 lg:px-12 py-6"> -->
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Links Column -->
                     <div class="space-y-4">
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Navigation</h4>
-                        <button onclick="scrollToSection('home')"
+                        <!-- <button onclick="scrollToSection('home')"
                             class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Home</button>
                         <button onclick="scrollToSection('about')"
                             class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">About
@@ -503,9 +596,18 @@
                         <button onclick="scrollToSection('courses')"
                             class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Courses</button>
                         <button onclick="scrollToSection('contact')"
-                            class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Contact</button>
+                            class="block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all">Contact</button> -->
+                        <button onclick="scrollToSection('home')" data-section="home"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Home</button>
+                        <button onclick="scrollToSection('about')" data-section="about"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">About
+                            Us</button>
+                        <button onclick="scrollToSection('courses')" data-section="courses"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Courses</button>
+                        <button onclick="scrollToSection('contact')" data-section="contact"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Contact</button>
 
-                        <div class="pt-4 flex items-center gap-4">
+                        <!-- <div class="pt-4 flex items-center gap-4">
                             <a href="#"
                                 class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors">
                                 <i data-lucide="facebook" class="w-5 h-5"></i> <span class="text-sm">Facebook</span>
@@ -518,11 +620,26 @@
                                 class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-700 transition-colors">
                                 <i data-lucide="linkedin" class="w-5 h-5"></i> <span class="text-sm">LinkedIn</span>
                             </a>
+                        </div> -->
+                        <div class="pt-4 flex items-center gap-4">
+                            <a href="#"
+                                class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                <i data-lucide="facebook" class="w-5 h-5"></i> <span class="text-sm">Facebook</span>
+                            </a>
+                            <a href="#"
+                                class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors">
+                                <i data-lucide="instagram" class="w-5 h-5"></i> <span class="text-sm">Instagram</span>
+                            </a>
+                            <a href="#"
+                                class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-500 transition-colors">
+                                <i data-lucide="linkedin" class="w-5 h-5"></i> <span class="text-sm">LinkedIn</span>
+                            </a>
                         </div>
 
                         <!-- THEME SETTINGS TOGGLE -->
                         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
-                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Appearance</h4>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Appearance
+                            </h4>
                             <div class="flex items-center justify-between">
                                 <span
                                     class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -550,7 +667,8 @@
 
                     <!-- Action Buttons Column -->
                     <div class="space-y-4">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Student Actions</h4>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Student Actions
+                        </h4>
 
                         <div id="mobile-auth-buttons"
                             class="md:hidden grid grid-cols-2 gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-6">
@@ -585,7 +703,7 @@
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 
     <!-- Hero Section -->
     <section id="home"
@@ -594,9 +712,18 @@
         <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
             <div class="grid lg:grid-cols-2 gap-12 lg:gap-12 items-start">
                 <div class="max-w-2xl pt-4">
-                    <div
+                    <!-- <div
                         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800">
                         <span class="flex h-2 w-2 rounded-full bg-blue-600"></span> Admissions Open for 2024
+                    </div> -->
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800 transition-transform hover:scale-105 cursor-default">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+                        </span>
+                        Admissions Open for 2024
                     </div>
                     <h1 class="text-4xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
                         Build Your Future with <span
@@ -604,19 +731,32 @@
                             Skills</span>
                     </h1>
                     <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                        NIAT Computer Academy provides top-tier vocational training in computer basics, accounting, and
-                        design. Empowering students with practical skills for the modern workforce.
+                        NIAT Computer Academy provides top-tier vocational training in computer basics, accounting, and design. Empowering students with practical skills for the modern workforce.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <!-- <div class="flex flex-col sm:flex-row gap-4">
                         <button onclick="scrollToSection('courses')"
                             class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
                             Explore Courses <i data-lucide="chevron-right" class="w-5 h-5"></i>
                         </button>
-                        <!-- FIXED: Register Button triggers handleRegister -->
+                        < !-- FIXED: Register Button triggers handleRegister -- >
                         <button onclick="handleRegister()"
                             class="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2">
                             Register
                         </button>
+                    </div> -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                        
+                        <button onclick="scrollToSection('courses')"
+                            class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 group">
+                            Explore Courses 
+                            <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
+                        </button>
+                        
+                        <button onclick="handleRegister()"
+                            class="w-full py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400">
+                            Register
+                        </button>
+                        
                     </div>
                 </div>
                 <div class="relative lg:ml-6 flex flex-col gap-8">
@@ -647,56 +787,81 @@
                             class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><i
                                 data-lucide="chevron-right" class="w-6 h-6"></i></button>
                     </div>
-                    <!-- <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-100 dark:border-slate-800 grid grid-cols-4 divide-x divide-slate-100 dark:divide-slate-800">
-                        <div class="text-center px-1 flex flex-col items-center">
-                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="users" class="w-4 h-4"></i></div>
-                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">5k+</p>
-                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Students</p>
-                        </div>
-                        <div class="text-center px-1 flex flex-col items-center">
-                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="calendar" class="w-4 h-4"></i></div>
-                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">10+</p>
-                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Years Exp</p>
-                        </div>
-                        <div class="text-center px-1 flex flex-col items-center">
-                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="book-open" class="w-4 h-4"></i></div>
-                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">20+</p>
-                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Courses</p>
-                        </div>
-                        <div class="text-center px-1 flex flex-col items-center">
-                            <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
-                            <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">100%</p>
-                            <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Placement</p>
-                        </div>
-                    </div> -->
                 </div>
             </div>
-            <div id="states"
+            <!-- <div id="states"
                 class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-100 dark:border-slate-800 grid grid-cols-4 divide-x divide-slate-100 dark:divide-slate-800">
                 <div class="text-center px-1 flex flex-col items-center">
                     <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2">
-                        <i data-lucide="users" class="w-4 h-4"></i></div>
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                    </div>
                     <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">5k+</p>
                     <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Students</p>
                 </div>
                 <div class="text-center px-1 flex flex-col items-center">
                     <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2">
-                        <i data-lucide="calendar" class="w-4 h-4"></i></div>
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                    </div>
                     <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">10+</p>
                     <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Years Exp</p>
                 </div>
                 <div class="text-center px-1 flex flex-col items-center">
                     <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2">
-                        <i data-lucide="book-open" class="w-4 h-4"></i></div>
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                    </div>
                     <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">20+</p>
                     <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Courses</p>
                 </div>
                 <div class="text-center px-1 flex flex-col items-center">
                     <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-2">
-                        <i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                        <i data-lucide="briefcase" class="w-4 h-4"></i>
+                    </div>
                     <p class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">100%</p>
                     <p class="text-[10px] lg:text-xs text-slate-500 dark:text-slate-400 font-medium">Placement</p>
                 </div>
+            </div> -->
+            <div id="states" class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+                
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                    <div class="p-4 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full mb-4">
+                        <i data-lucide="users" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">
+                        <span class="counter" data-target="5000">0</span>+
+                    </h3>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Happy Students</p>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                    <div class="p-4 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-full mb-4">
+                        <i data-lucide="calendar" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">
+                        <span class="counter" data-target="10">0</span>+
+                    </h3>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Years Experience</p>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                    <div class="p-4 bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400 rounded-full mb-4">
+                        <i data-lucide="book-open" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">
+                        <span class="counter" data-target="20">0</span>+
+                    </h3>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Courses</p>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                    <div class="p-4 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-full mb-4">
+                        <i data-lucide="briefcase" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">
+                        <span class="counter" data-target="100">0</span>%
+                    </h3>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Placement Rate</p>
+                </div>
+
             </div>
         </div>
     </section>
@@ -771,15 +936,16 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-16 bg-slate-50 dark:bg-slate-950 transition-colors">
-        <!-- <div class="container mx-auto px-4"> -->
+    <!-- <section class="py-16 bg-slate-50 dark:bg-slate-950 transition-colors">
+        <!- - <div class="container mx-auto px-4"> - ->
         <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
             <div class="grid md:grid-cols-3 gap-8">
                 <div
                     class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-lg transition-all group">
                     <div
                         class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="users" class="w-6 h-6 text-orange-500"></i></div>
+                        <i data-lucide="users" class="w-6 h-6 text-orange-500"></i>
+                    </div>
                     <div>
                         <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Expert Instructors</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Learn from industry
@@ -790,7 +956,8 @@
                     class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-lg transition-all group">
                     <div
                         class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="award" class="w-6 h-6 text-blue-500"></i></div>
+                        <i data-lucide="award" class="w-6 h-6 text-blue-500"></i>
+                    </div>
                     <div>
                         <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Recognized Certification</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Value across the industry.
@@ -801,11 +968,66 @@
                     class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-lg transition-all group">
                     <div
                         class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500"></i></div>
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500"></i>
+                    </div>
                     <div>
                         <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">Practical Training</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">100% Hands-on lab
                             sessions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <section class="py-20 bg-slate-50 dark:bg-slate-950 transition-colors border-b border-slate-200 dark:border-slate-800">
+        <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">
+                    Why Choose Us
+                </span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">
+                    Redefining Computer Education
+                </h2>
+                <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                    We go beyond textbooks. Our practical, hands-on approach ensures you gain the real-world skills that today's top employers are looking for.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div class="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="users" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-900 dark:text-white mb-2">Expert Instructors</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Learn directly from industry veterans with years of real-world experience.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="award" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-900 dark:text-white mb-2">Recognized Certification</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Earn certificates that are ISO 9001:2015 certified and valued across the industry.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="check-circle" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-900 dark:text-white mb-2">Practical Training</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            100% Hands-on lab sessions. We believe in learning by doing, not just watching.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -835,13 +1057,14 @@
                             <div
                                 class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                 <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span>
+                            </div>
                         </div>
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Basics of Computer</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Master the fundamentals of computing,
                             OS navigation, MS Office suite, and internet essentials.</p>
                         <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month</div>
                             <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 120+</div>
                         </div>
                     </div>
@@ -867,13 +1090,14 @@
                             <div
                                 class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                 <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in DTP</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">DTP</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Learn Desktop Publishing with
                             CorelDraw, Photoshop, and PageMaker.</p>
                         <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month</div>
                             <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 85+</div>
                         </div>
                     </div>
@@ -899,13 +1123,14 @@
                             <div
                                 class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                 <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span>
+                            </div>
                         </div>
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Tally Prime & Accounting</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Complete financial accounting
                             training using Tally Prime. Covers GST & Payroll.</p>
                         <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 4 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month</div>
                             <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 200+</div>
                         </div>
                     </div>
@@ -930,13 +1155,14 @@
                             <div
                                 class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                 <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Excel with MIS</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Excel with MIS Report</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Master advanced formulas, pivot
                             tables, macros, and creating professional MIS reports.</p>
                         <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 2 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month</div>
                             <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 150+</div>
                         </div>
                     </div>
@@ -961,13 +1187,14 @@
                             <div
                                 class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                 <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                                    class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span>
+                            </div>
                         </div>
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">AI/ML using Python</h3>
                         <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Dive into Artificial Intelligence and
                             Machine Learning concepts using Python.</p>
                         <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo</div>
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month</div>
                             <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 60+</div>
                         </div>
                     </div>
@@ -995,13 +1222,14 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span>
+                                </div>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Digital Marketing</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Learn SEO, Social Media
                                 Marketing, Content Strategy, and Online Advertising.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 90+
                                 </div>
@@ -1025,14 +1253,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Communication Skill & PD
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Communication Skill & Personality Development
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Enhance soft skills, public
                                 speaking confidence, and overall personality.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 2 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 75+
                                 </div>
@@ -1058,14 +1287,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.6</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.6</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Google Workspace
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Office management with Google Workspace
                                 Management</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Efficiently manage office tasks
                                 using Google Docs, Sheets, Slides, and Drive.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 2 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 50+
                                 </div>
@@ -1091,14 +1321,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Skill Development
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">(SDP)Skill Development
                                 Programme</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Comprehensive program focused on
                                 enhancing various vocational skills.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 100+
                                 </div>
@@ -1123,14 +1354,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in Computer App
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in Computer Application
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Extensive diploma covering
                                 fundamental to intermediate computer applications.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 110+
                                 </div>
@@ -1155,14 +1387,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span>
+                                </div>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Tally Prime with
                                 GST</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">In-depth Tally training focusing
                                 on Goods and Services Tax implementation.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 80+
                                 </div>
@@ -1187,13 +1420,14 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.6</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.6</span>
+                                </div>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in CAB</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Computer Application in Business
                                 - bridging technology with business needs.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 70+
                                 </div>
@@ -1219,13 +1453,14 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Financial Literacy</h3>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Personal Financial Literacy & Stock Market</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Understand personal finance,
                                 investing, and the basics of stock market.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 1 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 40+
                                 </div>
@@ -1251,14 +1486,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.5</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.5</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Back Office Management
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Back Office Management & MIS Report
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Skills for backend operations,
                                 data handling, and management reporting.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 3 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 55+
                                 </div>
@@ -1283,14 +1519,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span>
+                                </div>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Data Analyst with AI Tech
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Comprehensive data analysis using
                                 Advance Excel, SQL, Python, and Power BI.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 6 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 95+
                                 </div>
@@ -1315,14 +1552,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Diploma in Comp
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Diploma in Computer Application
                                 App</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Advanced level diploma covering
                                 specialized computer application topics.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 1 Year
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 130+
                                 </div>
@@ -1348,13 +1586,13 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span>
+                                </div>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">PGDCA</h3>
-                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Post-graduate level certification
-                                in computer applications for advanced career roles.</p>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Post-graduate level certification in computer applications for advanced career roles.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 1 Year
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 45+
                                 </div>
@@ -1380,14 +1618,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.8</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in Accounting &
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Advance Diploma in Financial Accounting with Taxation
                                 Tax</h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Specialized diploma focusing on
                                 advanced financial accounting and taxation.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 1 Year
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 60+
                                 </div>
@@ -1413,14 +1652,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.9</span>
+                                </div>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">ADCA with AI Technology
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Advance Diploma integrating
                                 traditional computer apps with modern AI technologies.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 15 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 18 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 85+
                                 </div>
@@ -1446,14 +1686,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">4.7</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Computer Teacher Training
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Diploma in Computer Teacher Training
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Prepare for a career in teaching
                                 computer science and applications.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 12 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 18 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 70+
                                 </div>
@@ -1478,14 +1719,15 @@
                                 <div
                                     class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
                                     <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i><span
-                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">5.0</span></div>
+                                        class="text-sm font-bold text-slate-700 dark:text-slate-200">5.0</span>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Master Diploma in Comp App
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Master Diploma in Computer Application
                             </h3>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">The ultimate certification for
                                 mastering all aspects of computer applications.</p>
                             <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 18 Mo
+                                <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> 24 Month
                                 </div>
                                 <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> 40+
                                 </div>
@@ -1826,7 +2068,8 @@
                     <div class="flex items-start gap-3">
                         <div
                             class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
-                            <i data-lucide="map-pin" class="w-5 h-5"></i></div>
+                            <i data-lucide="map-pin" class="w-5 h-5"></i>
+                        </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900 dark:text-white">Location</p>
                             <p class="text-sm text-slate-500 dark:text-slate-400">123 Education Lane, Knowledge
@@ -1836,7 +2079,8 @@
                     <div class="flex items-start gap-3">
                         <div
                             class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
-                            <i data-lucide="mail" class="w-5 h-5"></i></div>
+                            <i data-lucide="mail" class="w-5 h-5"></i>
+                        </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900 dark:text-white">Email</p>
                             <p class="text-sm text-slate-500 dark:text-slate-400">admissions@niat.edu</p>
@@ -1845,7 +2089,8 @@
                     <div class="flex items-start gap-3">
                         <div
                             class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
-                            <i data-lucide="phone" class="w-5 h-5"></i></div>
+                            <i data-lucide="phone" class="w-5 h-5"></i>
+                        </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900 dark:text-white">Call Us</p>
                             <p class="text-sm text-slate-500 dark:text-slate-400">+91 98765 43210</p>
@@ -1854,7 +2099,8 @@
                     <div class="flex items-start gap-3">
                         <div
                             class="mt-1 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
-                            <i data-lucide="clock" class="w-5 h-5"></i></div>
+                            <i data-lucide="clock" class="w-5 h-5"></i>
+                        </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900 dark:text-white">Working Time</p>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Mon - Sat: 9:00 AM - 7:00 PM</p>
@@ -1916,7 +2162,7 @@
             </div>
 
             <!-- Socials & Map -->
-            <div class="mb-8">
+            <!-- <div class="mb-8">
                 <div class="flex items-center gap-4 mb-4">
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Follow Us On:</span>
                     <a href="#"
@@ -1928,6 +2174,33 @@
                     <a href="#"
                         class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-800 hover:text-white transition-all"><i
                             data-lucide="linkedin" class="w-5 h-5"></i></a>
+                </div>
+
+                <div class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.447551066042!2d77.123456!3d28.567890!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd5b347eb62d%3A0x52c2b7494e204dce!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1709282345678!5m2!1sen!2sin"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div> -->
+            <div class="mb-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Follow Us On:</span>
+
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white dark:hover:text-white transition-all">
+                        <i data-lucide="facebook" class="w-5 h-5"></i>
+                    </a>
+
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white dark:hover:text-white transition-all">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </a>
+
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-800 dark:hover:bg-blue-700 hover:text-white dark:hover:text-white transition-all">
+                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+                    </a>
                 </div>
 
                 <div class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner">
@@ -2077,7 +2350,8 @@
                     </button>
                     <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">Don't have an account?
                         <button type="button" onclick="switchModal('loginModal', 'signupModal')"
-                            class="text-blue-600 font-bold hover:underline">Sign Up</button></p>
+                            class="text-blue-600 font-bold hover:underline">Sign Up</button>
+                    </p>
                 </form>
             </div>
         </div>
@@ -2155,7 +2429,8 @@
                     </button>
                     <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">Already have an account?
                         <button type="button" onclick="switchModal('signupModal', 'loginModal')"
-                            class="text-blue-600 font-bold hover:underline">Login</button></p>
+                            class="text-blue-600 font-bold hover:underline">Login</button>
+                    </p>
                 </form>
             </div>
         </div>
@@ -2446,6 +2721,44 @@
             }
         }
 
+        // --- COUNTER ANIMATION ---
+        const counters = document.querySelectorAll('.counter');
+        let hasAnimated = false; // Ensure it only runs once
+
+        const animateCounters = () => {
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    
+                    // Determine increment speed (higher divisor = slower)
+                    // If target is small (like 10), increment by smaller amount to prevent instant jump
+                    const increment = target / 100; 
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        setTimeout(updateCount, 20);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                updateCount();
+            });
+        };
+
+        // Use Intersection Observer to trigger when visible
+        const sectionObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !hasAnimated) {
+                animateCounters();
+                hasAnimated = true; // Stop observing after animation
+            }
+        }, { threshold: 0.5 }); // Trigger when 50% of the section is visible
+
+        const statesSection = document.getElementById('states');
+        if (statesSection) {
+            sectionObserver.observe(statesSection);
+        }
+
         // --- 1. Theme Logic ---
         const html = document.documentElement;
         const checkbox = document.getElementById('theme-toggle');
@@ -2465,15 +2778,37 @@
         lucide.createIcons();
 
         // --- 3. UI Helpers ---
-        function toggleMenu() { document.getElementById('mainMenu').classList.toggle('hidden'); }
+        //function toggleMenu() { document.getElementById('mainMenu').classList.toggle('hidden'); }
+        // --- Toggle Mobile Menu (Animation Logic) ---
+        function toggleMenu() {
+            const menu = document.getElementById('mainMenu');
+            menu.classList.toggle('active');
+
+            // Prevent background scrolling when menu is open
+            if (menu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
         function switchModal(currentId, targetId) { closeModal(currentId); openModal(targetId); }
+        //function scrollToSection(id) {
+        //    const el = document.getElementById(id);
+        //    if (el) {
+        //        el.scrollIntoView({ behavior: 'smooth' });
+        //        document.getElementById('mainMenu').classList.add('hidden');
+        //    }
+        //}
         function scrollToSection(id) {
             const el = document.getElementById(id);
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth' });
-                document.getElementById('mainMenu').classList.add('hidden');
+
+                // Close the menu properly
+                document.getElementById('mainMenu').classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
             }
         }
 
@@ -2530,12 +2865,43 @@
             if (touchEndX - touchStartX > 50) { prevSlide(); resetTimer(); }
         });
 
-        // --- 6. View All ---
+        // --- 6. View All (Staggered Grid Animation) ---
         function toggleCourses() {
             const more = document.getElementById('moreCourses');
             const btn = document.getElementById('viewAllBtn');
-            if (more.classList.contains('hidden')) { more.classList.remove('hidden'); btn.textContent = "View Less Courses"; }
-            else { more.classList.add('hidden'); btn.textContent = "View All Courses"; document.getElementById('courses').scrollIntoView({ behavior: 'smooth' }); }
+
+            if (more.classList.contains('hidden')) {
+                // --- OPENING ---
+                more.classList.remove('hidden');
+                
+                // Animate each course card individually
+                // We use Array.from because 'more.children' is an HTMLCollection
+                Array.from(more.children).forEach((card, index) => {
+                    // Reset opacity first
+                    card.style.opacity = '0';
+                    card.style.animation = 'none';
+                    
+                    // Trigger reflow
+                    card.offsetHeight; 
+                    
+                    // Apply animation with a slight delay for each card (Stagger effect)
+                    // 50ms delay between each card
+                    card.style.animation = `fadeIn 0.5s ease-out forwards ${index * 50}ms`;
+                });
+
+                btn.textContent = "View Less Courses";
+                
+            } else {
+                // --- CLOSING ---
+                more.classList.add('hidden');
+                btn.textContent = "View All Courses";
+
+                // Scroll back up smoothly so the user isn't lost
+                document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Re-initialize icons for the newly revealed cards
+            lucide.createIcons();
         }
 
         // --- 7. COURSE DATABASE & DETAILS LOGIC ---
@@ -2702,6 +3068,66 @@
 
         // Auto-play testimonials every 6 seconds
         setInterval(nextTestimonial, 6000);
+
+        // --- 10. SCROLL SPY (Active Section Highlight) ---
+
+        // 1. Select all navigation buttons (We will add the 'nav-link' class in HTML next)
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = ['home', 'about', 'courses', 'contact'];
+
+        //window.addEventListener('scroll', () => {
+        //    let current = '';
+
+        //    sections.forEach(id => {
+        //        const section = document.getElementById(id);
+        //        if (section) {
+        //            const sectionTop = section.offsetTop;
+        //            const sectionHeight = section.clientHeight;
+
+        //            // Logic: If we have scrolled past 1/3 of the section
+        //            if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+        //                current = id;
+        //            }
+        //        }//
+        //    });
+        // 2. Define the Highlight Function
+        function highlightNav() {
+            let current = '';
+
+            // Special check: If at the very top, set Home active
+            if (window.scrollY < 100) {
+                current = 'home';
+            } else {
+                sections.forEach(id => {
+                    const section = document.getElementById(id);
+                    if (section) {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.clientHeight;
+
+                        // If we are viewing this section
+                        if (window.scrollY >= (sectionTop - sectionHeight / 3)) {
+                            current = id;
+                        }
+                    }
+                });
+            }
+
+            // Update classes
+            navLinks.forEach(link => {
+                link.classList.remove('active-section');
+                // Check if this link corresponds to the current section
+                if (link.getAttribute('data-section') === current) {
+                    link.classList.add('active-section');
+                }
+            });
+        }
+
+        // 3. Run on Scroll
+        window.addEventListener('scroll', highlightNav);
+
+        // 4. Run IMMEDIATELY on Load (This fixes your issue)
+        highlightNav();
+
     </script>
 
     <script type="module">
