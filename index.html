@@ -161,6 +161,97 @@
         }
         .profile-link:hover { background: var(--reg-slate-100); color: var(--reg-primary); }
 
+        /* --- PROFILE OVERLAY CSS (MISSING) --- */
+        #profile-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 200; /* Ensure it is above the navbar (z-50) */
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        /* When JS adds 'active', make it visible */
+        #profile-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* The Dark Background */
+        #profile-overlay .bg-pattern {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+            backdrop-filter: blur(4px);      /* Glass blur effect */
+        }
+        
+        /* Center Container */
+        #profile-overlay .main-wrapper {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            align-items: center; /* Center Vertically */
+            justify-content: center; /* Center Horizontally */
+            padding: 1rem;
+        }
+        
+        /* The Card Itself */
+        #profile-overlay .glass-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-height: 90vh; /* Prevents it from being taller than screen */
+            overflow-y: auto; /* Scroll if content is too long */
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        /* Dark Mode Support for Card */
+        .dark #profile-overlay .glass-card {
+            background: #0f172a; /* slate-900 */
+            border: 1px solid #334155; /* slate-700 */
+        }
+        
+        #profile-overlay.active .glass-card {
+            transform: scale(1); /* Pop-up animation */
+        }
+
+        /* Profile Header Bar inside Card */
+        .user-profile-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .dark .user-profile-bar {
+            border-color: #334155;
+        }
+        
+        /* 'Go Back' Button Style */
+        .btn-secondary-sm {
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            background: #f1f5f9;
+            transition: all 0.2s;
+        }
+        .btn-secondary-sm:hover { background: #e2e8f0; color: #334155; }
+        
+        .dark .btn-secondary-sm {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        .dark .btn-secondary-sm:hover { background: #334155; color: white; }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
