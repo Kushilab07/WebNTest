@@ -461,7 +461,88 @@
             border-left-color: #60a5fa;
         }
 
-        
+        /* --- CATEGORY FILTERS & ANIMATIONS --- */
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            background: white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .dark .filter-btn {
+            background: #1e293b;
+            border-color: #334155;
+            color: #94a3b8;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .dark .filter-btn:hover {
+            border-color: #60a5fa;
+            color: #60a5fa;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+        }
+
+        .dark .filter-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        /* Staggered Animation Entry */
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- CARD SHAKE ANIMATION --- */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        .hover-shake:hover {
+            animation: shake 0.4s ease-in-out;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
@@ -604,6 +685,11 @@
                             Us</button>
                         <button onclick="scrollToSection('courses')" data-section="courses"
                             class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Courses</button>
+                        <button onclick="scrollToSection('faculty')" data-section="faculty"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Faculty</button>
+
+                        <button onclick="scrollToSection('testimonials')" data-section="testimonials"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Testimonials</button>
                         <button onclick="scrollToSection('contact')" data-section="contact"
                             class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Contact</button>
 
@@ -731,7 +817,8 @@
                             Skills</span>
                     </h1>
                     <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                        NIAT Computer Academy provides top-tier vocational training in computer basics, accounting, and design. Empowering students with practical skills for the modern workforce.
+                        NIAT Computer Academy provides top-tier vocational training in computer basics, accounting, and
+                        design. Empowering students with practical skills for the modern workforce.
                     </p>
                     <!-- <div class="flex flex-col sm:flex-row gap-4">
                         <button onclick="scrollToSection('courses')"
@@ -745,18 +832,19 @@
                         </button>
                     </div> -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                        
+
                         <button onclick="scrollToSection('courses')"
                             class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 group">
-                            Explore Courses 
-                            <i data-lucide="chevron-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
+                            Explore Courses
+                            <i data-lucide="chevron-right"
+                                class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
                         </button>
-                        
+
                         <button onclick="handleRegister()"
                             class="w-full py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400">
                             Register
                         </button>
-                        
+
                     </div>
                 </div>
                 <div class="relative lg:ml-6 flex flex-col gap-8">
@@ -821,8 +909,9 @@
                 </div>
             </div> -->
             <div id="states" class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
-                
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
                     <div class="p-4 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full mb-4">
                         <i data-lucide="users" class="w-8 h-8"></i>
                     </div>
@@ -832,8 +921,10 @@
                     <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Happy Students</p>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
-                    <div class="p-4 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-full mb-4">
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                    <div
+                        class="p-4 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-full mb-4">
                         <i data-lucide="calendar" class="w-8 h-8"></i>
                     </div>
                     <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">
@@ -842,7 +933,8 @@
                     <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Years Experience</p>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
                     <div class="p-4 bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400 rounded-full mb-4">
                         <i data-lucide="book-open" class="w-8 h-8"></i>
                     </div>
@@ -852,8 +944,10 @@
                     <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Courses</p>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
-                    <div class="p-4 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-full mb-4">
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+                    <div
+                        class="p-4 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-full mb-4">
                         <i data-lucide="briefcase" class="w-8 h-8"></i>
                     </div>
                     <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-1">
@@ -979,9 +1073,10 @@
             </div>
         </div>
     </section> -->
-    <section class="py-20 bg-slate-50 dark:bg-slate-950 transition-colors border-b border-slate-200 dark:border-slate-800">
+    <section
+        class="py-20 bg-slate-50 dark:bg-slate-950 transition-colors border-b border-slate-200 dark:border-slate-800">
         <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
-            
+
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">
                     Why Choose Us
@@ -990,13 +1085,16 @@
                     Redefining Computer Education
                 </h2>
                 <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
-                    We go beyond textbooks. Our practical, hands-on approach ensures you gain the real-world skills that today's top employers are looking for.
+                    We go beyond textbooks. Our practical, hands-on approach ensures you gain the real-world skills that
+                    today's top employers are looking for.
                 </p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                    <div class="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <div
+                    class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="users" class="w-8 h-8"></i>
                     </div>
                     <div>
@@ -1007,8 +1105,10 @@
                     </div>
                 </div>
 
-                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <div
+                    class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="award" class="w-8 h-8"></i>
                     </div>
                     <div>
@@ -1019,8 +1119,10 @@
                     </div>
                 </div>
 
-                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                    <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <div
+                    class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="check-circle" class="w-8 h-8"></i>
                     </div>
                     <div>
@@ -1035,9 +1137,9 @@
     </section>
 
     <!-- Courses Section -->
-    <section id="courses" class="py-20 bg-white dark:bg-slate-900 transition-colors">
+    <!-- <section id="courses" class="py-20 bg-white dark:bg-slate-900 transition-colors">
         <div class="container mx-auto px-4 sm:px-6">
-            <!-- <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12"></div> -->
+            <!-- <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12"></div> -- >
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Our Popular Courses</h2>
                 <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Choose from our wide range of
@@ -1046,7 +1148,7 @@
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="courseGrid">
 
-                <!-- 1. Basics -->
+                <!-- 1. Basics - ->
                 <div
                     class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                     <div class="h-2 w-full bg-blue-500"></div>
@@ -1078,7 +1180,7 @@
                     </div>
                 </div>
 
-                <!-- 2. DTP -->
+                <!-- 2. DTP -- >
                 <div
                     class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                     <div class="h-2 w-full bg-purple-500"></div>
@@ -1111,7 +1213,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Tally -->
+                <!-- 3. Tally - ->
                 <div
                     class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                     <div class="h-2 w-full bg-emerald-500"></div>
@@ -1144,7 +1246,7 @@
                     </div>
                 </div>
 
-                <!-- 4. Advance Excel -->
+                <!-- 4. Advance Excel - ->
                 <div
                     class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                     <div class="h-2 w-full bg-green-600"></div>
@@ -1176,7 +1278,7 @@
                     </div>
                 </div>
 
-                <!-- 5. AI/ML -->
+                <!-- 5. AI/ML -- >
                 <div
                     class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                     <div class="h-2 w-full bg-indigo-600"></div>
@@ -1208,10 +1310,10 @@
                     </div>
                 </div>
 
-                <!-- HIDDEN COURSES (The other 16 courses are here, hidden by default) -->
+                <!-- HIDDEN COURSES (The other 16 courses are here, hidden by default) - ->
                 <div id="moreCourses" class="contents hidden">
 
-                    <!-- 6. Digital Marketing -->
+                    <!-- 6. Digital Marketing -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-orange-500"></div>
@@ -1242,7 +1344,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 7. Communication -->
+                    <!-- 7. Communication - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-pink-500"></div>
@@ -1276,7 +1378,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 8. Office Management -->
+                    <!-- 8. Office Management - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-yellow-500"></div>
@@ -1310,7 +1412,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 9. SDP -->
+                    <!-- 9. SDP - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-teal-500"></div>
@@ -1343,7 +1445,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 10. Diploma Computer App -->
+                    <!-- 10. Diploma Computer App -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-blue-600"></div>
@@ -1376,7 +1478,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 11. Advance Tally GST -->
+                    <!-- 11. Advance Tally GST -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-emerald-600"></div>
@@ -1409,7 +1511,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 12. CAB -->
+                    <!-- 12. CAB -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-slate-600"></div>
@@ -1442,7 +1544,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 13. Financial Literacy -->
+                    <!-- 13. Financial Literacy -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-green-500"></div>
@@ -1475,7 +1577,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 14. Back Office -->
+                    <!-- 14. Back Office -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-gray-600"></div>
@@ -1508,7 +1610,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 15. Data Analyst -->
+                    <!-- 15. Data Analyst - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-violet-600"></div>
@@ -1541,7 +1643,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 16. Advance Diploma CA -->
+                    <!-- 16. Advance Diploma CA - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-cyan-600"></div>
@@ -1575,7 +1677,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 17. PGDCA -->
+                    <!-- 17. PGDCA - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-rose-600"></div>
@@ -1607,7 +1709,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 18. ADFAT -->
+                    <!-- 18. ADFAT -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-emerald-700"></div>
@@ -1641,7 +1743,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 19. ADCA with AI -->
+                    <!-- 19. ADCA with AI - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-indigo-500"></div>
@@ -1675,7 +1777,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 20. Teacher Training -->
+                    <!-- 20. Teacher Training - ->
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-orange-600"></div>
@@ -1708,7 +1810,7 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                    <!-- 21. Master Diploma -->
+                    <!-- 21. Master Diploma -- >
                     <div
                         class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col">
                         <div class="h-2 w-full bg-yellow-600"></div>
@@ -1742,17 +1844,49 @@
                                 Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
                     </div>
 
-                </div> <!-- End Hidden Courses -->
+                </div> <!-- End Hidden Courses -- >
 
             </div>
 
-            <!-- View All Button -->
+            <!-- View All Button -- >
             <div class="mt-16 text-center">
                 <button id="viewAllBtn" onclick="toggleCourses()"
                     class="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                     View All Courses
                 </button>
             </div>
+        </div>
+    </section> -->
+    <section id="courses" class="py-20 bg-white dark:bg-slate-900 transition-colors">
+        <div class="container mx-auto px-4 sm:px-6">
+
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Our Popular Courses</h2>
+                <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Choose from our wide range of
+                    industry-oriented courses designed to make you job-ready.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 mb-12">
+                <button onclick="filterCourses('all')" id="btn-all" class="filter-btn active">All</button>
+                <button onclick="filterCourses('Three Month')" id="btn-three" class="filter-btn">Three Month</button>
+                <button onclick="filterCourses('Six Month')" id="btn-six" class="filter-btn">Six Month</button>
+                <button onclick="filterCourses('One Year')" id="btn-year" class="filter-btn">One Year</button>
+                <button onclick="filterCourses('Special')" id="btn-special" class="filter-btn">Special</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="dynamicCourseGrid">
+            </div>
+
+            <!-- <div id="moreCoursesContainer" class="contents hidden"> -->
+            <div id="moreCoursesContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden"></div>
+        </div>
+
+        <div class="mt-16 text-center hidden" id="viewAllWrapper">
+            <button id="viewAllBtn" onclick="toggleViewMore()"
+                class="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95">
+                View All Courses
+            </button>
+        </div>
         </div>
     </section>
 
@@ -1768,7 +1902,7 @@
                     <div class="flex flex-col sm:flex-row gap-4">
                         <!-- Register Button (No Icon) -->
                         <button onclick="handleRegister()"
-                            class="px-6 py-3 bg-white text-slate-900 rounded-lg font-bold hover:bg-slate-100 transition-colors text-center">
+                            class="flex-1 px-6 py-4 bg-white text-slate-900 rounded-lg font-bold hover:bg-slate-100 transition-colors text-center">
                             Register
                         </button>
 
@@ -1785,26 +1919,51 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-1/2">
+                <div class="md:w-1/2 w-full flex justify-center">
+
                     <div
-                        class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl max-w-md mx-auto transform rotate-2 hover:rotate-0 transition-all duration-500">
+                        class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full hover-shake transition-all duration-300">
+
                         <div class="flex items-center gap-4 mb-6 border-b border-slate-700 pb-4">
-                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                                <i data-lucide="file-check" class="w-6 h-6 text-white"></i>
+                            <div
+                                class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-lg">Verified Documents</h4>
-                                <p class="text-xs text-slate-400">Secure & Verifiable</p>
+                                <h4 class="font-bold text-lg">Demo Documents</h4>
+                                <p class="text-xs text-slate-400">Certificate & Marksheet</p>
                             </div>
                         </div>
-                        <div class="space-y-3">
-                            <div class="h-2 bg-slate-700 rounded w-3/4"></div>
-                            <div class="h-2 bg-slate-700 rounded w-full"></div>
-                            <div class="h-2 bg-slate-700 rounded w-5/6"></div>
-                        </div>
                         <div
-                            class="mt-6 p-4 bg-slate-900 rounded-xl border border-dashed border-slate-600 flex items-center justify-center text-slate-500 text-sm">
-                            Document Preview Area
+                            class="mt-4 p-6 bg-slate-900/50 rounded-xl border border-dashed border-slate-600 flex flex-col gap-3 justify-center items-center h-48 relative overflow-hidden">
+
+                            <p class="absolute top-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                                Document Preview</p>
+
+                            <div
+                                class="flex items-center gap-3 w-full max-w-[200px] bg-slate-800 p-3 rounded-lg border border-slate-700 hover:bg-slate-700 hover:border-emerald-500/50 transition-all group cursor-default">
+                                <div
+                                    class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg group-hover:scale-110 transition-transform">
+                                    <i data-lucide="award" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-medium">Verified</p>
+                                    <p class="text-sm font-bold text-emerald-400">Certificate</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-3 w-full max-w-[200px] bg-slate-800 p-3 rounded-lg border border-slate-700 hover:bg-slate-700 hover:border-purple-500/50 transition-all group cursor-default">
+                                <div
+                                    class="p-2 bg-purple-500/20 text-purple-400 rounded-lg group-hover:scale-110 transition-transform">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-medium">Final Year</p>
+                                    <p class="text-sm font-bold text-purple-400">Marksheet</p>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -1813,7 +1972,7 @@
     </section>
 
     <!-- Teacher Section -->
-    <section
+    <section id="faculty"
         class="py-20 bg-slate-50 dark:bg-slate-950 transition-colors border-b border-slate-200 dark:border-slate-800">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <!-- <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12"></div> -->
@@ -1955,7 +2114,7 @@
     </section>
 
     <!-- Testimonial Section -->
-    <section class="py-24 bg-white dark:bg-slate-900 transition-colors relative overflow-hidden">
+    <section id="testimonials" class="py-24 bg-white dark:bg-slate-900 transition-colors relative overflow-hidden">
         <div class="absolute top-10 left-10 text-slate-100 dark:text-slate-800 pointer-events-none select-none">
             <i data-lucide="quote" class="w-48 h-48 opacity-50 transform rotate-180"></i>
         </div>
@@ -2057,10 +2216,10 @@
                     computer education and vocational skills.</p>
             </div>
 
-            <!-- Grid -->
+            <!-- Grid
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
 
-                <!-- 1. Contact Info -->
+                <!-- 1. Contact Info -- >
                 <div class="lg:col-span-4 space-y-6">
                     <h4
                         class="font-bold text-slate-900 dark:text-white text-lg border-b border-slate-100 dark:border-slate-800 pb-2">
@@ -2108,7 +2267,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Send Message -->
+                <!-- 2. Send Message - ->
                 <div
                     class="lg:col-span-5 bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">
                     <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-4">Send Us Message</h4>
@@ -2127,9 +2286,9 @@
                             class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors text-sm w-full">Send
                             Message</button>
                     </form>
-                </div>
+                </div> -->
 
-                <!-- 3. Quick Links -->
+            <!-- 3. Quick Links
                 <div class="lg:col-span-3">
                     <h4
                         class="font-bold text-slate-900 dark:text-white text-lg border-b border-slate-100 dark:border-slate-800 pb-2 mb-6">
@@ -2158,8 +2317,135 @@
                                     data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
                                 Terms & Conditions</a></li>
                     </ul>
+                </div> -->
+            <!-- </div> -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+
+                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                    <div class="space-y-6">
+                        <h4 class="font-bold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i> 
+                            Get in Touch
+                        </h4>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-blue-600 dark:text-blue-400">
+                                <i data-lucide="map" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">Visit Us</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">123 Education Lane, Knowledge City,<br>State, Zip - 400001</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-blue-600 dark:text-blue-400">
+                                <i data-lucide="mail" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">Email Us</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">admissions@niat.edu</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-blue-600 dark:text-blue-400">
+                                <i data-lucide="phone" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">Call Us</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">+91 98765 43210</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-blue-600 dark:text-blue-400">
+                                <i data-lucide="clock" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">Working Time</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Mon - Sat: 9:00 AM - 7:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
+                        <i data-lucide="send" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                        Send Message
+                    </h4>
+                    <form class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" placeholder="Full Name" class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all">
+                            <input type="email" placeholder="Email Address" class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all">
+                        </div>
+                        <input type="text" placeholder="Subject" class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all">
+                        <textarea rows="4" placeholder="How can we help you?" class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all resize-none"></textarea>
+                        
+                        <button type="button" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2">
+                            Send Message <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="mb-16 border-t border-slate-200 dark:border-slate-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-lg">Quick Links</h4>
+                    
+                    <div class="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
+                        <button onclick="scrollToSection('home')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</button>
+                        <span class="text-slate-300 dark:text-slate-600">•</span>
+                        <button onclick="scrollToSection('about')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</button>
+                        <span class="text-slate-300 dark:text-slate-600">•</span>
+                        <button onclick="scrollToSection('courses')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Courses</button>
+                        <span class="text-slate-300 dark:text-slate-600">•</span>
+                        <button onclick="scrollToSection('faculty')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Faculty</button>
+                        <span class="text-slate-300 dark:text-slate-600">•</span>
+                        <button onclick="scrollToSection('testimonials')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Testimonials</button>
+                        <span class="text-slate-300 dark:text-slate-600">•</span>
+                        <button onclick="scrollToSection('contact')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</button>
+                        <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+                        <button onclick="scrollToSection('home')"
+                                    class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</button>
+                            <span class="text-slate-300 dark:text-slate-600">•</span>
+                            <button onclick="scrollToSection('home')"
+                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms & Conditions</button>
+                    </div>
                 </div>
             </div>
+            <!-- 3. Quick Links -->
+            <!-- <div class="lg:col-span-3">
+                <h4
+                    class="font-bold text-slate-900 dark:text-white text-lg border-b border-slate-100 dark:border-slate-800 pb-2 mb-6">
+                    Quick Links</h4>
+                <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                    <li><button onclick="scrollToSection('home')"
+                            class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i
+                                data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
+                            Home</button></li>
+                    <li><button onclick="scrollToSection('about')"
+                            class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i
+                                data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
+                            About Us</button></li>
+                    <li><button onclick="scrollToSection('courses')"
+                            class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i
+                                data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
+                            Courses</button></li>
+                    <li><button onclick="scrollToSection('contact')"
+                            class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i
+                                data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
+                            Contact</button></li>
+                    <li><a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i
+                                data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
+                            Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"><i
+                                data-lucide="chevron-right" class="w-4 h-4 text-slate-300 dark:text-slate-600"></i>
+                            Terms & Conditions</a></li>
+                </ul>
+            </div> -->
 
             <!-- Socials & Map -->
             <!-- <div class="mb-8">
@@ -2183,7 +2469,7 @@
                         referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div> -->
-            <div class="mb-8">
+            <div id="social-icons" class="mb-8">
                 <div class="flex items-center gap-4 mb-4">
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Follow Us On:</span>
 
@@ -2730,10 +3016,10 @@
                 const updateCount = () => {
                     const target = +counter.getAttribute('data-target');
                     const count = +counter.innerText;
-                    
+
                     // Determine increment speed (higher divisor = slower)
                     // If target is small (like 10), increment by smaller amount to prevent instant jump
-                    const increment = target / 100; 
+                    const increment = target / 100;
 
                     if (count < target) {
                         counter.innerText = Math.ceil(count + increment);
@@ -2865,91 +3151,163 @@
             if (touchEndX - touchStartX > 50) { prevSlide(); resetTimer(); }
         });
 
-        // --- 6. View All (Staggered Grid Animation) ---
-        function toggleCourses() {
-            const more = document.getElementById('moreCourses');
-            const btn = document.getElementById('viewAllBtn');
+        // --- 7. DYNAMIC COURSES & CATEGORIES ---
 
-            if (more.classList.contains('hidden')) {
-                // --- OPENING ---
-                more.classList.remove('hidden');
-                
-                // Animate each course card individually
-                // We use Array.from because 'more.children' is an HTMLCollection
-                Array.from(more.children).forEach((card, index) => {
-                    // Reset opacity first
-                    card.style.opacity = '0';
-                    card.style.animation = 'none';
-                    
-                    // Trigger reflow
-                    card.offsetHeight; 
-                    
-                    // Apply animation with a slight delay for each card (Stagger effect)
-                    // 50ms delay between each card
-                    card.style.animation = `fadeIn 0.5s ease-out forwards ${index * 50}ms`;
-                });
+        // 1. Full Course Database (with Colors & Icons)
+        const courses = [
+            { name: "Basics of Computer", duration: "3 Months", students: "120+", rating: "4.8", color: "blue", icon: "monitor", desc: "Master the fundamentals of computing, OS navigation, MS Office suite.", modules: ["Fundamentals", "Windows", "MS Office", "Internet"] },
+            { name: "DTP", duration: "3 Months", students: "85+", rating: "4.9", color: "purple", icon: "book-open", desc: "Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker.", modules: ["CorelDraw", "Photoshop", "PageMaker", "Printing"] },
+            { name: "Tally Prime & Accounting", duration: "3 Months", students: "200+", rating: "4.7", color: "emerald", icon: "bar-chart", desc: "Complete financial accounting with Tally Prime, GST & Payroll.", modules: ["Accounting", "Tally Prime", "GST", "Payroll"] },
+            { name: "Advance Excel with MIS Report", duration: "3 Months", students: "150+", rating: "4.8", color: "green", icon: "sheet", desc: "Master advanced formulas, pivot tables, macros, and MIS reports.", modules: ["Formulas", "Pivot Tables", "Macros", "MIS"] },
+            { name: "AI/ML using Python", duration: "3 Months", students: "60+", rating: "4.9", color: "indigo", icon: "brain", desc: "Artificial Intelligence and Machine Learning concepts using Python.", modules: ["Python", "Data Science", "ML Algos", "Neural Nets"] },
+            { name: "Digital Marketing", duration: "3 Months", students: "90+", rating: "4.7", color: "orange", icon: "megaphone", desc: "SEO, Social Media Marketing, Content Strategy, and Ads.", modules: ["SEO", "SMM", "Content", "Ads"] },
+            { name: "Communication Skill & Personality Development", duration: "3 Months", students: "75+", rating: "4.8", color: "pink", icon: "message-circle", desc: "Enhance soft skills, public speaking confidence, and personality.", modules: ["Speaking", "Interview", "Body Language", "Etiquette"] },
+            { name: "Office Management with Google workspace", duration: "3 Months", students: "50+", rating: "4.6", color: "yellow", icon: "briefcase", desc: "Manage office tasks using Google Docs, Sheets, Slides, Drive.", modules: ["Docs", "Sheets", "Slides", "Collaboration"] },
+            { name: "SDP(Skill Development Programme)", duration: "3 Months", students: "100+", rating: "4.7", color: "teal", icon: "lightbulb", desc: "Comprehensive program focused on enhancing vocational skills.", modules: ["Soft Skills", "IT Skills", "Readiness", "Comm"] },
+            { name: "Diploma in Computer Application", duration: "6 Months", students: "110+", rating: "4.8", color: "blue", icon: "monitor", desc: "Extensive diploma covering fundamental to intermediate computer apps.", modules: ["IT Basics", "MS Office", "Internet", "Accounting"] },
+            { name: "Advance Tally Prime with GST", duration: "6 Months", students: "80+", rating: "4.9", color: "emerald", icon: "bar-chart-3", desc: "In-depth Tally training focusing on GST implementation.", modules: ["Adv Tally", "GST Laws", "E-Way Bill", "Taxation"] },
+            { name: "Diploma in Computer Application in Business (CAB)", duration: "6 Months", students: "70+", rating: "4.6", color: "slate", icon: "building", desc: "Computer Application in Business - bridging tech with business.", modules: ["Bus Computing", "Tally", "Excel", "E-Commerce"] },
+            { name: "Personal Financial Literacy & Stock Market", duration: "6 Month", students: "40+", rating: "4.8", color: "green", icon: "trending-up", desc: "Personal finance, investing, and basics of stock market.", modules: ["Planning", "Stocks", "Analysis", "Investing"] },
+            { name: "Back office Management & MIS Report", duration: "6 Months", students: "55+", rating: "4.5", color: "gray", icon: "database", desc: "Skills for backend operations, data handling, and reporting.", modules: ["Data Entry", "Excel", "MIS", "Admin"] },
+            { name: "Data Analyst with Al Technology", duration: "6 Months", students: "95+", rating: "4.9", color: "violet", icon: "pie-chart", desc: "Data analysis using Excel, SQL, Python, and Power BI.", modules: ["SQL", "Python", "Power BI", "AI Tools"] },
+            { name: "Advance Diploma in Computer Application", duration: "1 Year", students: "130+", rating: "4.7", color: "cyan", icon: "cpu", desc: "Advanced level diploma covering specialized computer topics.", modules: ["C/C++", "Web Design", "DBMS", "Adv Office"] },
+            { name: "Post Graduate Diploma in Computer Application", duration: "1 Year", students: "45+", rating: "4.9", color: "rose", icon: "graduation-cap", desc: "Post-graduate level certification for advanced career roles.", modules: ["Software Eng", "Java/Python", "DBMS", "Project Mgmt"] },
+            { name: "Advance Diploma in Financial Accounting with Taxation", duration: "1 Year", students: "60+", rating: "4.8", color: "emerald", icon: "calculator", desc: "Specialized diploma focusing on advanced accounting and tax.", modules: ["Accounting", "Taxation", "Auditing", "Corp Laws"] },
+            { name: "Advance Diploma in Computer Application with Al Technology", duration: "18 Months", students: "85+", rating: "4.9", color: "indigo", icon: "circuit-board", desc: "Integrating traditional computer apps with modern AI tech.", modules: ["ADCA", "Intro AI", "Business AI", "Future Tech"] },
+            { name: "Diploma in Computer Teacher Training", duration: "18 Months", students: "70+", rating: "4.7", color: "orange", icon: "presentation", desc: "Prepare for a career in teaching computer science.", modules: ["Methodology", "Psychology", "CS", "Planning"] },
+            { name: "Master Diploma in Computer Application", duration: "24 Months", students: "40+", rating: "5.0", color: "yellow", icon: "award", desc: "The ultimate certification for mastering all computer applications.", modules: ["Full Stack", "Adv Prog", "Cloud", "Cyber Sec"] }
+        ];
 
-                btn.textContent = "View Less Courses";
-                
+        // 2. Helper: Categorize Course based on Duration string
+        function getCategoryForCourse(c) {
+            const d = c.duration.toLowerCase();
+            if (d.includes("3 month")) return "Three Month";
+            if (d.includes("6 month")) return "Six Month";
+            // Catches "1 Year" or "12 Months"
+            if (d.includes("1 year") || d.includes("12 month")) return "One Year";
+            // Everything else (1mo, 2mo, 4mo, 15mo, 18mo) goes to Special
+            return "Special";
+        }
+
+        // 3. Helper: Generate Card HTML
+        function renderCardHTML(c, index) {
+            const delay = index * 50; // Stagger effect
+
+            return `
+            <div class="fade-in-up h-full" style="animation-delay: ${delay}ms">
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 group flex flex-col hover:-translate-y-2">
+                    <div class="h-2 w-full bg-${c.color}-500"></div>
+                    <div class="p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-700 transition-all duration-300 group-hover:scale-110 shadow-sm">
+                                <i data-lucide="${c.icon}" class="w-8 h-8 text-${c.color}-500 dark:text-${c.color}-400"></i>
+                            </div>
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-700 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-600">
+                                <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-current"></i>
+                                <span class="text-sm font-bold text-slate-700 dark:text-slate-200">${c.rating}</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">${c.name}</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">${c.desc}</p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> ${c.duration}</div>
+                            <div class="flex items-center gap-1"><i data-lucide="users" class="w-4 h-4"></i> ${c.students}</div>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0 mt-auto space-y-3">
+                        <button onclick="openCourseDetails('${c.name}')" class="w-full py-3 px-6 bg-${c.color}-50 dark:bg-${c.color}-900/30 text-${c.color}-700 dark:text-${c.color}-300 font-semibold rounded-xl hover:bg-${c.color}-100 dark:hover:bg-${c.color}-900/50 transition-all text-sm">See Details</button>
+                        <button onclick="handleRegister('${c.name}')" class="w-full py-3 px-6 text-white font-semibold rounded-xl shadow-md flex items-center justify-center gap-2 bg-${c.color}-600 hover:bg-${c.color}-700">Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 4. Main Filter Function
+        function filterCourses(cat) {
+            // Update Active Tab State
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const btnId = cat === 'Three Month' ? 'btn-three' : cat === 'Six Month' ? 'btn-six' : cat === 'One Year' ? 'btn-year' : cat === 'Special' ? 'btn-special' : 'btn-all';
+            document.getElementById(btnId).classList.add('active');
+
+            let filtered = [];
+            if (cat === 'all') {
+                // For "All", sort by Rating (High to Low)
+                filtered = [...courses].sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
             } else {
-                // --- CLOSING ---
-                more.classList.add('hidden');
-                btn.textContent = "View All Courses";
-
-                // Scroll back up smoothly so the user isn't lost
-                document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+                // Filter by category
+                filtered = courses.filter(c => getCategoryForCourse(c) === cat);
             }
-            
-            // Re-initialize icons for the newly revealed cards
+
+            const mainGrid = document.getElementById('dynamicCourseGrid');
+            const hiddenGrid = document.getElementById('moreCoursesContainer');
+            const viewAllWrapper = document.getElementById('viewAllWrapper');
+            const viewAllBtn = document.getElementById('viewAllBtn');
+
+            // Clear old content
+            mainGrid.innerHTML = '';
+            hiddenGrid.innerHTML = '';
+            hiddenGrid.classList.add('hidden');
+            viewAllBtn.textContent = "View All Courses";
+
+            // Render first 6 items
+            const initialCount = Math.min(filtered.length, 6);
+            for (let i = 0; i < initialCount; i++) {
+                mainGrid.innerHTML += renderCardHTML(filtered[i], i);
+            }
+
+            // If more than 6, populate hidden grid and show button
+            if (filtered.length > 6) {
+                viewAllWrapper.classList.remove('hidden');
+                for (let i = 6; i < filtered.length; i++) {
+                    hiddenGrid.innerHTML += renderCardHTML(filtered[i], 0); // index 0 resets delay for smooth reveal later
+                }
+            } else {
+                viewAllWrapper.classList.add('hidden');
+            }
+
             lucide.createIcons();
         }
 
-        // --- 7. COURSE DATABASE & DETAILS LOGIC ---
-        const coursesDB = {
-            "Basics of Computer": { desc: "Master the fundamentals of computing, OS navigation, MS Office suite, and internet essentials.", modules: ["Computer Fundamentals", "Windows OS", "MS Word, Excel, PowerPoint", "Internet & Email"], duration: "3 Months", students: "120+", rating: "4.8" },
-            "Diploma in DTP": { desc: "Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker. Create stunning designs.", modules: ["CorelDraw", "Adobe Photoshop", "Adobe PageMaker", "Printing Technology"], duration: "6 Months", students: "85+", rating: "4.9" },
-            "Tally Prime & Accounting": { desc: "Complete financial accounting training using Tally Prime. Covers GST, payroll, and reporting.", modules: ["Accounting Concepts", "Tally Prime Interface", "GST Implementation", "Payroll Management"], duration: "4 Months", students: "200+", rating: "4.7" },
-            "Advance Excel with MIS Report": { desc: "Master advanced formulas, pivot tables, macros, and creating professional MIS reports.", modules: ["Advanced Formulas", "Pivot Tables & Charts", "Macros & VBA", "MIS Dashboard Creation"], duration: "2 Months", students: "150+", rating: "4.8" },
-            "AI/ML using Python": { desc: "Dive into Artificial Intelligence and Machine Learning concepts using Python programming.", modules: ["Python Programming", "Data Science Libraries", "Machine Learning Algorithms", "Neural Networks"], duration: "6 Months", students: "60+", rating: "4.9" },
-            "Digital Marketing": { desc: "Learn SEO, Social Media Marketing, Content Strategy, and Online Advertising.", modules: ["SEO & SEM", "Social Media Marketing", "Content Marketing", "Email Marketing"], duration: "3 Months", students: "90+", rating: "4.7" },
-            "Communication Skill & Personality Development": { desc: "Enhance your soft skills, public speaking confidence, and overall personality.", modules: ["Public Speaking", "Interview Skills", "Body Language", "Professional Etiquette"], duration: "2 Months", students: "75+", rating: "4.8" },
-            "Office Management with Google workspace": { desc: "Efficiently manage office tasks using Google Docs, Sheets, Slides, and Drive.", modules: ["Google Docs", "Google Sheets", "Google Slides", "Cloud Collaboration"], duration: "2 Months", students: "50+", rating: "4.6" },
-            "SDP(Skill Development Programme)": { desc: "Comprehensive program focused on enhancing various vocational skills for employment.", modules: ["Soft Skills", "Basic IT Skills", "Workplace Readiness", "Communication"], duration: "3 Months", students: "100+", rating: "4.7" },
-            "Diploma in Computer Application": { desc: "Extensive diploma covering fundamental to intermediate computer applications.", modules: ["IT Basics", "MS Office", "Internet", "Basic Accounting"], duration: "6 Months", students: "110+", rating: "4.8" },
-            "Advance Tally Prime with GST": { desc: "In-depth Tally training focusing on Goods and Services Tax implementation.", modules: ["Advanced Tally", "GST Laws & Returns", "E-Way Bill", "Taxation"], duration: "3 Months", students: "80+", rating: "4.9" },
-            "Diploma in Computer Application in Business (CAB)": { desc: "Computer Application in Business - bridging technology with business needs.", modules: ["Business Computing", "Tally", "Advanced Excel", "E-Commerce"], duration: "6 Months", students: "70+", rating: "4.6" },
-            "Personal Financial Literacy & Stock Market": { desc: "Understand personal finance, investing, and the basics of stock market trading.", modules: ["Financial Planning", "Stock Market Basics", "Technical Analysis", "Investment Strategies"], duration: "1 Month", students: "40+", rating: "4.8" },
-            "Back office Management & MIS Report": { desc: "Skills for backend operations, data handling, and management reporting.", modules: ["Data Entry", "Advanced Excel", "MIS Reporting", "Office Admin"], duration: "3 Months", students: "55+", rating: "4.5" },
-            "Data Analyst with Al Technology": { desc: "Comprehensive data analysis using Advance Excel, SQL, Python, and Power BI.", modules: ["SQL", "Python for Data", "Power BI", "AI Tools for Analysis"], duration: "6 Months", students: "95+", rating: "4.9" },
-            "Advance Diploma in Computer Application": { desc: "Advanced level diploma covering specialized computer application topics.", modules: ["Programming (C/C++)", "Web Design", "Database Management", "Advanced Office"], duration: "12 Months", students: "130+", rating: "4.7" },
-            "Post Graduate Diploma in Computer Application": { desc: "Post-graduate level certification in computer applications for advanced career roles.", modules: ["Software Engineering", "Java/Python", "DBMS", "Project Management"], duration: "12 Months", students: "45+", rating: "4.9" },
-            "Advance Diploma in Financial Accounting with Taxation": { desc: "Specialized diploma focusing on advanced financial accounting and taxation.", modules: ["Financial Accounting", "Direct & Indirect Tax", "Auditing", "Corporate Laws"], duration: "12 Months", students: "60+", rating: "4.8" },
-            "Advance Diploma in Computer Application with Al Technology": { desc: "Advance Diploma integrating traditional computer apps with modern AI technologies.", modules: ["ADCA Syllabus", "Intro to AI", "AI Tools in Business", "Future Tech"], duration: "15 Months", students: "85+", rating: "4.9" },
-            "Diploma in Computer Teacher Training": { desc: "Prepare for a career in teaching computer science and applications.", modules: ["Teaching Methodology", "Child Psychology", "Computer Science", "Lesson Planning"], duration: "12 Months", students: "70+", rating: "4.7" },
-            "Master Diploma in Computer Application": { desc: "The ultimate certification for mastering all aspects of computer applications.", modules: ["Full Stack Dev", "Advanced Programming", "Cloud Computing", "Cyber Security Basics"], duration: "18 Months", students: "40+", rating: "5.0" }
-        };
+        // 5. Toggle View More (with animation)
+        function toggleViewMore() {
+            const more = document.getElementById('moreCoursesContainer');
+            const btn = document.getElementById('viewAllBtn');
 
-        // Populate Dropdown
-        const regSelect = document.getElementById('regCourseSelect');
-        if (regSelect) {
-            Object.keys(coursesDB).forEach(course => {
-                const option = document.createElement('option');
-                option.value = course;
-                option.textContent = course;
-                regSelect.appendChild(option);
-            });
+            if (more.classList.contains('hidden')) {
+                // OPEN
+                more.classList.remove('hidden');
+
+                // Animate ONLY new cards
+                Array.from(more.children).forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.animation = 'none';
+                    card.offsetHeight; // trigger reflow
+                    card.style.animation = `fadeInUp 0.5s ease-out forwards ${index * 50}ms`;
+                });
+
+                btn.textContent = "View Less Courses";
+            } else {
+                // CLOSE
+                more.classList.add('hidden');
+                btn.textContent = "View All Courses";
+                document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
-        // Open Details Modal
+        // 6. Updated Open Details (Finds by name in array)
         function openCourseDetails(courseName) {
-            const data = coursesDB[courseName];
+            const data = courses.find(c => c.name === courseName);
             if (!data) return;
 
-            document.getElementById('detailTitle').textContent = courseName;
+            document.getElementById('detailTitle').textContent = data.name;
             document.getElementById('detailDesc').textContent = data.desc;
             document.getElementById('detailDuration').textContent = data.duration;
             document.getElementById('detailStudents').textContent = data.students + " Students";
             document.getElementById('detailRating').textContent = data.rating;
+
+            // Fix Icon color/type dynamically
+            const iconContainer = document.getElementById('detailIcon').parentElement;
+            iconContainer.innerHTML = `<i data-lucide="${data.icon}" class="w-10 h-10 text-${data.color}-600 dark:text-${data.color}-400"></i>`;
 
             const modulesList = document.getElementById('detailModules');
             modulesList.innerHTML = '';
@@ -2961,12 +3319,14 @@
             });
             lucide.createIcons();
 
-            // Update Register Button in Modal
             const regBtn = document.getElementById('detailRegisterBtn');
-            regBtn.onclick = () => handleRegister(courseName);
+            regBtn.onclick = () => handleRegister(data.name);
 
             openModal('courseDetailsModal');
         }
+
+        // INITIALIZE ON LOAD
+        filterCourses('all');
 
         // --- 8. AUTH & REGISTER LOGIC (MERGED) ---
 
@@ -3073,7 +3433,7 @@
 
         // 1. Select all navigation buttons (We will add the 'nav-link' class in HTML next)
         const navLinks = document.querySelectorAll('.nav-link');
-        const sections = ['home', 'about', 'courses', 'contact'];
+        const sections = ['home', 'about', 'courses', 'faculty', 'testimonials', 'contact'];
 
         //window.addEventListener('scroll', () => {
         //    let current = '';
