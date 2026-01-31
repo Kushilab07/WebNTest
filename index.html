@@ -24,7 +24,14 @@
             }
         }
     </script>
-
+    <script>
+        // Check local storage or system preference immediately
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -377,7 +384,7 @@
         /* --- MOBILE MENU OVERLAY (Slide & Blur) --- */
         #mainMenu {
             position: fixed;
-            top: 80px;
+            top: 56px;
             /* Below Navbar */
             left: 0;
             right: 0;
@@ -552,7 +559,7 @@
     <nav
         class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
         <div class="w-full max-w-screen-2xl mx-auto px-0 sm:px-6 lg:px-12">
-            <div class="flex justify-between items-center h-20 px-1.5 lg:px-0">
+            <div class="flex justify-between items-center h-14 px-1.5 lg:px-0">
                 <!-- <div class="flex justify-between items-center h-20"> -->
                 <!-- LEFT SIDE: Menu + Logo -->
                 <div class="flex items-center gap-4">
@@ -687,11 +694,12 @@
                             class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Courses</button>
                         <button onclick="scrollToSection('faculty')" data-section="faculty"
                             class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Faculty</button>
-
                         <button onclick="scrollToSection('testimonials')" data-section="testimonials"
                             class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Testimonials</button>
                         <button onclick="scrollToSection('contact')" data-section="contact"
                             class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Contact</button>
+                        <button onclick="scrollToSection('map')" data-section="map"
+                            class="nav-link block w-full text-left text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:pl-2 transition-all border-l-2 border-transparent">Map</button>
 
                         <!-- <div class="pt-4 flex items-center gap-4">
                             <a href="#"
@@ -809,7 +817,7 @@
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
                         </span>
-                        Admissions Open for 2024
+                        Admissions Open for 2026
                     </div>
                     <h1 class="text-4xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
                         Build Your Future with <span
@@ -2489,7 +2497,7 @@
                     </a>
                 </div>
 
-                <div class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner">
+                <div id="map" class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.447551066042!2d77.123456!3d28.567890!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd5b347eb62d%3A0x52c2b7494e204dce!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1709282345678!5m2!1sen!2sin"
                         width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
@@ -3062,13 +3070,15 @@
         // --- 1. Theme Logic ---
         const html = document.documentElement;
         const checkbox = document.getElementById('theme-toggle');
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
+
+        // Sync the checkbox state with the theme applied in <head>
+        if (html.classList.contains('dark')) {
             if (checkbox) checkbox.checked = true;
         } else {
-            html.classList.remove('dark');
             if (checkbox) checkbox.checked = false;
         }
+
+        // Toggle Function (triggered by user click)
         function toggleTheme() {
             if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.theme = 'light'; }
             else { html.classList.add('dark'); localStorage.theme = 'dark'; }
@@ -3447,7 +3457,7 @@
 
         // 1. Select all navigation buttons (We will add the 'nav-link' class in HTML next)
         const navLinks = document.querySelectorAll('.nav-link');
-        const sections = ['home', 'about', 'courses', 'faculty', 'testimonials', 'contact'];
+        const sections = ['home', 'about', 'courses', 'faculty', 'testimonials', 'contact', 'map'];
 
         //window.addEventListener('scroll', () => {
         //    let current = '';
