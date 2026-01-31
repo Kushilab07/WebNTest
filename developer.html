@@ -8,12 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'media', // Uses system preference automatically
+            darkMode: 'class', // CHANGED FROM 'media' TO 'class'
             theme: {
                 extend: {
                     colors: { slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' } }
                 }
             }
+        }
+    </script>
+    <script>
+        // 1. Check if user has manually saved a preference (light/dark)
+        // 2. If not, check the System Default (OS settings)
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
