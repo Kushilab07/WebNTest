@@ -2321,7 +2321,7 @@
             <!-- </div> -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
 
-                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between transform hover:-translate-y-1 transition-all duration-300">
                     <div class="space-y-6">
                         <h4 class="font-bold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
                             <i data-lucide="map-pin" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i> 
@@ -2370,7 +2370,7 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
+                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300">
                     <h4 class="font-bold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
                         <i data-lucide="send" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
                         Send Message
@@ -2392,27 +2392,27 @@
             </div>
 
             <div class="mb-16 border-t border-slate-200 dark:border-slate-800 pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col md:flex-row justify-between items-center text-center gap-6">
                     <h4 class="font-bold text-slate-900 dark:text-white text-lg">Quick Links</h4>
                     
                     <div class="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
-                        <button onclick="scrollToSection('home')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</button>
-                        <span class="text-slate-300 dark:text-slate-600">•</span>
-                        <button onclick="scrollToSection('about')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</button>
-                        <span class="text-slate-300 dark:text-slate-600">•</span>
-                        <button onclick="scrollToSection('courses')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Courses</button>
-                        <span class="text-slate-300 dark:text-slate-600">•</span>
-                        <button onclick="scrollToSection('faculty')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Faculty</button>
-                        <span class="text-slate-300 dark:text-slate-600">•</span>
-                        <button onclick="scrollToSection('testimonials')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Testimonials</button>
-                        <span class="text-slate-300 dark:text-slate-600">•</span>
-                        <button onclick="scrollToSection('contact')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</button>
+                        <button onclick="scrollToSection('home')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Home</button>
+                        <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+                        <button onclick="scrollToSection('about')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">About</button>
+                        <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+                        <button onclick="scrollToSection('courses')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Courses</button>
+                        <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+                        <button onclick="scrollToSection('faculty')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Faculty</button>
+                        <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+                        <button onclick="scrollToSection('testimonials')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Testimonials</button>
+                        <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+                        <button onclick="scrollToSection('contact')" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Contact</button>
                         <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
                         <button onclick="scrollToSection('home')"
-                                    class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</button>
-                            <span class="text-slate-300 dark:text-slate-600">•</span>
+                                    class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Privacy Policy</button>
+                            <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
                             <button onclick="scrollToSection('home')"
-                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms & Conditions</button>
+                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:-translate-y-1 transition-all duration-300">Terms & Conditions</button>
                     </div>
                 </div>
             </div>
@@ -2497,9 +2497,23 @@
                 </div>
             </div>
 
-            <div
+            <!-- <div
                 class="border-t border-slate-100 dark:border-slate-800 pt-8 text-center text-slate-500 dark:text-slate-400 text-sm">
                 <p>&copy; 2026 NIAT Computer Academy. All rights reserved.</p>
+            </div> -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-8 text-center">
+                
+                <p class="text-slate-500 dark:text-slate-400 text-sm mb-2">
+                    &copy; 2026 NIAT Computer Academy. All rights reserved.
+                </p>
+                
+                <p class="text-xs text-slate-400 dark:text-slate-500">
+                    Designed & Developed by 
+                    <a href="developer.html" class="font-bold text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        Kushilab Deva Sarma
+                    </a>
+                </p>
+
             </div>
         </div>
     </footer>
