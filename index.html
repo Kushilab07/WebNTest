@@ -550,6 +550,7 @@
             cursor: pointer;
         }
     </style>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
@@ -561,20 +562,20 @@
             <div class="flex justify-between items-center h-14 px-1.5 lg:px-0">
                 <!-- <div class="flex justify-between items-center h-20"> -->
                 <!-- LEFT SIDE: Menu + Logo -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1.5">
                     <!-- Menu Trigger -->
                     <button onclick="toggleMenu()"
                         class="text-slate-600 dark:text-slate-300 hover:text-blue-600 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <i data-lucide="menu" class="w-7 h-7"></i>
+                        <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
                     <!-- 1. Logo -->
                     <div class="flex items-center cursor-pointer" onclick="scrollToSection('home')">
                         <div
-                            class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg mr-3">
+                            class="w-7 h-7 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg mr-3">
                             N
                         </div>
                         <div>
-                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT</h1>
+                            <h1 class="w-10 h-5 text-1xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT</h1>
                             <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">COMPUTER
                                 ACADEMY</p>
                         </div>
@@ -607,7 +608,7 @@
                     </div> -->
                     <button onclick="toggleSearch()"
                         class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <i data-lucide="search" class="w-6 h-6"></i>
+                        <i data-lucide="search" class="w-5 h-5"></i>
                     </button>
 
                     <!-- Logged Out View -->
@@ -2936,6 +2937,16 @@
             </div>
         </div>
     </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,   // Animation duration in milliseconds
+            once: true,      // Whether animation should happen only once - while scrolling down
+            offset: 100,     // Offset (in px) from the original trigger point
+            easing: 'ease-out-cubic', // Easing function
+        });
+    </script>
 
     <script>
         // // Search
