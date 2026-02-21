@@ -8,20 +8,122 @@ const MAX_SIZE = 1 * 1024 * 1024; // 1MB Limit
 // --- 1. PRE-FILL DATA (Optional) ---
 // If you link from your site like: registrationForm.html?name=John&email=john@test.com
 // This code will auto-fill the form!
-window.onload = function() {
-    const params = new URLSearchParams(window.location.search);
-    const nameInput = document.getElementsByName('studentName')[0];
-    const emailInput = document.getElementById('email-field');
+// window.onload = function() {
+//     const params = new URLSearchParams(window.location.search);
+//     const nameInput = document.getElementsByName('studentName')[0];
+//     const emailInput = document.getElementById('email-field');
 
-    if(params.has('name') && nameInput) {
-        nameInput.value = params.get('name');
-        nameInput.classList.add('filled-input');
+//     if(params.has('name') && nameInput) {
+//         nameInput.value = params.get('name');
+//         nameInput.classList.add('filled-input');
+//     }
+//     if(params.has('email') && emailInput) {
+//         emailInput.value = params.get('email');
+//         emailInput.classList.add('filled-input');
+//     }
+// };
+// --- 1. PRE-FILL DATA & DYNAMIC FEES ---
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Fee Database based on your course categories
+    const courseAdmissionFees = {
+        // 3 Month Courses (1000/-)
+        "Basic Of Computer": "1000",
+        "Basics of Computer": "1000", // Fallback for typo
+        "DTP": "1000",
+        "Tally Prime & Accounting": "1000",
+        "Advance Excel with MIS Report": "1000",
+        "AI/ML using Python": "1000",
+        "Digital Marketing": "1000",
+        "Communication skill & Personality Dev": "1000",
+        "Office management with Google workspace": "1000",
+        "SDP(Skill Development Programme)": "1000",
+
+        // 6 Month Courses (2000/-)
+        "Diploma in Computer Application": "2000",
+        "Advance Tally Prime with GST": "2000", 
+        "Diploma in Computer Application in Business (CAB)": "2000",
+        "Personal Financial Literacy & Stock Market": "2000",
+        "Back office Management & MIS Report": "2000",
+        "Data Analyst with Al Technology": "2000",
+
+        // 1 Year Courses (2000/-)
+        "Advance Diploma in Computer Application": "2000",
+        "Post Graduate Diploma in Computer Application": "2000",
+        "Advance Diploma in Financial Accounting with Taxation": "2000",
+
+        // Special Courses (2000/-)
+        "Advance Diploma in Computer Application with Al Technology": "2000",
+        "Diploma in Computer Teacher Training": "2000",
+        "Master Diploma in Computer Application": "2000"
+    };
+
+    const courseSelects = document.querySelectorAll('.course-select');
+    const feeAmountDisplay = document.querySelector('.payment-box .amount');
+    const upiBtn = document.querySelector('.btn-upi');
+
+    // 2. Function to update UI based on selected course
+    function updateFee(selectedCourse) {
+        if (!selectedCourse) {
+            feeAmountDisplay.textContent = `₹ 0/-`;
+            return;
+        }
+
+        // Look up fee, default to 1000 if somehow not found
+        const fee = courseAdmissionFees[selectedCourse] || "1000";
+        
+        // Update text on page
+        feeAmountDisplay.textContent = `₹ ${fee}/-`;
+
+        // Update UPI Link Amount Dynamically (changes &am=1000 to correct fee)
+        if (upiBtn) {
+            upiBtn.href = `upi://pay?pa=prasantasarma.niat@oksbi&pn=Prasanta%20Sarma&am=${fee}&cu=INR&tn=Admission/Registration%20Fee`;
+        }
     }
-    if(params.has('email') && emailInput) {
-        emailInput.value = params.get('email');
-        emailInput.classList.add('filled-input');
+
+    // 3. Listen to changes on ALL course dropdowns
+    courseSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            if (this.value !== "") {
+                // Reset other dropdowns so only ONE course can be selected across all categories
+                courseSelects.forEach(otherSelect => {
+                    if (otherSelect !== this) otherSelect.value = "";
+                });
+                updateFee(this.value);
+            } else {
+                // If they cleared the selection, check if any others are active
+                const anySelected = Array.from(courseSelects).find(s => s.value !== "");
+                updateFee(anySelected ? anySelected.value : null);
+            }
+        });
+    });
+
+    // 4. Auto-Select Course & Email from URL Parameter
+    // This grabs data from index.html (e.g., ?email=test@test.com&course=DTP)
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseFromUrl = urlParams.get('course');
+    const emailFromUrl = urlParams.get('email');
+
+    if (emailFromUrl) {
+        const emailInput = document.getElementById('email-field');
+        if(emailInput) {
+            emailInput.value = emailFromUrl;
+            emailInput.readOnly = true; // Locks the email so they don't mistype it
+            emailInput.classList.add('bg-slate-100', 'cursor-not-allowed'); 
+        }
     }
-};
+
+    if (courseFromUrl) {
+        courseSelects.forEach(select => {
+            Array.from(select.options).forEach(option => {
+                // Match exact name or partial string
+                if (option.value && (option.value.toLowerCase() === courseFromUrl.toLowerCase() || courseFromUrl.toLowerCase().includes(option.value.toLowerCase()))) {
+                    select.value = option.value;
+                    updateFee(option.value);
+                }
+            });
+        });
+    }
+});
 
 // --- 2. FILE UPLOAD LOGIC ---
 function checkFileSize(fileInput) {
