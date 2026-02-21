@@ -2302,8 +2302,9 @@
             }
         }
         // Robust Scroll Locking for Modals
+        let scrollPosition = 0; // Variable to remember where we scrolled
+
         function preventBackgroundScroll(e) {
-            // If the user is touching the dark overlay directly, stop the scroll
             if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
                 e.preventDefault();
             }
@@ -2313,14 +2314,18 @@
             const modal = document.getElementById(modalId);
             modal.classList.remove('hidden'); 
             
+            // Save current scroll position
+            scrollPosition = window.scrollY;
+            
             // Lock body AND html
             document.body.style.overflow = 'hidden'; 
             document.documentElement.style.overflow = 'hidden';
-            // Prevent body from moving on iOS
+            
+            // Prevent body from moving on iOS but keep the visual position exactly where it was
             document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollPosition}px`;
             document.body.style.width = '100%';
 
-            // Add touch listener to the modal overlay to prevent scroll chaining
             modal.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
         }
         
@@ -2332,9 +2337,12 @@
             document.body.style.overflow = ''; 
             document.documentElement.style.overflow = '';
             document.body.style.position = '';
+            document.body.style.top = '';
             document.body.style.width = '';
 
-            // Remove the touch listener
+            // Jump back to the exact scroll position seamlessly
+            window.scrollTo(0, scrollPosition);
+
             modal.removeEventListener('touchmove', preventBackgroundScroll);
         }
         function switchModal(currentId, targetId) { closeModal(currentId); openModal(targetId); }
