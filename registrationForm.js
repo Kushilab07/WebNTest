@@ -118,6 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Match exact name or partial string
                 if (option.value && (option.value.toLowerCase() === courseFromUrl.toLowerCase() || courseFromUrl.toLowerCase().includes(option.value.toLowerCase()))) {
                     select.value = option.value;
+                    
+                    // NEW: Tell the browser the select changed so the CSS colors update automatically
+                    select.dispatchEvent(new Event('change'));
+                    
                     updateFee(option.value);
                 }
             });
