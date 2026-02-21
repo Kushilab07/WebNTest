@@ -553,7 +553,8 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden">
+<body
+    class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden">
 
     <!-- Navigation -->
     <nav
@@ -575,7 +576,8 @@
                             N
                         </div>
                         <div>
-                            <h1 class="w-10 h-5 text-1xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT</h1>
+                            <h1 class="w-10 h-5 text-1xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT
+                            </h1>
                             <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">COMPUTER
                                 ACADEMY</p>
                         </div>
@@ -776,6 +778,10 @@
                             </button>
                         </div>
 
+                        <button onclick="handleExamApplication(); toggleMenu()"
+                            class="w-full flex items-center justify-center gap-3 px-5 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition-all font-bold">
+                            <i data-lucide="file-edit" class="w-5 h-5"></i> Apply for Exam
+                        </button>
                         <!-- Register Button (FIXED: Now triggers handleRegister) -->
                         <button onclick="handleRegister(); toggleMenu()"
                             class="w-full flex items-center justify-center px-5 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition-all font-bold">
@@ -810,8 +816,8 @@
                         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800">
                         <span class="flex h-2 w-2 rounded-full bg-blue-600"></span> Admissions Open for 2024
                     </div> -->
-                    <div
-                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800 transition-transform hover:scale-105 cursor-default" data-aos="fade-right">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800 transition-transform hover:scale-105 cursor-default"
+                        data-aos="fade-right">
                         <span class="relative flex h-2.5 w-2.5">
                             <span
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -819,7 +825,8 @@
                         </span>
                         Admissions Open for 2026
                     </div>
-                    <h1 class="text-4xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6" data-aos="fade-right">
+                    <h1 class="text-4xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6"
+                        data-aos="fade-right">
                         Build Your Future with <span
                             class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Digital
                             Skills</span>
@@ -842,17 +849,24 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
 
                         <button onclick="scrollToSection('courses')"
-                            class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 group" data-aos="zoom-in up" data-aos-delay="200">
+                            class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 group"
+                            data-aos="zoom-in up" data-aos-delay="200">
                             Explore Courses
                             <i data-lucide="chevron-right"
                                 class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
                         </button>
 
                         <button onclick="handleRegister()"
-                            class="w-full py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400" data-aos="zoom-in up" data-aos-delay="200">
+                            class="w-full py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400"
+                            data-aos="zoom-in up" data-aos-delay="200">
                             Register
                         </button>
-
+                    </div>
+                    <div class="mt-4 w-full" data-aos="zoom-in-up" data-aos-delay="300">
+                        <button onclick="handleExamApplication()"
+                            class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold shadow-lg hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <i data-lucide="file-edit" class="w-5 h-5"></i> Apply for Exam
+                        </button>
                     </div>
                 </div>
                 <div class="relative lg:ml-6 flex flex-col gap-8" data-aos="fade-left">
@@ -1008,10 +1022,11 @@
                         alt="About NIAT" class="rounded-3xl shadow-2xl w-full object-cover h-80">
                 </div>
                 <div class="md:w-1/2">
-                    <span
-                        class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block" data-aos="zoom-in">Who
+                    <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block"
+                        data-aos="zoom-in">Who
                         We Are</span>
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-6" data-aos="zoom-in">Empowering Education Since 2014
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-6" data-aos="zoom-in">Empowering
+                        Education Since 2014
                     </h2>
                     <p class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed" data-aos="zoom-in">
                         At NIAT Computer Academy, our mission is to bridge the digital divide by providing affordable,
@@ -1019,17 +1034,20 @@
                         employability.
                     </p>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" data-aos="zoom-in" data-aos-delay="400"
-                                class="w-5 h-5 text-emerald-500"></i><span
-                                class="text-slate-700 dark:text-slate-300 font-medium" data-aos="zoom-in" data-aos-delay="100">ISO 9001:2015 Certified
+                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" data-aos="zoom-in"
+                                data-aos-delay="400" class="w-5 h-5 text-emerald-500"></i><span
+                                class="text-slate-700 dark:text-slate-300 font-medium" data-aos="zoom-in"
+                                data-aos-delay="100">ISO 9001:2015 Certified
                                 Institute</span></li>
-                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" data-aos="zoom-in" data-aos-delay="500"
-                                class="w-5 h-5 text-emerald-500"></i><span
-                                class="text-slate-700 dark:text-slate-300 font-medium" data-aos="zoom-in" data-aos-delay="200">Industry-standard
+                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" data-aos="zoom-in"
+                                data-aos-delay="500" class="w-5 h-5 text-emerald-500"></i><span
+                                class="text-slate-700 dark:text-slate-300 font-medium" data-aos="zoom-in"
+                                data-aos-delay="200">Industry-standard
                                 Curriculum</span></li>
-                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" data-aos="zoom-in" data-aos-delay="600"
-                                class="w-5 h-5 text-emerald-500"></i><span
-                                class="text-slate-700 dark:text-slate-300 font-medium" data-aos="zoom-in" data-aos-delay="300">Dedicated Placement Cell</span>
+                        <li class="flex items-center gap-3"><i data-lucide="check-circle-2" data-aos="zoom-in"
+                                data-aos-delay="600" class="w-5 h-5 text-emerald-500"></i><span
+                                class="text-slate-700 dark:text-slate-300 font-medium" data-aos="zoom-in"
+                                data-aos-delay="300">Dedicated Placement Cell</span>
                         </li>
                     </ul>
                 </div>
@@ -1099,8 +1117,8 @@
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
-                <div
-                    class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" data-aos="fade-up" data-aos-delay="0">
+                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-orange-200 dark:hover:border-orange-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                    data-aos="fade-up" data-aos-delay="0">
                     <div
                         class="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="users" class="w-8 h-8"></i>
@@ -1113,8 +1131,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" data-aos="fade-up" data-aos-delay="100">
+                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                    data-aos="fade-up" data-aos-delay="100">
                     <div
                         class="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="award" class="w-8 h-8"></i>
@@ -1127,8 +1145,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" data-aos="fade-up" data-aos-delay="200">
+                <div class="flex items-start gap-4 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                    data-aos="fade-up" data-aos-delay="200">
                     <div
                         class="p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="check-circle" class="w-8 h-8"></i>
@@ -1169,7 +1187,8 @@
 
         <div class="mt-16 text-center hidden" id="viewAllWrapper">
             <button id="viewAllBtn" onclick="toggleViewMore()"
-                class="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95" data-aos="zoom-in-up" data-aos-delay="100">
+                class="px-8 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95"
+                data-aos="zoom-in-up" data-aos-delay="100">
                 View All Courses
             </button>
         </div>
@@ -1185,24 +1204,47 @@
                     <h2 class="text-3xl md:text-4xl font-bold mb-6">Manage Your Academic Journey Online</h2>
                     <p class="text-slate-300 text-lg mb-8 leading-relaxed">NIAT is upgrading! Register online, track
                         attendance, and download certified e-marksheets directly from our portal.</p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <!-- Register Button (No Icon) -->
+                    <!-- <div class="flex flex-col sm:flex-row gap-4">
+                        <!- - Register Button (No Icon) - ->
                         <button onclick="handleRegister()"
                             class="flex-1 px-6 py-4 bg-white text-slate-900 rounded-lg font-bold hover:bg-slate-100 transition-colors text-center">
                             Register
                         </button>
 
-                        <!-- Download Certificate -->
+                        <!- - Download Certificate - ->
                         <button onclick="openModal('marksheetModal')"
                             class="px-6 py-3 border border-slate-600 text-white rounded-lg font-semibold hover:border-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all flex items-center justify-center gap-2">
                             <i data-lucide="download" class="w-5 h-5"></i> Download Certificate
                         </button>
 
-                        <!-- Download Marksheet -->
+                        <!- - Download Marksheet - ->
                         <button onclick="openModal('marksheetModal')"
                             class="px-6 py-3 border border-slate-600 text-white rounded-lg font-semibold hover:border-purple-500 hover:text-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2">
                             <i data-lucide="file-text" class="w-5 h-5"></i> Download Marksheet
                         </button>
+                    </div> -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                        
+                        <button onclick="handleExamApplication()"
+                            class="w-full px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg hover:-translate-y-1 transition-all text-center flex items-center justify-center gap-2">
+                            <i data-lucide="file-edit" class="w-5 h-5"></i> Apply for Exam
+                        </button>
+
+                        <button onclick="handleRegister()"
+                            class="w-full px-6 py-4 bg-white text-slate-900 rounded-xl font-bold shadow-lg hover:-translate-y-1 hover:bg-slate-50 transition-all text-center">
+                            Register
+                        </button>
+
+                        <button onclick="openModal('marksheetModal')"
+                            class="w-full px-6 py-4 border border-slate-600 text-white rounded-xl font-semibold hover:border-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="download" class="w-5 h-5"></i> Certificate
+                        </button>
+
+                        <button onclick="openModal('marksheetModal')"
+                            class="w-full px-6 py-4 border border-slate-600 text-white rounded-xl font-semibold hover:border-purple-500 hover:text-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5"></i> Marksheet
+                        </button>
+
                     </div>
                 </div>
                 <div class="md:w-1/2 w-full flex justify-center" data-aos="zoom-out" data-aos-delay="100">
@@ -1274,8 +1316,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-                <div
-                    class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-aos="flip-left" data-aos-delay="0">
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    data-aos="flip-left" data-aos-delay="0">
                     <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                             alt="Ms. Sarah Chen"
@@ -1305,8 +1347,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-aos="flip-left" data-aos-delay="100">
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    data-aos="flip-left" data-aos-delay="100">
                     <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                             alt="Mr. David Ross"
@@ -1335,8 +1377,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-aos="flip-left" data-aos-delay="200">
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    data-aos="flip-left" data-aos-delay="200">
                     <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                             alt="Mrs. Priya Kapoor"
@@ -1365,8 +1407,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-aos="flip-left" data-aos-delay="300">
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    data-aos="flip-left" data-aos-delay="300">
                     <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                             alt="Mr. James Carter"
@@ -1503,8 +1545,8 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                <div
-                    class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between transform hover:-translate-y-1 transition-all duration-300" data-aos="fade-up">
+                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between transform hover:-translate-y-1 transition-all duration-300"
+                    data-aos="fade-up">
                     <div class="space-y-6">
                         <h4 class="font-bold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
                             <i data-lucide="map-pin" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
@@ -1558,8 +1600,8 @@
                     </div>
                 </div>
 
-                <div
-                    class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300" data-aos="fade-up">
+                <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 transform hover:-translate-y-1 transition-all duration-300"
+                    data-aos="fade-up">
                     <h4 class="font-bold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
                         <i data-lucide="send" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
                         Send Message
@@ -1577,7 +1619,8 @@
                             class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all resize-none"></textarea>
 
                         <button type="button"
-                            class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2" data-aos="zoom-in">
+                            class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
+                            data-aos="zoom-in">
                             Send Message <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </button>
                     </form>
@@ -1677,31 +1720,33 @@
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Follow Us On:</span>
 
                     <a href="#"
-                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white dark:hover:text-white transition-all" data-aos="zoom-in" data-aos-delay="200">
+                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white dark:hover:text-white transition-all"
+                        data-aos="zoom-in" data-aos-delay="200">
                         <i data-lucide="facebook" class="w-5 h-5"></i>
                     </a>
 
                     <a href="#"
-                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white dark:hover:text-white transition-all" data-aos="zoom-in" data-aos-delay="400">
+                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white dark:hover:text-white transition-all"
+                        data-aos="zoom-in" data-aos-delay="400">
                         <i data-lucide="instagram" class="w-5 h-5"></i>
                     </a>
 
                     <a href="#"
-                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-800 dark:hover:bg-blue-700 hover:text-white dark:hover:text-white transition-all" data-aos="zoom-in" data-aos-delay="600">
+                        class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-800 dark:hover:bg-blue-700 hover:text-white dark:hover:text-white transition-all"
+                        data-aos="zoom-in" data-aos-delay="600">
                         <i data-lucide="linkedin" class="w-5 h-5"></i>
                     </a>
                 </div>
 
-                <div id="map"
-                    class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner" data-aos="fade-up">
+                <div id="map" class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-inner"
+                    data-aos="fade-up">
                     <!-- <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.447551066042!2d77.123456!3d28.567890!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd5b347eb62d%3A0x52c2b7494e204dce!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1709282345678!5m2!1sen!2sin"
                         width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"></iframe> -->
-                    <iframe
-                        src="https://www.google.com/maps/d/u/9/embed?mid=1RCzr9dJLLcIGeAen1U3roWl0-85QH6k&ehbc"
-                        width="100%" height="100%" style="border:0; margin-top: -68px; height: calc(100% + 68px);" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe src="https://www.google.com/maps/d/u/9/embed?mid=1RCzr9dJLLcIGeAen1U3roWl0-85QH6k&ehbc"
+                        width="100%" height="100%" style="border:0; margin-top: -68px; height: calc(100% + 68px);"
+                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
 
@@ -1977,7 +2022,7 @@
 
     <!-- NEW: Course Details Modal -->
     <div id="courseDetailsModal"
-        class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300">
         <div
             class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in max-h-[90vh] overflow-y-auto">
             <div class="relative">
@@ -2014,6 +2059,12 @@
                         <p id="detailDesc" class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">Course
                             description goes here.</p>
                     </div>
+                    <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                        <button id="detailRegisterBtn"
+                            class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            Register Now <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                     <div>
                         <h4 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">What
                             You'll Learn</h4>
@@ -2022,13 +2073,6 @@
                             <!-- Modules injected via JS -->
                         </ul>
                     </div>
-                </div>
-
-                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <button id="detailRegisterBtn"
-                        class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                        Register Now <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -2257,8 +2301,42 @@
                 document.body.style.overflow = '';
             }
         }
-        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
-        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        // Robust Scroll Locking for Modals
+        function preventBackgroundScroll(e) {
+            // If the user is touching the dark overlay directly, stop the scroll
+            if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
+                e.preventDefault();
+            }
+        }
+
+        function openModal(modalId) { 
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden'); 
+            
+            // Lock body AND html
+            document.body.style.overflow = 'hidden'; 
+            document.documentElement.style.overflow = 'hidden';
+            // Prevent body from moving on iOS
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+
+            // Add touch listener to the modal overlay to prevent scroll chaining
+            modal.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
+        }
+        
+        function closeModal(modalId) { 
+            const modal = document.getElementById(modalId);
+            modal.classList.add('hidden'); 
+            
+            // Restore scrolling
+            document.body.style.overflow = ''; 
+            document.documentElement.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+
+            // Remove the touch listener
+            modal.removeEventListener('touchmove', preventBackgroundScroll);
+        }
         function switchModal(currentId, targetId) { closeModal(currentId); openModal(targetId); }
         //function scrollToSection(id) {
         //    const el = document.getElementById(id);
@@ -2334,28 +2412,267 @@
         // --- 7. DYNAMIC COURSES & CATEGORIES ---
 
         // 1. Full Course Database (with Colors & Icons)
+        //const courses = [
+        //    { name: "Basics of Computer", duration: "3 Months", students: "120+", rating: "4.8", color: "blue", icon: "monitor", desc: "Master the fundamentals of computing, OS navigation, MS Office suite.", modules: ["Fundamentals", "Windows", "MS Office", "Internet"] },
+        //    { name: "DTP", duration: "3 Months", students: "85+", rating: "4.9", color: "purple", icon: "book-open", desc: "Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker.", modules: ["CorelDraw", "Photoshop", "PageMaker", "Printing"] },
+        //    { name: "Tally Prime & Accounting", duration: "3 Months", students: "200+", rating: "4.7", color: "emerald", icon: "bar-chart", desc: "Complete financial accounting with Tally Prime, GST & Payroll.", modules: ["Accounting", "Tally Prime", "GST", "Payroll"] },
+        //    { name: "Advance Excel with MIS Report", duration: "3 Months", students: "150+", rating: "4.8", color: "green", icon: "sheet", desc: "Master advanced formulas, pivot tables, macros, and MIS reports.", modules: ["Formulas", "Pivot Tables", "Macros", "MIS"] },
+        //    { name: "AI/ML using Python", duration: "3 Months", students: "60+", rating: "4.9", color: "indigo", icon: "brain", desc: "Artificial Intelligence and Machine Learning concepts using Python.", modules: ["Python", "Data Science", "ML Algos", "Neural Nets"] },
+        //    { name: "Digital Marketing", duration: "3 Months", students: "90+", rating: "4.7", color: "orange", icon: "megaphone", desc: "SEO, Social Media Marketing, Content Strategy, and Ads.", modules: ["SEO", "SMM", "Content", "Ads"] },
+        //    { name: "Communication Skill & Personality Development", duration: "3 Months", students: "75+", rating: "4.8", color: "pink", icon: "message-circle", desc: "Enhance soft skills, public speaking confidence, and personality.", modules: ["Speaking", "Interview", "Body Language", "Etiquette"] },
+        //    { name: "Office Management with Google workspace", duration: "3 Months", students: "50+", rating: "4.6", color: "yellow", icon: "briefcase", desc: "Manage office tasks using Google Docs, Sheets, Slides, Drive.", modules: ["Docs", "Sheets", "Slides", "Collaboration"] },
+        //    { name: "SDP(Skill Development Programme)", duration: "3 Months", students: "100+", rating: "4.7", color: "teal", icon: "lightbulb", desc: "Comprehensive program focused on enhancing vocational skills.", modules: ["Soft Skills", "IT Skills", "Readiness", "Comm"] },
+        //    { name: "Diploma in Computer Application", duration: "6 Months", students: "110+", rating: "4.8", color: "blue", icon: "monitor", desc: "Extensive diploma covering fundamental to intermediate computer apps.", modules: ["IT Basics", "MS Office", "Internet", "Accounting"] },
+        //    { name: "Advance Tally Prime with GST", duration: "6 Months", students: "80+", rating: "4.9", color: "emerald", icon: "bar-chart-3", desc: "In-depth Tally training focusing on GST implementation.", modules: ["Adv Tally", "GST Laws", "E-Way Bill", "Taxation"] },
+        //    { name: "Diploma in Computer Application in Business (CAB)", duration: "6 Months", students: "70+", rating: "4.6", color: "slate", icon: "building", desc: "Computer Application in Business - bridging tech with business.", modules: ["Bus Computing", "Tally", "Excel", "E-Commerce"] },
+        //    { name: "Personal Financial Literacy & Stock Market", duration: "6 Month", students: "40+", rating: "4.8", color: "green", icon: "trending-up", desc: "Personal finance, investing, and basics of stock market.", modules: ["Planning", "Stocks", "Analysis", "Investing"] },
+        //    { name: "Back office Management & MIS Report", duration: "6 Months", students: "55+", rating: "4.5", color: "gray", icon: "database", desc: "Skills for backend operations, data handling, and reporting.", modules: ["Data Entry", "Excel", "MIS", "Admin"] },
+        //    { name: "Data Analyst with Al Technology", duration: "6 Months", students: "95+", rating: "4.9", color: "violet", icon: "pie-chart", desc: "Data analysis using Excel, SQL, Python, and Power BI.", modules: ["SQL", "Python", "Power BI", "AI Tools"] },
+        //    { name: "Advance Diploma in Computer Application", duration: "1 Year", students: "130+", rating: "4.7", color: "cyan", icon: "cpu", desc: "Advanced level diploma covering specialized computer topics.", modules: ["C/C++", "Web Design", "DBMS", "Adv Office"] },
+        //    { name: "Post Graduate Diploma in Computer Application", duration: "1 Year", students: "45+", rating: "4.9", color: "rose", icon: "graduation-cap", desc: "Post-graduate level certification for advanced career roles.", modules: ["Software Eng", "Java/Python", "DBMS", "Project Mgmt"] },
+        //    { name: "Advance Diploma in Financial Accounting with Taxation", duration: "1 Year", students: "60+", rating: "4.8", color: "emerald", icon: "calculator", desc: "Specialized diploma focusing on advanced accounting and tax.", modules: ["Accounting", "Taxation", "Auditing", "Corp Laws"] },
+        //    { name: "Advance Diploma in Computer Application with Al Technology", duration: "18 Months", students: "85+", rating: "4.9", color: "indigo", icon: "circuit-board", desc: "Integrating traditional computer apps with modern AI tech.", modules: ["ADCA", "Intro AI", "Business AI", "Future Tech"] },
+        //    { name: "Diploma in Computer Teacher Training", duration: "18 Months", students: "70+", rating: "4.7", color: "orange", icon: "presentation", desc: "Prepare for a career in teaching computer science.", modules: ["Methodology", "Psychology", "CS", "Planning"] },
+        //    { name: "Master Diploma in Computer Application", duration: "24 Months", students: "40+", rating: "5.0", color: "yellow", icon: "award", desc: "The ultimate certification for mastering all computer applications.", modules: ["Full Stack", "Adv Prog", "Cloud", "Cyber Sec"] }
+        //];
+
+        // 1. Full Course Database (with Colors, Icons, Exact Syllabus & Fees)
         const courses = [
-            { name: "Basics of Computer", duration: "3 Months", students: "120+", rating: "4.8", color: "blue", icon: "monitor", desc: "Master the fundamentals of computing, OS navigation, MS Office suite.", modules: ["Fundamentals", "Windows", "MS Office", "Internet"] },
-            { name: "DTP", duration: "3 Months", students: "85+", rating: "4.9", color: "purple", icon: "book-open", desc: "Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker.", modules: ["CorelDraw", "Photoshop", "PageMaker", "Printing"] },
-            { name: "Tally Prime & Accounting", duration: "3 Months", students: "200+", rating: "4.7", color: "emerald", icon: "bar-chart", desc: "Complete financial accounting with Tally Prime, GST & Payroll.", modules: ["Accounting", "Tally Prime", "GST", "Payroll"] },
-            { name: "Advance Excel with MIS Report", duration: "3 Months", students: "150+", rating: "4.8", color: "green", icon: "sheet", desc: "Master advanced formulas, pivot tables, macros, and MIS reports.", modules: ["Formulas", "Pivot Tables", "Macros", "MIS"] },
-            { name: "AI/ML using Python", duration: "3 Months", students: "60+", rating: "4.9", color: "indigo", icon: "brain", desc: "Artificial Intelligence and Machine Learning concepts using Python.", modules: ["Python", "Data Science", "ML Algos", "Neural Nets"] },
-            { name: "Digital Marketing", duration: "3 Months", students: "90+", rating: "4.7", color: "orange", icon: "megaphone", desc: "SEO, Social Media Marketing, Content Strategy, and Ads.", modules: ["SEO", "SMM", "Content", "Ads"] },
-            { name: "Communication Skill & Personality Development", duration: "3 Months", students: "75+", rating: "4.8", color: "pink", icon: "message-circle", desc: "Enhance soft skills, public speaking confidence, and personality.", modules: ["Speaking", "Interview", "Body Language", "Etiquette"] },
-            { name: "Office Management with Google workspace", duration: "3 Months", students: "50+", rating: "4.6", color: "yellow", icon: "briefcase", desc: "Manage office tasks using Google Docs, Sheets, Slides, Drive.", modules: ["Docs", "Sheets", "Slides", "Collaboration"] },
-            { name: "SDP(Skill Development Programme)", duration: "3 Months", students: "100+", rating: "4.7", color: "teal", icon: "lightbulb", desc: "Comprehensive program focused on enhancing vocational skills.", modules: ["Soft Skills", "IT Skills", "Readiness", "Comm"] },
-            { name: "Diploma in Computer Application", duration: "6 Months", students: "110+", rating: "4.8", color: "blue", icon: "monitor", desc: "Extensive diploma covering fundamental to intermediate computer apps.", modules: ["IT Basics", "MS Office", "Internet", "Accounting"] },
-            { name: "Advance Tally Prime with GST", duration: "6 Months", students: "80+", rating: "4.9", color: "emerald", icon: "bar-chart-3", desc: "In-depth Tally training focusing on GST implementation.", modules: ["Adv Tally", "GST Laws", "E-Way Bill", "Taxation"] },
-            { name: "Diploma in Computer Application in Business (CAB)", duration: "6 Months", students: "70+", rating: "4.6", color: "slate", icon: "building", desc: "Computer Application in Business - bridging tech with business.", modules: ["Bus Computing", "Tally", "Excel", "E-Commerce"] },
-            { name: "Personal Financial Literacy & Stock Market", duration: "6 Month", students: "40+", rating: "4.8", color: "green", icon: "trending-up", desc: "Personal finance, investing, and basics of stock market.", modules: ["Planning", "Stocks", "Analysis", "Investing"] },
-            { name: "Back office Management & MIS Report", duration: "6 Months", students: "55+", rating: "4.5", color: "gray", icon: "database", desc: "Skills for backend operations, data handling, and reporting.", modules: ["Data Entry", "Excel", "MIS", "Admin"] },
-            { name: "Data Analyst with Al Technology", duration: "6 Months", students: "95+", rating: "4.9", color: "violet", icon: "pie-chart", desc: "Data analysis using Excel, SQL, Python, and Power BI.", modules: ["SQL", "Python", "Power BI", "AI Tools"] },
-            { name: "Advance Diploma in Computer Application", duration: "1 Year", students: "130+", rating: "4.7", color: "cyan", icon: "cpu", desc: "Advanced level diploma covering specialized computer topics.", modules: ["C/C++", "Web Design", "DBMS", "Adv Office"] },
-            { name: "Post Graduate Diploma in Computer Application", duration: "1 Year", students: "45+", rating: "4.9", color: "rose", icon: "graduation-cap", desc: "Post-graduate level certification for advanced career roles.", modules: ["Software Eng", "Java/Python", "DBMS", "Project Mgmt"] },
-            { name: "Advance Diploma in Financial Accounting with Taxation", duration: "1 Year", students: "60+", rating: "4.8", color: "emerald", icon: "calculator", desc: "Specialized diploma focusing on advanced accounting and tax.", modules: ["Accounting", "Taxation", "Auditing", "Corp Laws"] },
-            { name: "Advance Diploma in Computer Application with Al Technology", duration: "18 Months", students: "85+", rating: "4.9", color: "indigo", icon: "circuit-board", desc: "Integrating traditional computer apps with modern AI tech.", modules: ["ADCA", "Intro AI", "Business AI", "Future Tech"] },
-            { name: "Diploma in Computer Teacher Training", duration: "18 Months", students: "70+", rating: "4.7", color: "orange", icon: "presentation", desc: "Prepare for a career in teaching computer science.", modules: ["Methodology", "Psychology", "CS", "Planning"] },
-            { name: "Master Diploma in Computer Application", duration: "24 Months", students: "40+", rating: "5.0", color: "yellow", icon: "award", desc: "The ultimate certification for mastering all computer applications.", modules: ["Full Stack", "Adv Prog", "Cloud", "Cyber Sec"] }
+            {
+                name: "Basics of Computer", duration: "3 Months", students: "120+", rating: "4.8", color: "blue", icon: "monitor",
+                desc: "Master the fundamentals of computing, OS navigation, MS Office suite.",
+                fee: "Admission Fee: 1000/- | Course Fee: 3000/-",
+                modules: [
+                    "Fundamentals of Computer",
+                    "Ms-Word",
+                    "Ms-Excel",
+                    "Ms-Power Point",
+                    "Ms Access",
+                    "Internet"
+                ]
+            },
+            {
+                name: "DTP", duration: "3 Months", students: "85+", rating: "4.9", color: "purple", icon: "book-open",
+                desc: "Learn Desktop Publishing with CorelDraw, Photoshop, and PageMaker.",
+                fee: "Admission Fee: 1000/- | Course Fee: 3000/-",
+                modules: [
+                    "Fundamentals of Computer",
+                    "Ms-Word",
+                    "Page Maker",
+                    "Leap Office",
+                    "Photoshop",
+                    "Internet"
+                ]
+            },
+            {
+                name: "Tally Prime & Accounting", duration: "3 Months", students: "200+", rating: "4.7", color: "emerald", icon: "bar-chart",
+                desc: "Complete financial accounting with Tally Prime, GST & Payroll.",
+                fee: "Admission Fee: 1000/- | Course Fee: 4000/-",
+                modules: [
+                    "Basic Of Accounting",
+                    "Company Creation",
+                    "Ledger Creation",
+                    "Voucher Entry",
+                    "Inventory Management",
+                    "GST",
+                    "Reports Analysis and Printing"
+                ]
+            },
+            {
+                name: "Advance Excel with MIS Report", duration: "3 Months", students: "150+", rating: "4.8", color: "green", icon: "sheet",
+                desc: "Master advanced formulas, pivot tables, macros, and MIS reports.",
+                fee: "Admission Fee: 1000/- | Course Fee: 4000/-",
+                modules: [
+                    "Advance Ms-Excel",
+                    "Google Sheet",
+                    "MIS REPORT Prepare",
+                    "Presentation Skill",
+                    "Printing and Internet"
+                ]
+            },
+            {
+                name: "AI/ML using Python", duration: "3 Months", students: "60+", rating: "4.9", color: "indigo", icon: "brain",
+                desc: "Artificial Intelligence and Machine Learning concepts using Python.",
+                fee: "",
+                modules: ["Python", "Data Science", "ML Algos", "Neural Nets"]
+            },
+            {
+                name: "Digital Marketing", duration: "3 Months", students: "90+", rating: "4.7", color: "orange", icon: "megaphone",
+                desc: "SEO, Social Media Marketing, Content Strategy, and Ads.",
+                fee: "",
+                modules: ["SEO", "SMM", "Content", "Ads"]
+            },
+            {
+                name: "Communication Skill & Personality Development", duration: "3 Months", students: "75+", rating: "4.8", color: "pink", icon: "message-circle",
+                desc: "Enhance soft skills, public speaking confidence, and personality.",
+                fee: "Admission Fee: 1000/- | Course Fee: 3000/-",
+                modules: [
+                    "Communication: An Introduction",
+                    "Non-Verbal Communication",
+                    "Effective Communication",
+                    "Communication Network in an Organization-I",
+                    "Communication Network in an Organization-II"
+                ]
+            },
+            {
+                name: "Office Management with Google workspace", duration: "3 Months", students: "50+", rating: "4.6", color: "yellow", icon: "briefcase",
+                desc: "Manage office tasks using Google Docs, Sheets, Slides, Drive.",
+                fee: "",
+                modules: ["Docs", "Sheets", "Slides", "Collaboration"]
+            },
+            {
+                name: "SDP(Skill Development Programme)", duration: "3 Months", students: "100+", rating: "4.7", color: "teal", icon: "lightbulb",
+                desc: "Comprehensive program focused on enhancing vocational skills.",
+                fee: "Admission Fee: 1000/- | Course Fee: 3000/-",
+                modules: [
+                    "Computer Fundamentals and Operating Systems",
+                    "MS Office (Word, Excel, Power-Point)",
+                    "Internet and Digital Communication",
+                    "Communication and Personality Development",
+                    "Interview Techniques and Resume Writing",
+                    "Time Management and Teamwork",
+                    "Internet and Digital Communication",
+                    "Professional Behavior and Work Ethics"
+                ]
+            },
+            {
+                name: "Diploma in Computer Application", duration: "6 Months", students: "110+", rating: "4.8", color: "blue", icon: "monitor",
+                desc: "Extensive diploma covering fundamental to intermediate computer apps.",
+                fee: "Admission Fee: 2000/- | Course Fee: 6000/-",
+                modules: [
+                    "Fundamentals of Computer",
+                    "Windows",
+                    "Ms-office<br><span class='ml-4 text-slate-500'>• Ms-Word</span><br><span class='ml-4 text-slate-500'>• Ms-Excel</span><br><span class='ml-4 text-slate-500'>• Ms-Power Point</span><br><span class='ml-4 text-slate-500'>• Ms Access</span>",
+                    "Adobe Page Maker 7.0 (English, Hindi, Assamese Language)",
+                    "Professional Photo Editing",
+                    "Web Page Designing"
+                ]
+            },
+            {
+                name: "Advance Tally Prime with GST", duration: "6 Months", students: "80+", rating: "4.9", color: "emerald", icon: "bar-chart-3",
+                desc: "In-depth Tally training focusing on GST implementation.",
+                fee: "Admission & Course Fees: Contact Branch",
+                modules: [
+                    "Advance Accounting<br><span class='ml-4 text-slate-500'>• Cost centers and cost categories</span><br><span class='ml-4 text-slate-500'>• Cost center class</span><br><span class='ml-4 text-slate-500'>• Budgets & Controls</span><br><span class='ml-4 text-slate-500'>• Variance Analysis (Budget & Actual Comparison)</span><br><span class='ml-4 text-slate-500'>• Ratio Analysis</span><br><span class='ml-4 text-slate-500'>• Fund Flow & Cash Flow</span><br><span class='ml-4 text-slate-500'>• Information regarding TDS</span><br><span class='ml-4 text-slate-500'>• Reversing and Memorandum JV</span>",
+                    "Advance Inventory<br><span class='ml-4 text-slate-500'>• Order Processing</span><br><span class='ml-4 text-slate-500'>• Item cost tracking</span><br><span class='ml-4 text-slate-500'>• Price level & price list</span><br><span class='ml-4 text-slate-500'>• POS</span>",
+                    "Banking<br><span class='ml-4 text-slate-500'>• Electronic Payments</span><br><span class='ml-4 text-slate-500'>• Sources of Financing & Collaterals</span><br><span class='ml-4 text-slate-500'>• Bank reconciliation</span>",
+                    "Job Costing<br><span class='ml-4 text-slate-500'>• Features, Transactions, Reports</span>",
+                    "Job Work Order<br><span class='ml-4 text-slate-500'>• Activation & Setup</span><br><span class='ml-4 text-slate-500'>• Job order processing</span>",
+                    "Advance Payroll<br><span class='ml-4 text-slate-500'>• Payroll & Statutory Details</span>",
+                    "GSTR 1, 2, 3B<br><span class='ml-4 text-slate-500'>• Returns Summary & Details</span><br><span class='ml-4 text-slate-500'>• Summary of exceptions</span><br><span class='ml-4 text-slate-500'>• Table wise GSTR</span>",
+                    "Acces Controls & Security management",
+                    "Data Synchronization"
+                ]
+            },
+            {
+                name: "Diploma in Computer Application in Business (CAB)", duration: "6 Months", students: "70+", rating: "4.6", color: "slate", icon: "building",
+                desc: "Computer Application in Business - bridging tech with business.",
+                fee: "Admission Fee: 2000/- | Course Fee: 10000/-",
+                modules: [
+                    "Basic of Accounting<br><span class='ml-4 text-slate-500'>• Meaning and Objective</span><br><span class='ml-4 text-slate-500'>• Types, Concepts and Conventions</span><br><span class='ml-4 text-slate-500'>• Types of Accounts</span><br><span class='ml-4 text-slate-500'>• Golden Rules & Accounting Cycle</span>",
+                    "Business Transactions<br><span class='ml-4 text-slate-500'>• Capital and Revenue</span><br><span class='ml-4 text-slate-500'>• Asserts, Liabilities, Income, Expenses</span><br><span class='ml-4 text-slate-500'>• Debit/Credit Rules & Journal Entries</span>",
+                    "Ledger and Trial Balance<br><span class='ml-4 text-slate-500'>• Ledger Posting & Balancing</span><br><span class='ml-4 text-slate-500'>• Trial Balance</span><br><span class='ml-4 text-slate-500'>• Errors & Rectification</span>",
+                    "Final Account<br><span class='ml-4 text-slate-500'>• Trading, P&L, Balance Sheet & Adjustments</span>",
+                    "Introduction to Computerized Accounting",
+                    "Tally (Latest Version)<br><span class='ml-4 text-slate-500'>• Company & Ledger Creation</span><br><span class='ml-4 text-slate-500'>• Voucher Entry, Purchase & Sales</span><br><span class='ml-4 text-slate-500'>• GST Basics & Reports</span>",
+                    "Banking & Taxation Basic<br><span class='ml-4 text-slate-500'>• BRS</span><br><span class='ml-4 text-slate-500'>• GST Overview & Registration Types</span><br><span class='ml-4 text-slate-500'>• Input & Output GST</span>"
+                ]
+            },
+            {
+                name: "Personal Financial Literacy & Stock Market", duration: "6 Month", students: "40+", rating: "4.8", color: "green", icon: "trending-up",
+                desc: "Personal finance, investing, and basics of stock market.",
+                fee: "Admission Fee: 2000/- | Course Fee: 8000/-",
+                modules: [
+                    "Financial Life Circle",
+                    "Financial Planning and Budgeting",
+                    "Carrier and Income",
+                    "Banking Product and Services",
+                    "Financial Risk and Insurance",
+                    "Investing in Stock Market",
+                    "Personal Tax"
+                ]
+            },
+            {
+                name: "Back office Management & MIS Report", duration: "6 Months", students: "55+", rating: "4.5", color: "gray", icon: "database",
+                desc: "Skills for backend operations, data handling, and reporting.",
+                fee: "Admission Fee: 2000/- | Course Fee: 6000/-",
+                modules: [
+                    "Fundamentals of Computer",
+                    "Windows",
+                    "Ms-office<br><span class='ml-4 text-slate-500'>• Ms-Word</span><br><span class='ml-4 text-slate-500'>• Ms-Excel</span><br><span class='ml-4 text-slate-500'>• Ms-Power Point</span><br><span class='ml-4 text-slate-500'>• Ms-Access</span>",
+                    "Google Workspace (Gmail, Meet, Sheet, Docs, Slide, Form)",
+                    "Advance Excel",
+                    "Power BI"
+                ]
+            },
+            {
+                name: "Data Analyst with Al Technology", duration: "6 Months", students: "95+", rating: "4.9", color: "violet", icon: "pie-chart",
+                desc: "Data analysis using Excel, SQL, Python, and Power BI.",
+                fee: "Admission Fee: 2000/- | Course Fee: 6000/-",
+                modules: [
+                    "Fundamentals of Computer",
+                    "AI/ML Technology",
+                    "Python",
+                    "Date Analylist And Mis Report<br><span class='ml-4 text-slate-500'>• Advance Excel</span><br><span class='ml-4 text-slate-500'>• Power Point</span><br><span class='ml-4 text-slate-500'>• Google Sheet</span>",
+                    "DBMS--SQL",
+                    "Power BI"
+                ]
+            },
+            {
+                name: "Advance Diploma in Computer Application", duration: "1 Year", students: "130+", rating: "4.7", color: "cyan", icon: "cpu",
+                desc: "Advanced level diploma covering specialized computer topics.",
+                fee: "Admission Fee: 2000/- | Course Fee: 12000/-",
+                modules: [
+                    "1st Sem:<br><span class='ml-4 text-slate-500'>• Fundamentals of Computer</span><br><span class='ml-4 text-slate-500'>• Windows</span><br><span class='ml-4 text-slate-500'>• Ms-office (Word, Excel, Power Point, Access)</span><br><span class='ml-4 text-slate-500'>• Adobe Page Maker 7.0</span><br><span class='ml-4 text-slate-500'>• Professional Photo Editing</span><br><span class='ml-4 text-slate-500'>• Web Page Designing</span>",
+                    "2nd Sem:<br><span class='ml-4 text-slate-500'>• Programming C & C++</span><br><span class='ml-4 text-slate-500'>• Basic of Accounting</span><br><span class='ml-4 text-slate-500'>• Tally ERP 9/Prime</span><br><span class='ml-4 text-slate-500'>• Taxation (GST, TCS, TDS)</span><br><span class='ml-4 text-slate-500'>• Basic Hardware (Assemble/Dissemble, Trouble Shooting, Software Install)</span>"
+                ]
+            },
+            {
+                name: "Post Graduate Diploma in Computer Application", duration: "1 Year", students: "45+", rating: "4.9", color: "rose", icon: "graduation-cap",
+                desc: "Post-graduate level certification for advanced career roles.",
+                fee: "Admission Fee: 2000/- | Course Fee: 12000/-",
+                modules: [
+                    "1st Sem:<br><span class='ml-4 text-slate-500'>• Fundamentals of Computer</span><br><span class='ml-4 text-slate-500'>• Windows</span><br><span class='ml-4 text-slate-500'>• Ms-office (Word, Excel, Power Point, Access)</span><br><span class='ml-4 text-slate-500'>• Adobe Page Maker 7.0</span><br><span class='ml-4 text-slate-500'>• Professional Photo Editing</span><br><span class='ml-4 text-slate-500'>• Web Page Designing</span>",
+                    "2nd Sem:<br><span class='ml-4 text-slate-500'>• Programming C & C++</span><br><span class='ml-4 text-slate-500'>• Basic of Accounting</span><br><span class='ml-4 text-slate-500'>• Tally ERP 9/Prime</span><br><span class='ml-4 text-slate-500'>• Taxation (GST, TCS, TDS)</span><br><span class='ml-4 text-slate-500'>• DBMS</span><br><span class='ml-4 text-slate-500'>• Basic Hardware (Assemble/Dissemble, Trouble Shooting, Software Install)</span>"
+                ]
+            },
+            {
+                name: "Advance Diploma in Financial Accounting with Taxation", duration: "1 Year", students: "60+", rating: "4.8", color: "emerald", icon: "calculator",
+                desc: "Specialized diploma focusing on advanced accounting and tax.",
+                fee: "",
+                modules: ["Accounting", "Taxation", "Auditing", "Corp Laws"]
+            },
+            {
+                name: "Advance Diploma in Computer Application with Al Technology", duration: "18 Months", students: "85+", rating: "4.9", color: "indigo", icon: "circuit-board",
+                desc: "Integrating traditional computer apps with modern AI tech.",
+                fee: "Admission Fee: 2000/- | Course Fee: 18000/-",
+                modules: [
+                    "1st Sem (DCA):<br><span class='ml-4 text-slate-500'>• Fundamentals, Windows, Ms-office</span><br><span class='ml-4 text-slate-500'>• DTP (PageMaker, Photoshop, Typing)</span><br><span class='ml-4 text-slate-500'>• Banner and Flex Designing</span><br><span class='ml-4 text-slate-500'>• Scanning and Printing</span>",
+                    "2nd Sem (ADCA):<br><span class='ml-4 text-slate-500'>• Web Designing through HTML</span><br><span class='ml-4 text-slate-500'>• Programming C and C++</span><br><span class='ml-4 text-slate-500'>• Basic of Accounting & Tally Prime</span><br><span class='ml-4 text-slate-500'>• Taxation (GST, TCS, TDS)</span><br><span class='ml-4 text-slate-500'>• Computer Hardware & Project</span>",
+                    "3rd Sem (ADCA With AI Technology):<br><span class='ml-4 text-slate-500'>• AI/ML Technology & Python</span><br><span class='ml-4 text-slate-500'>• Data Analyst And Mis Report</span><br><span class='ml-4 text-slate-500'>• DBMS--SQL & POWER BI</span><br><span class='ml-4 text-slate-500'>• Communication Skill & Personality Development</span><br><span class='ml-4 text-slate-500'>• Project</span>"
+                ]
+            },
+            {
+                name: "Diploma in Computer Teacher Training", duration: "18 Months", students: "70+", rating: "4.7", color: "orange", icon: "presentation",
+                desc: "Prepare for a career in teaching computer science.",
+                fee: "Admission Fee: 2000/- | Course Fee: 18000/-",
+                modules: [
+                    "1st Sem:<br><span class='ml-4 text-slate-500'>• Fundamentals, Windows, Ms-office</span><br><span class='ml-4 text-slate-500'>• Adobe Page Maker 7.0 & Photo Editing</span><br><span class='ml-4 text-slate-500'>• Web Page Designing</span>",
+                    "2nd Sem:<br><span class='ml-4 text-slate-500'>• Programming C & C++</span><br><span class='ml-4 text-slate-500'>• Basic of Accounting & Tally ERP 9/Prime</span><br><span class='ml-4 text-slate-500'>• Taxation (GST, TCS, TDS)</span><br><span class='ml-4 text-slate-500'>• Hardware (Assemble, Trouble Shooting, Installation)</span>",
+                    "3rd Sem (Teaching Methodology):<br><span class='ml-4 text-slate-500'>• Role of a Computer Teacher</span><br><span class='ml-4 text-slate-500'>• Lesson Planning & Curriculum Development</span><br><span class='ml-4 text-slate-500'>• Effective Teaching & Student Engagement</span><br><span class='ml-4 text-slate-500'>• Online Teaching Tools & Digital Learning</span><br><span class='ml-4 text-slate-500'>• E-Learning & LMS (Kahoot, Classroom, Zoom)</span>"
+                ]
+            },
+            {
+                name: "Master Diploma in Computer Application", duration: "24 Months", students: "40+", rating: "5.0", color: "yellow", icon: "award",
+                desc: "The ultimate certification for mastering all computer applications.",
+                fee: "Admission Fee: 2000/- | Course Fee: 22000/-",
+                modules: [
+                    "1st Sem (DCA):<br><span class='ml-4 text-slate-500'>• Fundamentals, Windows, Ms-office</span><br><span class='ml-4 text-slate-500'>• DTP, Banner/Flex Designing, Printing</span>",
+                    "2nd Sem (ADCA):<br><span class='ml-4 text-slate-500'>• HTML, C and C++, Accounting</span><br><span class='ml-4 text-slate-500'>• Tally Prime, Taxation, Hardware</span>",
+                    "3rd Sem (ADCA With AI Technology):<br><span class='ml-4 text-slate-500'>• AI/ML Technology, Python</span><br><span class='ml-4 text-slate-500'>• Date Analylist And Mis Report</span><br><span class='ml-4 text-slate-500'>• DBMS--SQL, Communication Skill</span>",
+                    "4th Sem (MDCA Coure):<br><span class='ml-4 text-slate-500'>• Web--CCS, Visual Programming</span><br><span class='ml-4 text-slate-500'>• Java Programming</span><br><span class='ml-4 text-slate-500'>• DBMS-Oracle</span><br><span class='ml-4 text-slate-500'>• Final Project</span>"
+                ]
+            }
         ];
 
         // 2. Helper: Categorize Course based on Duration string
@@ -2482,10 +2799,18 @@
             if (!data) return;
 
             document.getElementById('detailTitle').textContent = data.name;
-            document.getElementById('detailDesc').textContent = data.desc;
+            //document.getElementById('detailDesc').textContent = data.desc;
             document.getElementById('detailDuration').textContent = data.duration;
             document.getElementById('detailStudents').textContent = data.students + " Students";
             document.getElementById('detailRating').textContent = data.rating;
+
+            // Display Fee dynamically if it exists
+            const descElement = document.getElementById('detailDesc');
+            if (data.fee && data.fee !== "") {
+                descElement.innerHTML = `${data.desc} <br><br> <span class="inline-block bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-lg font-bold border border-blue-200 dark:border-blue-800 text-sm tracking-wide shadow-sm">${data.fee}</span>`;
+            } else {
+                descElement.innerHTML = data.desc;
+            }
 
             // Fix Icon color/type dynamically
             const iconWrapper = document.getElementById('detailIconWrapper');
@@ -2493,12 +2818,15 @@
                 iconWrapper.innerHTML = `<i data-lucide="${data.icon}" class="w-10 h-10 text-${data.color}-600 dark:text-${data.color}-400"></i>`;
             }
 
+            // Display modules, changed grid class to block to allow long sub-topics room to breathe
             const modulesList = document.getElementById('detailModules');
+            modulesList.className = 'space-y-3 text-sm text-slate-600 dark:text-slate-300 mt-4';
             modulesList.innerHTML = '';
+
             data.modules.forEach(mod => {
                 const li = document.createElement('li');
-                li.className = 'flex items-center gap-2';
-                li.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-500"></i> ${mod}`;
+                li.className = 'flex items-start gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700';
+                li.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-${data.color}-500 mt-0.5 shrink-0"></i> <div class="leading-relaxed font-medium">${mod}</div>`;
                 modulesList.appendChild(li);
             });
             lucide.createIcons();
@@ -2570,7 +2898,7 @@
         function handleRegister(courseName = null) {
             // 1. Check Login Status
             if (!isUserLoggedIn) {
-                alert("Please Login or Sign Up to Register.");
+                alert("Please Login or Sign Up first to Register.");
                 openModal('signupModal');
             } else {
                 // 2. Redirect to the separate Registration Page
@@ -2582,6 +2910,16 @@
                 }
 
                 window.location.href = targetUrl;
+            }
+        }
+        // --- NEW: EXAM APPLICATION LOGIC ---
+        function handleExamApplication() {
+            if (!isUserLoggedIn) {
+                alert("Please Login or Sign Up first to apply for an exam.");
+                openModal('signupModal'); // Prompts user to signup
+            } else {
+                // If logged in, redirect to the exam form page
+                window.location.href = 'examForm.html';
             }
         }
 
