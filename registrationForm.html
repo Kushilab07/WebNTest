@@ -161,8 +161,14 @@
                         <span class="step-num">4</span>
                         <h3>Select Course</h3>
                     </div>
+                    <div id="locked-course-view" class="hidden mb-6">
+                        <div class="input-group">
+                            <label class="input-label text-indigo-600 font-bold">Auto-Selected Course</label>
+                            <input type="text" id="locked-course-name" class="input-field filled-input" style="background-color: #f1f5f9; cursor: not-allowed;" readonly>
+                        </div>
+                    </div>
 
-                    <div class="course-group">
+                    <div class="course-group" id="dropdown-course-view">
                         <div class="input-group">
                             <label class="input-label text-blue-600">Three Month Course</label>
                             <div class="select-wrapper">
