@@ -113,19 +113,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (courseFromUrl) {
-        courseSelects.forEach(select => {
+        const decodedCourse = decodeURIComponent(courseFromUrl).trim().toLowerCase();
+        const allCourseSelects = document.querySelectorAll('.course-select');
+        let matchedCourseName = ""; // Track the exact name found
+        
+        allCourseSelects.forEach(select => {
+            let matched = false;
             Array.from(select.options).forEach(option => {
-                // Match exact name or partial string
-                if (option.value && (option.value.toLowerCase() === courseFromUrl.toLowerCase() || courseFromUrl.toLowerCase().includes(option.value.toLowerCase()))) {
+                // Match course name safely
+                if (option.value && option.value.toLowerCase().trim() === decodedCourse) {
                     select.value = option.value;
-                    
-                    // NEW: Tell the browser the select changed so the CSS colors update automatically
-                    select.dispatchEvent(new Event('change'));
-                    
-                    updateFee(option.value);
+                    matchedCourseName = option.value; // Save the exact formatted name
+                    matched = true;
                 }
             });
+            
+            if (matched) {
+                // Triggers fee calculation and background color updates
+                select.dispatchEvent(new Event('change'));
+            }
         });
+
+        // NEW: If a course was successfully auto-matched, swap the UI!
+        if (matchedCourseName !== "") {
+            const dropdownView = document.getElementById('dropdown-course-view');
+            const lockedView = document.getElementById('locked-course-view');
+            const lockedInput = document.getElementById('locked-course-name');
+
+            if (dropdownView && lockedView && lockedInput) {
+                // Hide the complex dropdowns
+                dropdownView.style.display = 'none';
+                // Show the simple locked input
+                lockedView.classList.remove('hidden');
+                // Inject the course name into the locked input
+                lockedInput.value = matchedCourseName;
+            }
+        }
     }
 });
 
