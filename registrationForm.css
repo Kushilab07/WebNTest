@@ -69,10 +69,22 @@ body {
 /* --- HEADER TYPOGRAPHY (MODIFIED) --- */
 .institute-header { 
     display: flex; 
-    flex-direction: column; 
+    flex-direction: column;
+    color: #0f172a;
     align-items: center; 
-    margin-bottom: 40px; 
+    margin-bottom: 10px; 
     width: 100%;
+}
+
+hr {
+    border: none;
+    height: 2px;
+    background-color: #0f172a;
+    width: 100%;
+}
+
+h1 {
+    margin-bottom: 0;
 }
 
 .inst-name {
@@ -463,3 +475,125 @@ textarea.input-field { height: 100px; resize: vertical; }
 .fullscreen-success .success-icon svg { width: 100px; height: 100px; }
 
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* ==========================================================================
+   DARK MODE OVERRIDES
+   These apply automatically when the 'dark' class is present on the <html> tag
+   ========================================================================== */
+
+   .dark {
+    /* Swap light background colors for dark ones */
+    --slate-50: #0f172a;   /* Deep dark background */
+    --slate-100: #1e293b;  /* Card borders / secondary backgrounds */
+    --slate-200: #334155;  /* Input borders */
+    
+    /* Invert text colors */
+    --slate-700: #f1f5f9;  /* Primary Text */
+    --slate-800: #ffffff;  /* Headings / Bold Text */
+    --slate-600: #cbd5e1;  /* Labels / Secondary Text */
+    --slate-500: #94a3b8;  /* Muted Text / Placeholders */
+    --slate-400: #64748b;  
+    
+    /* Darken Primary Light (used for filled inputs and active states) */
+    --primary-light: rgba(37, 99, 235, 0.15); 
+}
+
+/* Specific Dark Mode Component Tweaks */
+.dark body {
+    background-color: var(--slate-50);
+}
+
+.dark .bg-pattern {
+    background-image: radial-gradient(#1e293b 1px, transparent 1px);
+}
+
+.dark .glass-card {
+    background: rgba(30, 41, 59, 0.8); /* Dark semi-transparent card */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.dark hr {
+    background-color: var(--slate-200);
+}
+
+.dark .input-field, 
+.dark .input-field-lg {
+    background: var(--slate-100);
+    color: white;
+}
+
+.dark .input-field:focus, 
+.dark .input-field-lg:focus {
+    background: var(--slate-50);
+}
+
+.dark .file-upload-card {
+    background: var(--slate-100);
+}
+
+.dark .btn-file {
+    background: var(--slate-200);
+    color: white;
+    border-color: var(--slate-200);
+}
+
+.dark .btn-file:hover {
+    background: var(--slate-200);
+    border-color: var(--primary);
+}
+
+.dark .payment-box, 
+.dark .declaration-box,
+.dark .radio-card {
+    background: var(--slate-100);
+}
+
+.dark .radio-card:hover,
+.dark .radio-card:has(input:checked) {
+    background: var(--primary-light);
+}
+
+.dark .modal-content {
+    background: var(--slate-100);
+}
+
+.dark .btn-secondary, 
+.dark .btn-secondary-sm {
+    background: var(--slate-100);
+    color: white;
+    border-color: var(--slate-200);
+}
+
+.dark .btn-secondary:hover, 
+.dark .btn-secondary-sm:hover {
+    background: var(--slate-200);
+}
+
+/* Ensure the back button looks good in dark mode */
+.dark button[title="Go Back"] {
+    background-color: var(--slate-100) !important;
+    border-color: var(--slate-200) !important;
+}
+
+.dark button[title="Go Back"] svg {
+    stroke: white !important;
+}
+
+.dark button[title="Go Back"]:hover {
+    background-color: var(--slate-200) !important;
+}
+
+.dark .fullscreen-success {
+    background: rgba(15, 23, 42, 0.95);
+}
+
+.dark .fullscreen-success h2 {
+    color: white;
+}
+
+/* Ensure the Select option dropdowns look readable */
+.dark select option {
+    background: var(--slate-100);
+    color: white;
+}
