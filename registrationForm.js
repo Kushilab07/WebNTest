@@ -108,8 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (emailInput) {
             emailInput.value = emailFromUrl;
             
-            // Trigger the blur event so your native 'filled-input' CSS applies immediately.
-            // By removing 'readOnly', the user can now edit this field freely!
+            // 1. Manually add the class to guarantee the UX updates instantly
+            emailInput.classList.add('filled-input');
+            
+            // 2. We keep the blur event just in case any of your other scripts need to know it changed
             emailInput.dispatchEvent(new Event('blur'));
         }
     }
@@ -441,3 +443,4 @@ document.addEventListener('keydown', e => {
         e.preventDefault();
     }
 });
+
