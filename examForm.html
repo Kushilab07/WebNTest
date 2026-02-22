@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NIAT - Apply for Exam</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,124 +20,194 @@
             document.documentElement.classList.remove('dark');
         }
     </script>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .filled-input { background-color: #f0f9ff !important; border-color: #3b82f6 !important; color: #1e3a8a !important; font-weight: 600;}
-        .dark .filled-input { background-color: #1e3a8a !important; border-color: #60a5fa !important; color: #eff6ff !important;}
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; width: 24px; height: 24px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filled-input {
+            background-color: #f0f9ff !important;
+            border-color: #3b82f6 !important;
+            color: #1e3a8a !important;
+            font-weight: 600;
+        }
+
+        .dark .filled-input {
+            background-color: #1e3a8a !important;
+            border-color: #60a5fa !important;
+            color: #eff6ff !important;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            width: 24px;
+            height: 24px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center p-4 sm:p-6 transition-colors duration-300 relative">
-    
-    <div class="fixed inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#2563eb 1px, transparent 1px); background-size: 30px 30px;"></div>
+<body
+    class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center p-4 sm:p-6 transition-colors duration-300 relative">
 
-    <div class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden relative z-10 transition-all duration-300">
-        
-        <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-            
+    <div class="fixed inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+        style="background-image: radial-gradient(#2563eb 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+    <div class="flex items-center gap-2">
+        <img src="logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified"
+            class="h-8 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
+        <img src="logoInstitute.jpeg" alt="NIAT Logo"
+            class="h-10 w-auto object-contain rounded-md shadow-sm shrink-0 bg-white">
+        <img src="logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME"
+            class="h-8 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
+    </div>
+
+    <div
+        class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden relative z-10 transition-all duration-300">
+
+        <div
+            class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+
             <div class="flex items-center gap-4">
-                <button onclick="history.back()" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:text-blue-600 transition-colors shrink-0">
+                <button onclick="history.back()"
+                    class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:text-blue-600 transition-colors shrink-0">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </button>
-                
-                <img src="logoInstitute.jpeg" alt="NIAT Logo" class="h-10 w-auto object-contain rounded-md shadow-sm shrink-0 bg-white">
-                
+
+
+
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Exam Application</h1>
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">NIAT Computer Academy</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <img src="logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified" class="h-8 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
-                <img src="logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME" class="h-8 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
-            </div>
+
 
         </div>
 
         <div class="p-6 sm:p-8 min-h-[400px] flex flex-col justify-center">
-            
+
             <div id="state-loading" class="flex flex-col items-center justify-center text-center py-10">
                 <div class="spinner mb-4 border-slate-300 dark:border-slate-700 !border-top-blue-600"></div>
                 <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Verifying Enrollment...</h2>
                 <p class="text-sm text-slate-500">Checking your records securely.</p>
             </div>
 
-            <div id="state-unregistered" class="hidden flex flex-col items-center justify-center text-center py-10 animate-in fade-in zoom-in duration-300">
-                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4">
+            <div id="state-unregistered"
+                class="hidden flex flex-col items-center justify-center text-center py-10 animate-in fade-in zoom-in duration-300">
+                <div
+                    class="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4">
                     <i data-lucide="shield-alert" class="w-8 h-8"></i>
                 </div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Enrollment Found</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6 max-w-sm">We couldn't find an active course registration for the email <span id="error-email-display" class="font-bold"></span>. Please register for a course first.</p>
-                <button onclick="window.location.href='index.html#courses'" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2">
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6 max-w-sm">We couldn't find an active course
+                    registration for the email <span id="error-email-display" class="font-bold"></span>. Please register
+                    for a course first.</p>
+                <button onclick="window.location.href='index.html#courses'"
+                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2">
                     Explore Courses <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
 
             <div id="state-declaration" class="hidden animate-in slide-in-from-right-8 duration-500">
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-6">
+                <div
+                    class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-6">
                     <i data-lucide="file-signature" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Before we proceed</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-8">Please confirm your fee status to unlock the exam application form.</p>
-                
-                <label class="flex items-start gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer hover:border-indigo-500 transition-colors mb-8">
-                    <input type="checkbox" id="fee-declaration" class="mt-1 w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-8">Please confirm your fee status to unlock the
+                    exam application form.</p>
+
+                <label
+                    class="flex items-start gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer hover:border-indigo-500 transition-colors mb-8">
+                    <input type="checkbox" id="fee-declaration"
+                        class="mt-1 w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                     <span class="text-sm font-medium text-slate-700 dark:text-slate-300">
                         I hereby declare that I have no outstanding fee dues for the present semester/course.
                     </span>
                 </label>
 
-                <button id="btn-continue" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all opacity-50 cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                <button id="btn-continue"
+                    class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all opacity-50 cursor-not-allowed flex items-center justify-center gap-2"
+                    disabled>
                     Continue to Form <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
             </div>
 
             <div id="state-form" class="hidden animate-in slide-in-from-right-8 duration-500">
                 <form id="exam-form" class="space-y-5">
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Branch</label>
-                            <input type="text" id="ex-branch" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none" readonly>
+                            <label
+                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Branch</label>
+                            <input type="text" id="ex-branch"
+                                class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none"
+                                readonly>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Student Name</label>
-                            <input type="text" id="ex-name" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none" readonly>
+                            <label
+                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Student
+                                Name</label>
+                            <input type="text" id="ex-name"
+                                class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none"
+                                readonly>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Father's/Guardian's Name</label>
-                        <input type="text" id="ex-father" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none" readonly>
+                        <label
+                            class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Father's/Guardian's
+                            Name</label>
+                        <input type="text" id="ex-father"
+                            class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none"
+                            readonly>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select Course for Exam *</label>
-                        <select id="ex-course" required class="w-full px-4 py-3 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none text-slate-800 dark:text-white transition-colors cursor-pointer font-semibold">
+                        <label
+                            class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select
+                            Course for Exam *</label>
+                        <select id="ex-course" required
+                            class="w-full px-4 py-3 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none text-slate-800 dark:text-white transition-colors cursor-pointer font-semibold">
                             <option value="">-- Choose your enrolled course --</option>
-                            </select>
+                        </select>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Course Duration</label>
-                            <input type="text" id="ex-duration" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-bold cursor-not-allowed outline-none" placeholder="Auto-filled" readonly>
+                            <label
+                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Course
+                                Duration</label>
+                            <input type="text" id="ex-duration"
+                                class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-bold cursor-not-allowed outline-none"
+                                placeholder="Auto-filled" readonly>
                         </div>
-                        
+
                         <div id="semester-wrapper" class="hidden">
-                            <label class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select Semester *</label>
-                            <select id="ex-semester" class="w-full px-4 py-3 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none text-slate-800 dark:text-white transition-colors cursor-pointer font-semibold">
-                                </select>
+                            <label
+                                class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select
+                                Semester *</label>
+                            <select id="ex-semester"
+                                class="w-full px-4 py-3 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none text-slate-800 dark:text-white transition-colors cursor-pointer font-semibold">
+                            </select>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full mt-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg transform hover:-translate-y-1 transition-all flex justify-center items-center gap-2">
+                    <button type="submit"
+                        class="w-full mt-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg transform hover:-translate-y-1 transition-all flex justify-center items-center gap-2">
                         <i data-lucide="send" class="w-5 h-5"></i> Apply
                     </button>
                 </form>
@@ -147,4 +218,5 @@
 
     <script src="examForm.js"></script>
 </body>
+
 </html>
