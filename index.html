@@ -2913,7 +2913,8 @@
                 openModal('signupModal'); // Prompts user to signup
             } else {
                 // If logged in, redirect to the exam form page
-                window.location.href = 'examForm.html';
+                // FIXED: Now passes the email to the exam form
+                window.location.href = `examForm.html?email=${encodeURIComponent(userEmail)}`;
             }
         }
 
