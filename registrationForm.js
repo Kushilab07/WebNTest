@@ -1,8 +1,8 @@
 // registrationForm.js
 
 // --- CONFIGURATION ---
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbzmq4_E0L_bZvj9Ok8Flmg9J4pxn54T0aYDxYLAo5cgjWvt9dgBbQTY0kZAfWM5q_8E/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbzHlXnJYQlV0tm5uvuF_1wSLZWfFE-c2xQruAIq9PASYCf81nBkFOxtBk9aoI0sloc3rw/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyP_ScGUXfaUqYAf0N73oQUkkIcxstuebeJ5rACvvsWdK11yDwuRrf95JKnpeDuj9wv/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz0gI2OJDcwyI-J4SR3P9SrDUJoRKd6J_h68YZ0at3OLJKjT4dQRSxsc-pASKzQuR2thw/exec";
 const MAX_SIZE = 1 * 1024 * 1024; // 1MB Limit
 
 // --- 1. PRE-FILL DATA (Optional) ---
@@ -681,4 +681,5 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
 
