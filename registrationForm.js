@@ -61,20 +61,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const feeAmountDisplay = document.querySelector('.payment-box .amount');
     const upiBtn = document.querySelector('.btn-upi');
 
-    // 2. Function to update UI based on selected course
+    // NEW: EWS Logic
+    let isEWS = false;
+    const ewsRadios = document.querySelectorAll('input[name="ewsCategory"]');
+    const ewsUploadSection = document.getElementById('ews-upload-section');
+
+    ewsRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            isEWS = (this.value === 'Yes');
+            if (isEWS) {
+                ewsUploadSection.classList.remove('hidden');
+            } else {
+                ewsUploadSection.classList.add('hidden');
+                document.getElementById('ewsFile').value = ""; // Clear file if they switch to No
+                document.getElementById('ewsFile-name').textContent = "No file added";
+            }
+            
+            // Recalculate fee when EWS status changes
+            let currentCourse = "";
+            courseSelects.forEach(s => { if(s.value) currentCourse = s.value; });
+            updateFee(currentCourse);
+        });
+    });
+
+    // UPDATED: Fee calculation handles EWS discount
     function updateFee(selectedCourse) {
         if (!selectedCourse) {
             feeAmountDisplay.textContent = `₹ 0/-`;
             return;
         }
 
-        // Look up fee, default to 1000 if somehow not found
-        const fee = courseAdmissionFees[selectedCourse] || "1000";
+        let fee = parseInt(courseAdmissionFees[selectedCourse] || "1000");
+        
+        // Apply 50% discount if EWS is Yes
+        if (isEWS) {
+            fee = fee / 2;
+        }
 
-        // Update text on page
         feeAmountDisplay.textContent = `₹ ${fee}/-`;
 
-        // Update UPI Link Amount Dynamically (changes &am=1000 to correct fee)
         if (upiBtn) {
             upiBtn.href = `upi://pay?pa=prasantasarma.niat@oksbi&pn=Prasanta%20Sarma&am=${fee}&cu=INR&tn=Admission/Registration%20Fee`;
         }
@@ -176,10 +201,12 @@ function checkFileSize(fileInput) {
 
 const photoF = document.getElementById('photoFile');
 const docF = document.getElementById('docFile');
+const ewsF = document.getElementById('ewsFile');
 const payF = document.getElementById('payFile');
 
 if (photoF) photoF.addEventListener('change', function () { checkFileSize(this) });
 if (docF) docF.addEventListener('change', function () { checkFileSize(this) });
+if (ewsF) ewsF.addEventListener('change', function () { checkFileSize(this) });
 if (payF) payF.addEventListener('change', function () { checkFileSize(this) });
 
 
@@ -241,19 +268,24 @@ if (form) {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
+        // Safely fetch current states directly from the DOM
+        const payMode = document.querySelector('input[name="payMode"]:checked').value;
+        const isEWS = document.querySelector('input[name="ewsCategory"]:checked').value === 'Yes';
+
         // Validation
         if (!document.getElementById('declaration').checked) { alert("Please tick the declaration box."); return; }
         if (document.getElementById('photoFile').files.length === 0) { alert("Please upload your Passport Photo."); return; }
         if (document.getElementById('docFile').files.length === 0) { alert("Please upload your Qualification Document."); return; }
-        const payMode = document.querySelector('input[name="payMode"]:checked').value;
+        if (isEWS && document.getElementById('ewsFile').files.length === 0) { alert("Please upload your EWS Certificate."); return; }
         if (payMode === 'Online' && document.getElementById('payFile').files.length === 0) { alert("Please upload the Payment Screenshot."); return; }
 
         // Read Files
         const photoPromise = getFileData('photoFile');
         const docPromise = getFileData('docFile');
-        const payPromise = (payMode === 'Online') ? getFileData('payFile') : Promise.resolve({ data: null });
+        const ewsPromise = isEWS ? getFileData('ewsFile') : Promise.resolve({ data: null, name: "" });
+        const payPromise = (payMode === 'Online') ? getFileData('payFile') : Promise.resolve({ data: null, name: "" });
 
-        Promise.all([photoPromise, docPromise, payPromise]).then(([photoRes, docRes, payRes]) => {
+        Promise.all([photoPromise, docPromise, ewsPromise, payPromise]).then(([photoRes, docRes, ewsRes, payRes]) => {
             let selectedCourse = "";
             document.querySelectorAll('.course-select').forEach(s => { if (s.value) selectedCourse = s.value; });
 
@@ -270,8 +302,10 @@ if (form) {
                 { label: "Qualification", val: document.getElementsByName('qualification')[0].value },
                 { label: "Present Activity", val: document.getElementsByName('activity')[0].value },
                 { label: "Selected Course", val: selectedCourse },
+                { label: "EWS Category", val: isEWS ? "Yes" : "No" },
                 { label: "Passport Photo", val: photoRes.data, type: 'image' },
                 { label: "Last Qualification Doc", val: docRes.data, type: 'file', fileName: docRes.name },
+                { label: "EWS Certificate", val: ewsRes.data, type: 'file', fileName: ewsRes.name },
                 { label: "Payment Mode", val: payMode },
                 { label: "Payment Screenshot", val: payRes.data, type: 'image' }
             ];
@@ -346,9 +380,12 @@ if (finalSubmitBtn) {
 
         // 4. PREPARE DATA
         const payMode = document.querySelector('input[name="payMode"]:checked').value;
+        const isEWS = document.querySelector('input[name="ewsCategory"]:checked').value === 'Yes';
+        
         const filePromises = [
             getFileData('photoFile'),
             getFileData('docFile'),
+            isEWS ? getFileData('ewsFile') : Promise.resolve({ data: "", name: "" }),
             (payMode === 'Online') ? getFileData('payFile') : Promise.resolve({ data: "", name: "" })
         ];
 
@@ -376,7 +413,8 @@ if (finalSubmitBtn) {
                 paymentMode: payMode,
                 photoData: files[0].data, photoName: files[0].name,
                 docData: files[1].data, docName: files[1].name,
-                payData: files[2].data, payName: files[2].name
+                ewsData: files[2].data, ewsName: files[2].name,
+                payData: files[3].data, payName: files[3].name
             };
 
             const serialDisplay = document.getElementById('serial-display');
@@ -444,3 +482,197 @@ document.addEventListener('keydown', e => {
     }
 });
 
+// --- 9. DESKTOP QR CODE LOGIC ---
+// document.addEventListener("DOMContentLoaded", function () {
+//     const upiBtn = document.querySelector('.btn-upi');
+//     const qrModal = document.getElementById('qr-modal');
+//     const qrContainer = document.getElementById('qr-container');
+//     const qrSpinner = document.getElementById('qr-spinner');
+//     const timerDisplay = document.getElementById('qr-timer');
+//     const doneBtn = document.getElementById('qr-done-btn');
+    
+//     let timerInterval;
+
+//     // Device Detection (Simple regex for mobile platforms)
+//     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+//     if (upiBtn) {
+//         upiBtn.addEventListener('click', function(e) {
+//             if (!isMobile) {
+//                 // If it is a desktop, stop the default link behavior
+//                 e.preventDefault();
+                
+//                 // Get the current dynamic UPI URL from the button's href
+//                 const upiUrl = this.href;
+
+//                 // Show Modal & Spinner
+//                 qrModal.classList.remove('hidden');
+//                 qrContainer.innerHTML = ''; 
+//                 qrContainer.appendChild(qrSpinner);
+//                 qrSpinner.style.display = 'block';
+
+//                 // Simulate loading animation for 1 second, then generate QR
+//                 setTimeout(() => {
+//                     qrSpinner.style.display = 'none';
+                    
+//                     // Generate QR Code using the library
+//                     new QRCode(qrContainer, {
+//                         text: upiUrl,
+//                         width: 200,
+//                         height: 200,
+//                         colorDark : "#000000",
+//                         colorLight : "#ffffff",
+//                         correctLevel : QRCode.CorrectLevel.H
+//                     });
+
+//                     // Start 10-minute timer
+//                     startTimer(10 * 60);
+//                 }, 1000);
+//             }
+//             // If it is mobile, do nothing (allow default behavior to open UPI app)
+//         });
+//     }
+
+//     function startTimer(durationInSeconds) {
+//         clearInterval(timerInterval);
+//         let timer = durationInSeconds;
+        
+//         timerInterval = setInterval(function () {
+//             let minutes = parseInt(timer / 60, 10);
+//             let seconds = parseInt(timer % 60, 10);
+
+//             minutes = minutes < 10 ? "0" + minutes : minutes;
+//             seconds = seconds < 10 ? "0" + seconds : seconds;
+
+//             timerDisplay.textContent = minutes + ":" + seconds;
+
+//             if (--timer < 0) {
+//                 clearInterval(timerInterval);
+//                 timerDisplay.textContent = "Expired";
+//                 alert("Payment session expired. Please try again.");
+//                 closeQRModal();
+//             }
+//         }, 1000);
+//     }
+
+//     function closeQRModal() {
+//         qrModal.classList.add('hidden');
+//         clearInterval(timerInterval);
+//     }
+
+//     if (doneBtn) {
+//         doneBtn.addEventListener('click', function(e) {
+//             e.preventDefault();
+//             closeQRModal();
+//             // Optional: You could auto-focus the file upload button here
+//             document.getElementById('payFile').click(); 
+//         });
+//     }
+// });
+
+// --- 9. DESKTOP QR CODE LOGIC (ROBUST VERSION) ---
+document.addEventListener("DOMContentLoaded", function () {
+    const upiBtn = document.querySelector('.btn-upi');
+    const qrModal = document.getElementById('qr-modal');
+    const qrContainer = document.getElementById('qr-container');
+    const timerDisplay = document.getElementById('qr-timer');
+    const doneBtn = document.getElementById('qr-done-btn');
+    
+    let timerInterval;
+
+    // Strict device detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (upiBtn) {
+        upiBtn.addEventListener('click', function(e) {
+            if (!isMobile) {
+                // If Desktop: Intercept click
+                e.preventDefault();
+                const upiUrl = this.href;
+
+                // Reset and show modal
+                qrModal.classList.remove('hidden');
+                
+                // Inject Spinner reliably
+                qrContainer.innerHTML = '<div class="spinner" style="display: block; border-color: var(--slate-200); border-top-color: var(--primary);"></div>';
+
+                // Lock the Done button initially
+                doneBtn.disabled = true;
+                doneBtn.style.opacity = '0.5';
+                doneBtn.style.cursor = 'not-allowed';
+
+                // Simulate brief loading, then show QR
+                setTimeout(() => {
+                    qrContainer.innerHTML = ''; // Clear spinner
+                    new QRCode(qrContainer, {
+                        text: upiUrl,
+                        width: 200,
+                        height: 200,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    // Start robust 10 min timer & 30s button lock
+                    startRobustTimer(10 * 60);
+                }, 1000);
+            }
+            // Mobile users will pass right through to their UPI app natively
+        });
+    }
+
+    function startRobustTimer(durationInSeconds) {
+        clearInterval(timerInterval);
+        
+        // Calculate exact absolute times (immune to tab throttling)
+        const endTime = Date.now() + (durationInSeconds * 1000);
+        const enableTime = Date.now() + (10 * 1000); // 10 seconds from now
+
+        updateTimerDisplay(endTime, enableTime);
+
+        timerInterval = setInterval(() => {
+            updateTimerDisplay(endTime, enableTime);
+        }, 1000);
+    }
+
+    function updateTimerDisplay(endTime, enableTime) {
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        const totalSeconds = Math.floor(remaining / 1000);
+
+        let minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        timerDisplay.textContent = minutes + ":" + seconds;
+
+        // Button Unlock Logic (30 Seconds)
+        if (now >= enableTime && doneBtn.disabled) {
+            doneBtn.disabled = false;
+            doneBtn.style.opacity = '1';
+            doneBtn.style.cursor = 'pointer';
+            doneBtn.textContent = "Payment Done";
+        }
+
+        // Expiration Logic (10 Minutes)
+        if (totalSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Expired";
+            alert("Payment session expired. Please click 'Pay via UPI App' to generate a new QR code.");
+            qrModal.classList.add('hidden');
+        }
+    }
+
+    if (doneBtn) {
+        doneBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (this.disabled) return; // Prevent click if still locked
+            
+            // Close the QR Modal
+            qrModal.classList.add('hidden');
+            clearInterval(timerInterval);
+        });
+    }
+});
