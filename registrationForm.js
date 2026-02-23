@@ -411,6 +411,7 @@ if (finalSubmitBtn) {
                 courseSp: document.getElementsByName('courseSp')[0].value,
                 notes: document.getElementsByName('notes')[0].value,
                 paymentMode: payMode,
+                ewsCategory: isEWS ? "Yes" : "No",
                 photoData: files[0].data, photoName: files[0].name,
                 docData: files[1].data, docName: files[1].name,
                 ewsData: files[2].data, ewsName: files[2].name,
@@ -680,3 +681,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
