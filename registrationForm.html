@@ -12,6 +12,7 @@
             document.documentElement.classList.remove('dark');
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -69,14 +70,14 @@
                     </div>
 
                 <div
-                    style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e2e8f0;">
+                    style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--slate-200);">
 
                     <button type="button" onclick="history.back()" title="Go Back"
-                        style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; transition: background-color 0.2s;"
-                        onmouseover="this.style.backgroundColor='#e2e8f0'"
-                        onmouseout="this.style.backgroundColor='#f8fafc'">
+                        style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: var(--slate-50); border: 1px solid var(--slate-200); cursor: pointer; transition: background-color 0.2s;"
+                        onmouseover="this.style.backgroundColor='var(--slate-100)'"
+                        onmouseout="this.style.backgroundColor='var(--slate-50)'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--slate-600);">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
@@ -84,10 +85,10 @@
 
                     <div>
                         <h1
-                            style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin: 0; font-family: 'Inter', sans-serif;">
+                            style="font-size: 1.5rem; font-weight: 800; color: var(--slate-800); margin: 0; font-family: 'Inter', sans-serif;">
                             Admission Form</h1>
                         <p
-                            style="font-size: 0.875rem; color: #64748b; margin: 4px 0 0 0; font-family: 'Inter', sans-serif;">
+                            style="font-size: 0.875rem; color: var(--slate-500); margin: 4px 0 0 0; font-family: 'Inter', sans-serif;">
                             Fill the details below to get admission.</p>
                     </div>
                     
@@ -267,6 +268,27 @@
 
                     <div class="section-title-wrapper">
                         <span class="step-num">5</span>
+                        <h3>Economically Weaker Section (EWS)</h3>
+                    </div>
+
+                    <div class="declaration-box" style="margin-bottom: 15px;">
+                        <p style="font-size: 0.9rem; font-weight: 600; color: var(--slate-700); margin-top: 0; margin-bottom: 12px;">Do you belong to the Economically Weaker Section (EWS) Category?</p>
+                        <div class="payment-options">
+                            <label class="radio-card">
+                                <input type="radio" name="ewsCategory" value="No" checked>
+                                <div class="radio-content"><span class="radio-title">No</span></div>
+                                <div class="radio-check"></div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="ewsCategory" value="Yes">
+                                <div class="radio-content"><span class="radio-title">Yes</span></div>
+                                <div class="radio-check"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section-title-wrapper">
+                        <span class="step-num">6</span>
                         <h3>Upload Documents</h3>
                     </div>
 
@@ -284,7 +306,7 @@
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
-                                Add File
+                                Add Passport Photo
                             </button>
                             <span id="photoFile-name" class="file-name">No file added</span>
                         </div>
@@ -303,14 +325,31 @@
                                     <line x1="16" y1="17" x2="8" y2="17"></line>
                                     <polyline points="10 9 9 9 8 9"></polyline>
                                 </svg>
-                                Add File
+                                Add Qualification Doc
                             </button>
                             <span id="docFile-name" class="file-name">No file added</span>
+                        </div>
+
+                        <div id="ews-upload-section" class="file-upload-card hidden mb-6" style="border-style: dashed; border-color: var(--primary);">
+                            <label>Upload EWS Certificate</label>
+                            <p>Max 1MB (PDF/Image)</p>
+                            <input type="file" id="ewsFile" accept="image/*,.pdf" class="hidden-input">
+                            <button type="button" class="btn-file" onclick="document.getElementById('ewsFile').click()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                Add EWS Certificate
+                            </button>
+                            <span id="ewsFile-name" class="file-name">No file added</span>
                         </div>
                     </div>
 
                     <div class="section-title-wrapper">
-                        <span class="step-num">6</span>
+                        <span class="step-num">7</span>
                         <h3>Payment</h3>
                     </div>
 
@@ -370,14 +409,14 @@
                     </div>
 
                     <div class="section-title-wrapper">
-                        <span class="step-num">7</span>
+                        <span class="step-num">8</span>
                         <h3>Additional Notes</h3>
                     </div>
                     <textarea name="notes" class="input-field"
                         placeholder="Any message for the administrator? (Optional)"></textarea>
 
                     <div class="section-title-wrapper">
-                        <span class="step-num">8</span>
+                        <span class="step-num">9</span>
                         <h3>Declaration</h3>
                     </div>
                     <div class="declaration-box">
@@ -446,6 +485,24 @@
                 </button>
             </div>
 
+        </div>
+    </div>
+
+    <div id="qr-modal" class="modal-overlay hidden" style="z-index: 2000;">
+        <div class="modal-content" style="align-items: center; padding: 40px 20px; text-align: center; max-width: 400px;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--slate-700); margin-bottom: 8px;">Scan to Pay</h2>
+            <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 24px;">Open your UPI app (GPay, PhonePe, Paytm) and scan the QR code below.</p>
+            
+            <div id="qr-container" style="background: white; padding: 16px; border-radius: 16px; border: 2px solid var(--slate-200); margin-bottom: 24px; min-width: 200px; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                <div id="qr-spinner" class="spinner border-slate-300 !border-top-blue-600" style="display: block;"></div>
+            </div>
+
+            <div style="background: var(--primary-light); color: var(--primary); padding: 8px 16px; border-radius: 99px; font-weight: 700; font-size: 0.9rem; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="clock" class="w-4 h-4"></i> Time remaining: <span id="qr-timer">10:00</span>
+            </div>
+
+            <button id="qr-done-btn" class="btn-primary" style="width: 100%;">Payment Done</button>
+            
         </div>
     </div>
 
