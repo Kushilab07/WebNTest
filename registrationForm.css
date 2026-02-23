@@ -597,3 +597,21 @@ textarea.input-field { height: 100px; resize: vertical; }
     background: var(--slate-100);
     color: white;
 }
+
+/* Fix Step Numbers (Keep them highly visible) */
+.dark .step-num {
+    background: var(--primary); /* Use bright blue instead of dark slate so it pops */
+    color: white;
+}
+
+/* Fix the Payment Amount Text */
+.dark .payment-box .amount {
+    color: var(--slate-700); /* Or a bright color like #60a5fa */
+}
+
+/* Fix the Registration Number Badge Text */
+.dark .serial-badge {
+    background: var(--slate-800); 
+    color: var(--success); /* Make the text bright green so it stands out */
+    border: 1px solid var(--slate-700);
+}
