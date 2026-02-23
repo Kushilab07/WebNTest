@@ -580,8 +580,12 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let timerInterval;
 
-    // Strict device detection
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // ROBUST DEVICE DETECTION: Handles "Desktop Mode" spoofing on mobile browsers
+    // ROBUST DEVICE DETECTION (Modern, warning-free approach)
+    const isMobile = 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+        window.matchMedia("(pointer: coarse)").matches || 
+        (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
 
     if (upiBtn) {
         upiBtn.addEventListener('click', function(e) {
@@ -676,4 +680,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
