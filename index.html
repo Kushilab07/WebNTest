@@ -556,6 +556,10 @@
 <body
     class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden">
 
+    <div id="toast-container"
+        class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] flex flex-col gap-3 pointer-events-none w-full max-w-sm px-4">
+    </div>
+
     <!-- Navigation -->
     <nav
         class="fixed top-0 left-0 w-full z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
@@ -571,7 +575,8 @@
                     </button>
                     <!-- 1. Logo -->
                     <div class="flex items-center cursor-pointer gap-2" onclick="scrollToSection('home')">
-                        <img src="logoInstitute.jpeg" alt="NIAT Logo" class="w-10 h-10 object-contain rounded-md shadow-sm">
+                        <img src="logoInstitute.jpeg" alt="NIAT Logo"
+                            class="w-10 h-10 object-contain rounded-md shadow-sm">
                         <div>
                             <h1 class="w-10 h-5 text-1xl font-bold text-slate-900 dark:text-white tracking-tight">NIAT
                             </h1>
@@ -1221,7 +1226,7 @@
                         </button>
                     </div> -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                        
+
                         <button onclick="handleExamApplication()"
                             class="w-full px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg hover:-translate-y-1 transition-all text-center flex items-center justify-center gap-2">
                             <i data-lucide="file-edit" class="w-5 h-5"></i> Apply for Exam
@@ -1857,7 +1862,8 @@
     <!-- Login Modal -->
     <div id="loginModal"
         class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in overscroll-none">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in overscroll-none">
             <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Welcome Back</h3>
                 <button onclick="closeModal('loginModal')"
@@ -1880,8 +1886,15 @@
                             class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             required>
                     </div>
-                    <button type="submit"
-                        class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-2">Login</button>
+                    <!-- <button type="submit"
+                        class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-2">Login</button> -->
+                    <button type="submit" id="loginSubmitBtn"
+                        class="relative w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-2 flex justify-center items-center overflow-hidden">
+                        <span id="loginBtnText" class="transition-opacity duration-300">Login</span>
+                        <div id="loginSpinner"
+                            class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin">
+                        </div>
+                    </button>
                     <div class="relative my-6">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
@@ -1952,15 +1965,21 @@
                                 type="password" id="signupPassword"
                                 class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 required></div>
-                        <div><label
-                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirm</label><input
-                                type="password" id="confirmPassword"
+                        <div><label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirm
+                                Password</label><input type="password" id="confirmPassword"
                                 class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 required></div>
                     </div>
-                    <button type="submit"
+                    <!-- <button type="submit"
                         class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-4">Create
-                        Account</button>
+                        Account</button> -->
+                    <button type="submit" id="signupSubmitBtn"
+                        class="relative w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-4 flex justify-center items-center overflow-hidden">
+                        <span id="signupBtnText" class="transition-opacity duration-300">Create Account</span>
+                        <div id="signupSpinner"
+                            class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin">
+                        </div>
+                    </button>
                     <div class="relative my-6">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
@@ -2308,29 +2327,29 @@
                 e.preventDefault();
             }
         }
-        
-        function openModal(modalId) { 
+
+        function openModal(modalId) {
             const modal = document.getElementById(modalId);
-            modal.classList.remove('hidden'); 
-            
+            modal.classList.remove('hidden');
+
             // 1. Block touch swiping (Mobile) - MUST have { passive: false }
-            modal.addEventListener('touchmove', preventBackgroundScroll, { passive: false }); 
+            modal.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
             // 2. Block mouse wheel/trackpad scrolling (Desktop)
-            modal.addEventListener('wheel', preventBackgroundScroll, { passive: false }); 
+            modal.addEventListener('wheel', preventBackgroundScroll, { passive: false });
         }
-        
-        function closeModal(modalId) { 
+
+        function closeModal(modalId) {
             const modal = document.getElementById(modalId);
-            modal.classList.add('hidden'); 
-            
+            modal.classList.add('hidden');
+
             // Remove both listeners to clean up
-            modal.removeEventListener('touchmove', preventBackgroundScroll); 
-            modal.removeEventListener('wheel', preventBackgroundScroll); 
+            modal.removeEventListener('touchmove', preventBackgroundScroll);
+            modal.removeEventListener('wheel', preventBackgroundScroll);
         }
-        
-        function switchModal(currentId, targetId) { 
-            closeModal(currentId); 
-            openModal(targetId); 
+
+        function switchModal(currentId, targetId) {
+            closeModal(currentId);
+            openModal(targetId);
         }
         //function scrollToSection(id) {
         //    const el = document.getElementById(id);
@@ -3012,6 +3031,58 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 
+        // --- NEW: CUSTOM TOAST NOTIFICATION SYSTEM ---
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let borderClass = type === 'success' ? 'border-l-emerald-500' : (type === 'error' ? 'border-l-red-500' : 'border-l-blue-500');
+            let iconName = type === 'success' ? 'check-circle' : (type === 'error' ? 'alert-circle' : 'info');
+            let iconColor = type === 'success' ? 'text-emerald-500' : (type === 'error' ? 'text-red-500' : 'text-blue-500');
+
+            toast.className = `flex items-center gap-3 p-4 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 border-l-4 ${borderClass} transform transition-all duration-500 translate-y-[-100%] opacity-0`;
+            
+            toast.innerHTML = `
+                <i data-lucide="${iconName}" class="w-6 h-6 shrink-0 ${iconColor}"></i>
+                <p class="text-sm font-bold text-slate-800 dark:text-white leading-tight">${message}</p>
+            `;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            // Animate In
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-100%]', 'opacity-0');
+            });
+
+            // Auto Remove After 4 Seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        };
+
+        // Update existing alert functions to use Toasts
+        window.handleRegister = function(courseName = null) {
+            if (!isUserLoggedIn) {
+                showToast("Please Login or Sign Up first to Register.", "info");
+                openModal('signupModal');
+            } else {
+                let targetUrl = `registrationForm.html?email=${encodeURIComponent(userEmail)}`;
+                if (courseName) targetUrl += `&course=${encodeURIComponent(courseName)}`;
+                window.location.href = targetUrl;
+            }
+        };
+
+        window.handleExamApplication = function() {
+            if (!isUserLoggedIn) {
+                showToast("Please Login or Sign Up first to apply for an exam.", "info");
+                openModal('signupModal');
+            } else {
+                window.location.href = `examForm.html?email=${encodeURIComponent(userEmail)}`;
+            }
+        };
+
         // REPLACE WITH YOUR CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
@@ -3057,11 +3128,11 @@
             if (!auth) return;
             try {
                 await signOut(auth);
-                alert("Logged Out Successfully");
-                
+                showToast("You have been successfully logged out.", "info");
+
                 // Close UI elements
                 if (typeof closeProfile === 'function') closeProfile();
-                
+
                 // Force menu to close if it is open
                 const menu = document.getElementById('mainMenu');
                 if (menu && menu.classList.contains('active')) {
@@ -3073,11 +3144,11 @@
                 if (typeof scrollToSection === 'function') {
                     scrollToSection('home');
                 } else {
-                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
 
             } catch (error) {
-                console.error("Logout Error:", error);
+                showToast("Logout Error: " + error.message, "error");
             }
         };
 
@@ -3088,23 +3159,37 @@
                 e.preventDefault();
                 const email = document.getElementById('signupEmail').value;
                 const password = document.getElementById('signupPassword').value;
-                if (!auth) { alert("Firebase not configured."); return; }
+                const btnText = document.getElementById('signupBtnText');
+                const spinner = document.getElementById('signupSpinner');
+                const submitBtn = document.getElementById('signupSubmitBtn');
+                if (!auth) { showToast("System configuration error.", "error"); return; }
+
+                // Show Spinner
+                btnText.classList.add('opacity-0');
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = true;
+
                 try {
                     // 1. Create the account (Firebase auto-logs them in here)
                     await createUserWithEmailAndPassword(auth, email, password);
-                    
+
                     // 2. Immediately log them out in the background
                     await signOut(auth);
-                    
+
                     // 3. Tell them it worked and switch to the Login modal
-                    alert("Account Created Successfully! Please log in.");
+                    showToast("Account created successfully! Please log in to continue.", "success");
                     switchModal('signupModal', 'loginModal');
-                    
+
                     // Optional: Pre-fill their email in the login box for convenience
                     document.getElementById('loginEmail').value = email;
-                    
-                } catch (error) { 
-                    alert("Error: " + error.message); 
+
+                } catch (error) {
+                    showToast("Failed to create account. " + error.message.replace('Firebase:', ''), "error");
+                } finally {
+                    // Hide Spinner
+                    btnText.classList.remove('opacity-0');
+                    spinner.classList.add('hidden');
+                    submitBtn.disabled = false;
                 }
             });
         }
@@ -3116,18 +3201,34 @@
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
-                if (!auth) { alert("Firebase not configured."); return; }
+                const btnText = document.getElementById('loginBtnText');
+                const spinner = document.getElementById('loginSpinner');
+                const submitBtn = document.getElementById('loginSubmitBtn');
+                if (!auth) { showToast("System configuration error.", "error"); return; }
+
+                // Show Spinner
+                btnText.classList.add('opacity-0');
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = true;
+
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
-                    alert("Login Successful!");
+                    showToast("Welcome back! You are successfully logged in.", "success");
                     closeModal('loginModal');
-                } catch (error) { alert("Login Failed: " + error.message); }
+                } catch (error) { 
+                    showToast("Incorrect email or password.", "error");
+                } finally {
+                    // Hide Spinner
+                    btnText.classList.remove('opacity-0');
+                    spinner.classList.add('hidden');
+                    submitBtn.disabled = false;
+                }
             });
         }
 
         // --- GOOGLE LOGIN LOGIC (FIXED) ---
         const handleGoogleLogin = async () => {
-            if (!auth) { alert("Firebase not configured."); return; }
+            if (!auth) { showToast("Firebase not configured."); return; }
             try {
                 // FIXED: Force the Google popup to ask which account to use every time
                 provider.setCustomParameters({
@@ -3136,9 +3237,9 @@
 
                 await signInWithPopup(auth, provider);
                 // Success is handled by onAuthStateChanged above
-                alert("Google Sign-In Successful!");
+                showToast("Welcome! Signed in with Google securely.", "success");
             } catch (error) {
-                alert("Google Sign-In Error: " + error.message);
+                showToast("Google Sign-In was cancelled or failed.", "error");
             }
         };
 
