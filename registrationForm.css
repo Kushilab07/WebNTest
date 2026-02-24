@@ -615,3 +615,153 @@ textarea.input-field { height: 100px; resize: vertical; }
     color: var(--success); /* Make the text bright green so it stands out */
     border: 1px solid var(--slate-700);
 }
+
+/* --- RESPONSIVE OFFER BADGE / RIBBON STYLES --- */
+.payment-box {
+    position: relative; 
+}
+
+/* Mobile First: Centered Pill Badge (Sits above the fee text) */
+.corner-ribbon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px; /* Pushes the "Registration Fee" text down */
+    position: relative;
+    z-index: 10;
+}
+
+.corner-ribbon {
+    background: linear-gradient(to right, #dc2626, #ef4444);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 9999px; /* Pill shape for mobile */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px -2px rgba(220, 38, 38, 0.4);
+}
+
+.ribbon-top {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 800;
+    opacity: 0.95;
+}
+
+.ribbon-bottom {
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: #fef08a; /* Bright yellow */
+}
+
+/* Desktop View (640px and up): Transforms into Corner Ribbon */
+@media (min-width: 640px) {
+    .payment-box {
+        overflow: hidden; /* Only clip corners on desktop so ribbon hides edges */
+    }
+
+    .corner-ribbon-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 130px;
+        height: 130px;
+        display: block; /* Override flex */
+        margin-bottom: 0;
+        pointer-events: none;
+    }
+
+    .corner-ribbon {
+        position: absolute;
+        top: 28px;
+        left: -38px;
+        width: 180px;
+        transform: rotate(-45deg); /* Tilt it */
+        padding: 6px 0;
+        border-radius: 0; /* Remove pill shape */
+        flex-direction: column; /* Stack text vertically */
+        gap: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        border-bottom: 1px solid rgba(153, 27, 27, 0.5);
+    }
+
+    .ribbon-top {
+        font-size: 0.55rem;
+        letter-spacing: 0.1em;
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    .ribbon-bottom {
+        font-size: 0.95rem;
+        line-height: 1;
+    }
+}
+
+/* --- STACKED PRICING STYLES --- */
+.price-strike {
+    font-size: 1.1rem;
+    color: var(--slate-400);
+    text-decoration: line-through;
+    text-decoration-color: #ef4444; /* red strike */
+    text-decoration-thickness: 2px;
+    font-weight: 700;
+    margin-bottom: -4px;
+    display: block;
+}
+
+.price-final {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--slate-900);
+    display: block;
+    line-height: 1.1;
+}
+
+.price-only {
+    font-size: 0.9rem;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 6px;
+    font-weight: 700;
+}
+
+/* Dark Mode Support */
+.dark .price-strike { color: var(--slate-500); }
+.dark .price-final { color: white; }
+.dark .price-only { color: var(--slate-400); }
+
+/* --- GO BACK TO HOME BUTTON --- */
+.btn-go-back {
+    padding: 12px 32px;
+    background-color: var(--slate-100);
+    color: var(--slate-800);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    margin-top: 24px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.btn-go-back:hover {
+    background-color: var(--slate-200);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Dark Mode Support for the Button */
+.dark .btn-go-back {
+    background-color: var(--slate-800);
+    color: white;
+    border: 1px solid var(--slate-700);
+}
+
+.dark .btn-go-back:hover {
+    background-color: var(--slate-700);
+}
