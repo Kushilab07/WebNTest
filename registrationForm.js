@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ewsUploadSection = document.getElementById('ews-upload-section');
 
     ewsRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
+        radio.addEventListener('change', function () {
             isEWS = (this.value === 'Yes');
             if (isEWS) {
                 ewsUploadSection.classList.remove('hidden');
@@ -76,27 +76,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('ewsFile').value = ""; // Clear file if they switch to No
                 document.getElementById('ewsFile-name').textContent = "No file added";
             }
-            
+
             // Recalculate fee when EWS status changes
             let currentCourse = "";
-            courseSelects.forEach(s => { if(s.value) currentCourse = s.value; });
+            courseSelects.forEach(s => { if (s.value) currentCourse = s.value; });
             updateFee(currentCourse);
         });
     });
 
-    // UPDATED: Advanced Fee calculation with Corner Ribbon & Stacked Pricing
+    // UPDATED: Fee calculation using Custom CSS Classes
     function updateFee(selectedCourse) {
         const paymentBox = feeAmountDisplay.closest('.payment-box');
-        
-        // Always clean up the old ribbon first to prevent duplicates
+
+        // 1. Clean up old ribbon
         if (paymentBox) {
-            paymentBox.classList.add('relative', 'overflow-hidden'); // Ensure parent can clip the ribbon
-            const oldRibbon = paymentBox.querySelector('.corner-ribbon');
+            const oldRibbon = paymentBox.querySelector('.corner-ribbon-wrapper');
             if (oldRibbon) oldRibbon.remove();
         }
 
         if (!selectedCourse) {
-            feeAmountDisplay.innerHTML = `<span class="text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-white">₹ 0/-</span>`;
+            feeAmountDisplay.innerHTML = `<span class="price-final">₹ 0/-</span>`;
             return;
         }
 
@@ -105,9 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let isDiscounted = false;
         let discountPercent = "";
 
-        // --- PRICING LOGIC ---
+        // --- 2. PRICING LOGIC ---
         if (baseFee === 1000) {
-            // 3-Month Courses (Base: 1000)
             if (isEWS) {
                 finalFee = 500;
                 discountPercent = "50%";
@@ -116,9 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalFee = 1000;
                 isDiscounted = false;
             }
-        } 
+        }
         else if (baseFee === 2000) {
-            // 6+ Month Courses (Base: 2000)
             if (isEWS) {
                 finalFee = 500;
                 discountPercent = "75%";
@@ -129,45 +126,36 @@ document.addEventListener('DOMContentLoaded', () => {
             isDiscounted = true;
         }
 
-        // --- CORNER RIBBON INJECTION ---
+        // --- 3. INJECT CORNER RIBBON ---
         if (isDiscounted && paymentBox) {
-            // Pure Tailwind CSS Corner Ribbon
             const ribbonHTML = `
-                <div class="corner-ribbon absolute top-0 left-0 w-32 h-32 overflow-hidden pointer-events-none z-10">
-                    <div class="absolute top-6 -left-10 w-48 -rotate-45 bg-gradient-to-r from-red-600 to-red-500 text-white text-center py-1 shadow-lg border-y border-red-700/50 flex flex-col items-center justify-center">
-                        <span class="block text-[8px] uppercase tracking-widest font-bold opacity-90 leading-none mt-0.5">Limited Offer</span>
-                        <span class="block text-sm font-extrabold text-yellow-300 leading-tight mb-0.5">${discountPercent} OFF</span>
+                <div class="corner-ribbon-wrapper">
+                    <div class="corner-ribbon">
+                        <span class="ribbon-top">Limited Offer</span>
+                        <span class="ribbon-bottom">${discountPercent} OFF</span>
                     </div>
                 </div>
             `;
-            // Insert the ribbon at the very beginning of the payment box
             paymentBox.insertAdjacentHTML('afterbegin', ribbonHTML);
         }
 
-        // --- STACKED PRICING UI ---
+        // --- 4. INJECT STACKED PRICING ---
         if (isDiscounted) {
             feeAmountDisplay.innerHTML = `
-                <div class="flex flex-col items-center justify-center transition-all duration-300 fade-in relative z-20">
-                    <span class="text-base sm:text-lg text-slate-400 dark:text-slate-500 line-through decoration-red-500/80 font-bold decoration-2 mb-0">
-                        ₹ ${baseFee}/-
-                    </span>
-                    <span class="text-4xl sm:text-5xl font-extrabold text-slate-800 dark:text-white leading-none mt-1">
-                        <span class="text-sm text-slate-500 dark:text-slate-400 font-bold mr-1 uppercase tracking-wide">Only</span>₹ ${finalFee}/-
-                    </span>
+                <div style="display: flex; flex-direction: column; align-items: center; position: relative; z-index: 20;">
+                    <span class="price-strike">₹ ${baseFee}/-</span>
+                    <span class="price-final">₹ ${finalFee}/-</span>
                 </div>
             `;
         } else {
-            // Standard display for non-discounted courses
             feeAmountDisplay.innerHTML = `
-                <div class="flex flex-col items-center justify-center transition-all duration-300 fade-in relative z-20 pt-4">
-                    <span class="text-4xl sm:text-5xl font-extrabold text-slate-800 dark:text-white leading-none">
-                        ₹ ${finalFee}/-
-                    </span>
+                <div style="display: flex; flex-direction: column; align-items: center; padding-top: 10px; position: relative; z-index: 20;">
+                    <span class="price-final">₹ ${finalFee}/-</span>
                 </div>
             `;
         }
 
-        // Update the UPI Button Link
+        // 5. Update the UPI Button Link
         if (upiBtn) {
             upiBtn.href = `upi://pay?pa=prasantasarma.niat@oksbi&pn=Prasanta%20Sarma&am=${finalFee}&cu=INR&tn=Admission/Registration%20Fee`;
         }
@@ -200,10 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailInput = document.getElementById('email-field');
         if (emailInput) {
             emailInput.value = emailFromUrl;
-            
+
             // 1. Manually add the class to guarantee the UX updates instantly
             emailInput.classList.add('filled-input');
-            
+
             // 2. We keep the blur event just in case any of your other scripts need to know it changed
             emailInput.dispatchEvent(new Event('blur'));
         }
@@ -449,7 +437,7 @@ if (finalSubmitBtn) {
         // 4. PREPARE DATA
         const payMode = document.querySelector('input[name="payMode"]:checked').value;
         const isEWS = document.querySelector('input[name="ewsCategory"]:checked').value === 'Yes';
-        
+
         const filePromises = [
             getFileData('photoFile'),
             getFileData('docFile'),
@@ -559,7 +547,7 @@ document.addEventListener('keydown', e => {
 //     const qrSpinner = document.getElementById('qr-spinner');
 //     const timerDisplay = document.getElementById('qr-timer');
 //     const doneBtn = document.getElementById('qr-done-btn');
-    
+
 //     let timerInterval;
 
 //     // Device Detection (Simple regex for mobile platforms)
@@ -570,7 +558,7 @@ document.addEventListener('keydown', e => {
 //             if (!isMobile) {
 //                 // If it is a desktop, stop the default link behavior
 //                 e.preventDefault();
-                
+
 //                 // Get the current dynamic UPI URL from the button's href
 //                 const upiUrl = this.href;
 
@@ -583,7 +571,7 @@ document.addEventListener('keydown', e => {
 //                 // Simulate loading animation for 1 second, then generate QR
 //                 setTimeout(() => {
 //                     qrSpinner.style.display = 'none';
-                    
+
 //                     // Generate QR Code using the library
 //                     new QRCode(qrContainer, {
 //                         text: upiUrl,
@@ -605,7 +593,7 @@ document.addEventListener('keydown', e => {
 //     function startTimer(durationInSeconds) {
 //         clearInterval(timerInterval);
 //         let timer = durationInSeconds;
-        
+
 //         timerInterval = setInterval(function () {
 //             let minutes = parseInt(timer / 60, 10);
 //             let seconds = parseInt(timer % 60, 10);
@@ -646,18 +634,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const qrContainer = document.getElementById('qr-container');
     const timerDisplay = document.getElementById('qr-timer');
     const doneBtn = document.getElementById('qr-done-btn');
-    
+
     let timerInterval;
 
     // ROBUST DEVICE DETECTION: Handles "Desktop Mode" spoofing on mobile browsers
     // ROBUST DEVICE DETECTION (Modern, warning-free approach)
-    const isMobile = 
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-        window.matchMedia("(pointer: coarse)").matches || 
+    const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        window.matchMedia("(pointer: coarse)").matches ||
         (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
 
     if (upiBtn) {
-        upiBtn.addEventListener('click', function(e) {
+        upiBtn.addEventListener('click', function (e) {
             if (!isMobile) {
                 // If Desktop: Intercept click
                 e.preventDefault();
@@ -665,7 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Reset and show modal
                 qrModal.classList.remove('hidden');
-                
+
                 // Inject Spinner reliably
                 qrContainer.innerHTML = '<div class="spinner" style="display: block; border-color: var(--slate-200); border-top-color: var(--primary);"></div>';
 
@@ -681,9 +669,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         text: upiUrl,
                         width: 200,
                         height: 200,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
                     });
 
                     // Start robust 10 min timer & 30s button lock
@@ -696,7 +684,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function startRobustTimer(durationInSeconds) {
         clearInterval(timerInterval);
-        
+
         // Calculate exact absolute times (immune to tab throttling)
         const endTime = Date.now() + (durationInSeconds * 1000);
         const enableTime = Date.now() + (10 * 1000); // 10 seconds from now
@@ -739,10 +727,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (doneBtn) {
-        doneBtn.addEventListener('click', function(e) {
+        doneBtn.addEventListener('click', function (e) {
             e.preventDefault();
             if (this.disabled) return; // Prevent click if still locked
-            
+
             // Close the QR Modal
             qrModal.classList.add('hidden');
             clearInterval(timerInterval);
