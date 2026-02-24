@@ -56,18 +56,18 @@
             <div id="form-section">
 
                 <div
-                        style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+                    style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 0.5rem; margin-bottom: 1.25rem;">
 
-                        <img src="logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified"
-                            style="height: 45px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px; border: 1px solid #e2e8f0;">
+                    <img src="logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified"
+                        style="height: 45px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px; border: 1px solid #e2e8f0;">
 
-                        <img src="logoInstitute.jpeg" alt="NIAT Logo"
-                            style="height: 65px; width: auto; object-fit: contain; border-radius: 8px;">
+                    <img src="logoInstitute.jpeg" alt="NIAT Logo"
+                        style="height: 65px; width: auto; object-fit: contain; border-radius: 8px;">
 
-                        <img src="logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME"
-                            style="height: 45px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px; border: 1px solid #e2e8f0;">
+                    <img src="logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME"
+                        style="height: 45px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px; border: 1px solid #e2e8f0;">
 
-                    </div>
+                </div>
 
                 <div
                     style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--slate-200);">
@@ -77,7 +77,8 @@
                         onmouseover="this.style.backgroundColor='var(--slate-100)'"
                         onmouseout="this.style.backgroundColor='var(--slate-50)'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--slate-600);">
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            style="color: var(--slate-600);">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
@@ -91,10 +92,10 @@
                             style="font-size: 0.875rem; color: var(--slate-500); margin: 4px 0 0 0; font-family: 'Inter', sans-serif;">
                             Fill the details below to get admission.</p>
                     </div>
-                    
+
                 </div>
 
-                
+
 
                 <form id="admissionForm">
 
@@ -272,7 +273,9 @@
                     </div>
 
                     <div class="declaration-box" style="margin-bottom: 15px;">
-                        <p style="font-size: 0.9rem; font-weight: 600; color: var(--slate-700); margin-top: 0; margin-bottom: 12px;">Do you belong to the Economically Weaker Section (EWS) Category?</p>
+                        <p
+                            style="font-size: 0.9rem; font-weight: 600; color: var(--slate-700); margin-top: 0; margin-bottom: 12px;">
+                            Do you belong to the Economically Weaker Section (EWS) Category?</p>
                         <div class="payment-options">
                             <label class="radio-card">
                                 <input type="radio" name="ewsCategory" value="No" checked>
@@ -330,12 +333,15 @@
                             <span id="docFile-name" class="file-name">No file added</span>
                         </div>
 
-                        <div id="ews-upload-section" class="file-upload-card hidden mb-6" style="border-style: dashed; border-color: var(--primary);">
+                        <div id="ews-upload-section" class="file-upload-card hidden mb-6"
+                            style="border-style: dashed; border-color: var(--primary);">
                             <label>Upload EWS Certificate</label>
                             <p>Max 1MB (PDF/Image)</p>
                             <input type="file" id="ewsFile" accept="image/*,.pdf" class="hidden-input">
                             <button type="button" class="btn-file" onclick="document.getElementById('ewsFile').click()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                     <polyline points="14 2 14 8 20 8"></polyline>
                                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -457,9 +463,9 @@
 
         <p class="text-sm text-slate-400 mt-6">A confirmation email has been sent to your inbox.</p>
 
-        <button id="go-back-btn" onclick="window.location.href='index.html'" class="px-8 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl transition-all shadow-sm">Go Back to
-            Home</button>
-
+        <button onclick="window.location.href='index.html'" class="btn-go-back">
+            Go Back to Home
+        </button>
     </div>
 
     <div id="preview-modal" class="modal-overlay hidden">
@@ -489,20 +495,26 @@
     </div>
 
     <div id="qr-modal" class="modal-overlay hidden" style="z-index: 2000;">
-        <div class="modal-content" style="align-items: center; padding: 40px 20px; text-align: center; max-width: 400px;">
-            <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--slate-700); margin-bottom: 8px;">Scan to Pay</h2>
-            <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 24px;">Open your UPI app (GPay, PhonePe, Paytm) and scan the QR code below.</p>
-            
-            <div id="qr-container" style="background: white; padding: 16px; border-radius: 16px; border: 2px solid var(--slate-200); margin-bottom: 24px; min-width: 200px; min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                <div id="qr-spinner" class="spinner border-slate-300 !border-top-blue-600" style="display: block;"></div>
+        <div class="modal-content"
+            style="align-items: center; padding: 40px 20px; text-align: center; max-width: 400px;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--slate-700); margin-bottom: 8px;">Scan to Pay
+            </h2>
+            <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 24px;">Open your UPI app (GPay,
+                PhonePe, Paytm) and scan the QR code below.</p>
+
+            <div id="qr-container"
+                style="background: white; padding: 16px; border-radius: 16px; border: 2px solid var(--slate-200); margin-bottom: 24px; min-width: 200px; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                <div id="qr-spinner" class="spinner border-slate-300 !border-top-blue-600" style="display: block;">
+                </div>
             </div>
 
-            <div style="background: var(--primary-light); color: var(--primary); padding: 8px 16px; border-radius: 99px; font-weight: 700; font-size: 0.9rem; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+            <div
+                style="background: var(--primary-light); color: var(--primary); padding: 8px 16px; border-radius: 99px; font-weight: 700; font-size: 0.9rem; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
                 <i data-lucide="clock" class="w-4 h-4"></i> Time remaining: <span id="qr-timer">10:00</span>
             </div>
 
             <button id="qr-done-btn" class="btn-primary" style="width: 100%;">Payment Done</button>
-            
+
         </div>
     </div>
 
