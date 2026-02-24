@@ -757,11 +757,12 @@ textarea.input-field { height: 100px; resize: vertical; }
 
 /* Dark Mode Support for the Button */
 .dark .btn-go-back {
-    background-color: var(--slate-800);
-    color: white;
-    border: 1px solid var(--slate-700);
+    background-color: #334155; /* Light dark grey */
+    color: #ffffff !important; /* Force white text */
+    border: 1px solid #475569;
 }
 
 .dark .btn-go-back:hover {
-    background-color: var(--slate-700);
+    background-color: #475569; /* Slightly lighter grey on hover */
+    color: #ffffff !important;
 }
