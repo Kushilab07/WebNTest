@@ -84,24 +84,92 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // UPDATED: Fee calculation handles EWS discount
+    // UPDATED: Advanced Fee calculation with Corner Ribbon & Stacked Pricing
     function updateFee(selectedCourse) {
+        const paymentBox = feeAmountDisplay.closest('.payment-box');
+        
+        // Always clean up the old ribbon first to prevent duplicates
+        if (paymentBox) {
+            paymentBox.classList.add('relative', 'overflow-hidden'); // Ensure parent can clip the ribbon
+            const oldRibbon = paymentBox.querySelector('.corner-ribbon');
+            if (oldRibbon) oldRibbon.remove();
+        }
+
         if (!selectedCourse) {
-            feeAmountDisplay.textContent = `₹ 0/-`;
+            feeAmountDisplay.innerHTML = `<span class="text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-white">₹ 0/-</span>`;
             return;
         }
 
-        let fee = parseInt(courseAdmissionFees[selectedCourse] || "1000");
-        
-        // Apply 50% discount if EWS is Yes
-        if (isEWS) {
-            fee = fee / 2;
+        const baseFee = parseInt(courseAdmissionFees[selectedCourse] || "1000");
+        let finalFee = baseFee;
+        let isDiscounted = false;
+        let discountPercent = "";
+
+        // --- PRICING LOGIC ---
+        if (baseFee === 1000) {
+            // 3-Month Courses (Base: 1000)
+            if (isEWS) {
+                finalFee = 500;
+                discountPercent = "50%";
+                isDiscounted = true;
+            } else {
+                finalFee = 1000;
+                isDiscounted = false;
+            }
+        } 
+        else if (baseFee === 2000) {
+            // 6+ Month Courses (Base: 2000)
+            if (isEWS) {
+                finalFee = 500;
+                discountPercent = "75%";
+            } else {
+                finalFee = 1000;
+                discountPercent = "50%";
+            }
+            isDiscounted = true;
         }
 
-        feeAmountDisplay.textContent = `₹ ${fee}/-`;
+        // --- CORNER RIBBON INJECTION ---
+        if (isDiscounted && paymentBox) {
+            // Pure Tailwind CSS Corner Ribbon
+            const ribbonHTML = `
+                <div class="corner-ribbon absolute top-0 left-0 w-32 h-32 overflow-hidden pointer-events-none z-10">
+                    <div class="absolute top-6 -left-10 w-48 -rotate-45 bg-gradient-to-r from-red-600 to-red-500 text-white text-center py-1 shadow-lg border-y border-red-700/50 flex flex-col items-center justify-center">
+                        <span class="block text-[8px] uppercase tracking-widest font-bold opacity-90 leading-none mt-0.5">Limited Offer</span>
+                        <span class="block text-sm font-extrabold text-yellow-300 leading-tight mb-0.5">${discountPercent} OFF</span>
+                    </div>
+                </div>
+            `;
+            // Insert the ribbon at the very beginning of the payment box
+            paymentBox.insertAdjacentHTML('afterbegin', ribbonHTML);
+        }
 
+        // --- STACKED PRICING UI ---
+        if (isDiscounted) {
+            feeAmountDisplay.innerHTML = `
+                <div class="flex flex-col items-center justify-center transition-all duration-300 fade-in relative z-20">
+                    <span class="text-base sm:text-lg text-slate-400 dark:text-slate-500 line-through decoration-red-500/80 font-bold decoration-2 mb-0">
+                        ₹ ${baseFee}/-
+                    </span>
+                    <span class="text-4xl sm:text-5xl font-extrabold text-slate-800 dark:text-white leading-none mt-1">
+                        <span class="text-sm text-slate-500 dark:text-slate-400 font-bold mr-1 uppercase tracking-wide">Only</span>₹ ${finalFee}/-
+                    </span>
+                </div>
+            `;
+        } else {
+            // Standard display for non-discounted courses
+            feeAmountDisplay.innerHTML = `
+                <div class="flex flex-col items-center justify-center transition-all duration-300 fade-in relative z-20 pt-4">
+                    <span class="text-4xl sm:text-5xl font-extrabold text-slate-800 dark:text-white leading-none">
+                        ₹ ${finalFee}/-
+                    </span>
+                </div>
+            `;
+        }
+
+        // Update the UPI Button Link
         if (upiBtn) {
-            upiBtn.href = `upi://pay?pa=prasantasarma.niat@oksbi&pn=Prasanta%20Sarma&am=${fee}&cu=INR&tn=Admission/Registration%20Fee`;
+            upiBtn.href = `upi://pay?pa=prasantasarma.niat@oksbi&pn=Prasanta%20Sarma&am=${finalFee}&cu=INR&tn=Admission/Registration%20Fee`;
         }
     }
 
@@ -681,5 +749,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-
