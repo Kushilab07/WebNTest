@@ -3052,21 +3052,36 @@
             console.error("Firebase Config Error:", error);
         }
 
-        // --- LOGOUT FUNCTION ---
+        // --- LOGOUT FUNCTION (FIXED) ---
         window.handleLogout = async () => {
             if (!auth) return;
             try {
                 await signOut(auth);
                 alert("Logged Out Successfully");
-                // UI updates automatically via onAuthStateChanged
+                
+                // Close UI elements
                 if (typeof closeProfile === 'function') closeProfile();
-                if (typeof toggleMenu === 'function') toggleMenu();
+                
+                // Force menu to close if it is open
+                const menu = document.getElementById('mainMenu');
+                if (menu && menu.classList.contains('active')) {
+                    menu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+
+                // Redirect to Home section smoothly
+                if (typeof scrollToSection === 'function') {
+                    scrollToSection('home');
+                } else {
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                }
+
             } catch (error) {
                 console.error("Logout Error:", error);
             }
         };
 
-        // --- EMAIL SIGN UP ---
+        // --- EMAIL SIGN UP (FIXED) ---
         const signupForm = document.getElementById('signupForm');
         if (signupForm) {
             signupForm.addEventListener('submit', async (e) => {
@@ -3075,10 +3090,22 @@
                 const password = document.getElementById('signupPassword').value;
                 if (!auth) { alert("Firebase not configured."); return; }
                 try {
+                    // 1. Create the account (Firebase auto-logs them in here)
                     await createUserWithEmailAndPassword(auth, email, password);
-                    alert("Account Created! You are now logged in.");
-                    closeModal('signupModal');
-                } catch (error) { alert("Error: " + error.message); }
+                    
+                    // 2. Immediately log them out in the background
+                    await signOut(auth);
+                    
+                    // 3. Tell them it worked and switch to the Login modal
+                    alert("Account Created Successfully! Please log in.");
+                    switchModal('signupModal', 'loginModal');
+                    
+                    // Optional: Pre-fill their email in the login box for convenience
+                    document.getElementById('loginEmail').value = email;
+                    
+                } catch (error) { 
+                    alert("Error: " + error.message); 
+                }
             });
         }
 
@@ -3102,6 +3129,11 @@
         const handleGoogleLogin = async () => {
             if (!auth) { alert("Firebase not configured."); return; }
             try {
+                // FIXED: Force the Google popup to ask which account to use every time
+                provider.setCustomParameters({
+                    prompt: 'select_account'
+                });
+
                 await signInWithPopup(auth, provider);
                 // Success is handled by onAuthStateChanged above
                 alert("Google Sign-In Successful!");
