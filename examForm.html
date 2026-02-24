@@ -69,35 +69,6 @@
     <div
         class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden relative z-10 transition-all duration-300">
 
-        <!-- <div
-            class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-
-            <div class="flex items-center gap-2">
-                <img src="logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified"
-                    class="h-8 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
-                <img src="logoInstitute.jpeg" alt="NIAT Logo"
-                    class="h-10 w-auto object-contain rounded-md shadow-sm shrink-0 bg-white">
-                <img src="logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME"
-                    class="h-8 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
-            </div>
-
-            <div class="flex items-center gap-4">
-                <button onclick="history.back()"
-                    class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:text-blue-600 transition-colors shrink-0">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
-
-
-
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Exam Application</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">NIAT Computer Academy</p>
-                </div>
-            </div>
-
-
-
-        </div> -->
         <div class="relative p-6 border-b border-slate-200 dark:border-slate-800 text-center">
             
             <button type="button" onclick="history.back()" title="Go Back" 
@@ -181,6 +152,14 @@
             <div id="state-form" class="hidden animate-in slide-in-from-right-8 duration-500">
                 <form id="exam-form" class="space-y-5">
 
+                    <div class="hidden">
+                        <input type="text" id="ex-branch">
+                        <input type="text" id="ex-name">
+                        <input type="text" id="ex-father">
+                        <input type="text" id="ex-regno">
+                        <input type="text" id="ex-duration">
+                    </div>
+
                     <div>
                         <label
                             class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select
@@ -191,64 +170,21 @@
                         </select>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div id="semester-wrapper" class="hidden">
-                            <label
-                                class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select
-                                Semester *</label>
-                            <select id="ex-semester"
-                                class="w-full px-4 py-3 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none text-slate-800 dark:text-white transition-colors cursor-pointer font-semibold">
-                            </select>
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Course
-                                Duration</label>
-                            <input type="text" id="ex-duration"
-                                class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-bold cursor-not-allowed outline-none"
-                                placeholder="Auto-filled" readonly>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Branch</label>
-                            <input type="text" id="ex-branch"
-                                class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none"
-                                readonly>
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Student
-                                Name</label>
-                            <input type="text" id="ex-name"
-                                class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none"
-                                readonly>
-                        </div>
-                    </div>
-
-                    <div>
+                    <div id="semester-wrapper" class="hidden">
                         <label
-                            class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Father's/Guardian's
-                            Name</label>
-                        <input type="text" id="ex-father"
-                            class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-semibold cursor-not-allowed outline-none"
-                            readonly>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Registration Number</label>
-                        <input type="text" id="ex-regno" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 font-bold cursor-not-allowed outline-none" placeholder="Auto-filled based on course" readonly required>
+                            class="block text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Select
+                            Semester *</label>
+                        <select id="ex-semester"
+                            class="w-full px-4 py-3 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none text-slate-800 dark:text-white transition-colors cursor-pointer font-semibold">
+                        </select>
                     </div>
 
                     <button type="submit" id="apply-btn" 
                         class="relative w-full mt-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg transform hover:-translate-y-1 transition-all flex justify-center items-center gap-2 overflow-hidden">
-                        
                         <span id="apply-btn-text" class="flex items-center gap-2 transition-opacity duration-300"><i data-lucide="send" class="w-5 h-5"></i> Apply</span>
-                        
                         <div id="apply-spinner" class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
                     </button>
+                    
                 </form>
             </div>
 
