@@ -3249,12 +3249,12 @@
             });
         }
 
-        // --- EMAIL LOGIN WITH SPINNER ---
+        // --- EMAIL LOGIN WITH SPINNER (ROBUST ERROR HANDLING) ---
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
+                const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value;
                 const btnText = document.getElementById('loginBtnText');
                 const spinner = document.getElementById('loginSpinner');
@@ -3273,13 +3273,37 @@
                     closeModal('loginModal');
                     document.getElementById('loginForm').reset(); // Clear form
                 } catch (error) { 
-                    // Clean Firebase Error Handling
+                    // EXACT FIREBASE ERROR HANDLING
                     let errorMsg = "Login failed. Please try again.";
-                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                        errorMsg = "Incorrect email or password.";
-                    } else if (error.code === 'auth/too-many-requests') {
-                        errorMsg = "Too many failed attempts. Try resetting your password.";
+                    
+                    switch (error.code) {
+                        case 'auth/invalid-email':
+                            errorMsg = "The email address you entered is not valid.";
+                            break;
+                        case 'auth/user-not-found':
+                            errorMsg = "No account found with this email. Please sign up first.";
+                            break;
+                        case 'auth/wrong-password':
+                            errorMsg = "Incorrect password. Please try again or reset it.";
+                            break;
+                        case 'auth/invalid-credential':
+                            // This is the default error if Email Enumeration Protection is ON
+                            errorMsg = "Invalid email or password. Please check your details.";
+                            break;
+                        case 'auth/user-disabled':
+                            errorMsg = "This account has been disabled by the administrator.";
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMsg = "Too many failed attempts. Your account is temporarily locked. Please reset your password or try later.";
+                            break;
+                        case 'auth/network-request-failed':
+                            errorMsg = "Network error. Please check your internet connection.";
+                            break;
+                        default:
+                            // Fallback for unknown errors, strips away the ugly "Firebase:" text
+                            errorMsg = error.message.replace('Firebase:', '').trim();
                     }
+                    
                     showToast(errorMsg, "error"); 
                 } finally {
                     // Hide Spinner
@@ -3295,7 +3319,7 @@
         if (forgotPasswordForm) {
             forgotPasswordForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('resetEmail').value;
+                const email = document.getElementById('resetEmail').value.trim();
                 const btnText = document.getElementById('resetBtnText');
                 const spinner = document.getElementById('resetSpinner');
                 const submitBtn = document.getElementById('resetSubmitBtn');
@@ -3309,18 +3333,20 @@
 
                 try {
                     await sendPasswordResetEmail(auth, email);
-                    showToast("Password reset link sent! Check your email inbox.", "success");
-                    // Auto-switch back to login modal
+                    // Updated message to be more accurate regarding Firebase's security behavior
+                    showToast("If this email is registered, a reset link was sent. Check your Spam folder!", "success");
+                    
                     switchModal('forgotPasswordModal', 'loginModal');
-                    // Pre-fill the login email so they don't have to type it again
                     document.getElementById('loginEmail').value = email;
+                    document.getElementById('forgotPasswordForm').reset();
                 } catch (error) { 
-                    // Handle specific Firebase errors cleanly
                     let errorMsg = "Failed to send reset link.";
                     if (error.code === 'auth/user-not-found') {
                         errorMsg = "No account found with this email address.";
                     } else if (error.code === 'auth/invalid-email') {
                         errorMsg = "Please enter a valid email address.";
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMsg = "Too many requests. Please try again later.";
                     }
                     showToast(errorMsg, "error"); 
                 } finally {
