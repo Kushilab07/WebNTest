@@ -208,9 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
+            // FIXED: Send data as plain text to bypass CORS preflight issues in Google Apps Script
             const response = await fetch(EXAM_API_URL, {
                 method: 'POST',
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                // Omit headers entirely or use text/plain
             });
 
             const result = await response.json();
@@ -237,4 +239,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
