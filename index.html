@@ -1879,9 +1879,18 @@
                             class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             required>
                     </div>
-                    <div>
+                    <!-- <div>
                         <label
                             class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
+                        <input type="password" id="loginPassword"
+                            class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            required>
+                    </div> -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                            <button type="button" onclick="switchModal('loginModal', 'forgotPasswordModal')" class="text-xs text-blue-600 font-bold hover:underline">Forgot Password?</button>
+                        </div>
                         <input type="password" id="loginPassword"
                             class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             required>
@@ -2003,6 +2012,38 @@
                     <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">Already have an account?
                         <button type="button" onclick="switchModal('signupModal', 'loginModal')"
                             class="text-blue-600 font-bold hover:underline">Login</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Model -->
+    <div id="forgotPasswordModal"
+        class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in overscroll-none">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Reset Password</h3>
+                <button onclick="closeModal('forgotPasswordModal')"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"><i
+                        data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8">
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Enter your email address and we'll send you a link to reset your password.</p>
+                <form id="forgotPasswordForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                        <input type="email" id="resetEmail"
+                            class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            required>
+                    </div>
+                    <button type="submit" id="resetSubmitBtn"
+                        class="relative w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-4 flex justify-center items-center overflow-hidden">
+                        <span id="resetBtnText" class="transition-opacity duration-300">Send Reset Link</span>
+                        <div id="resetSpinner" class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    </button>
+                    <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">
+                        Remember your password? <button type="button" onclick="switchModal('forgotPasswordModal', 'loginModal')" class="text-blue-600 font-bold hover:underline">Back to Login</button>
                     </p>
                 </form>
             </div>
@@ -3029,7 +3070,7 @@
     <script type="module">
         // FIREBASE AUTH LOGIC
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 
         // --- NEW: CUSTOM TOAST NOTIFICATION SYSTEM ---
         window.showToast = function(message, type = 'success') {
@@ -3152,17 +3193,30 @@
             }
         };
 
-        // --- EMAIL SIGN UP (FIXED) ---
+        // --- EMAIL SIGN UP WITH SPINNER ---
         const signupForm = document.getElementById('signupForm');
         if (signupForm) {
             signupForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('signupEmail').value;
                 const password = document.getElementById('signupPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value; // Get confirm password
+                
                 const btnText = document.getElementById('signupBtnText');
                 const spinner = document.getElementById('signupSpinner');
                 const submitBtn = document.getElementById('signupSubmitBtn');
+
                 if (!auth) { showToast("System configuration error.", "error"); return; }
+                
+                // Add quick validation
+                if (password !== confirmPassword) {
+                    showToast("Passwords do not match.", "error");
+                    return;
+                }
+                if (password.length < 6) {
+                    showToast("Password should be at least 6 characters.", "error");
+                    return;
+                }
 
                 // Show Spinner
                 btnText.classList.add('opacity-0');
@@ -3170,21 +3224,22 @@
                 submitBtn.disabled = true;
 
                 try {
-                    // 1. Create the account (Firebase auto-logs them in here)
                     await createUserWithEmailAndPassword(auth, email, password);
-
-                    // 2. Immediately log them out in the background
-                    await signOut(auth);
-
-                    // 3. Tell them it worked and switch to the Login modal
+                    await signOut(auth); // Prevent auto-login
+                    
                     showToast("Account created successfully! Please log in to continue.", "success");
                     switchModal('signupModal', 'loginModal');
-
-                    // Optional: Pre-fill their email in the login box for convenience
                     document.getElementById('loginEmail').value = email;
-
-                } catch (error) {
-                    showToast("Failed to create account. " + error.message.replace('Firebase:', ''), "error");
+                    document.getElementById('signupForm').reset(); // Clear form
+                } catch (error) { 
+                    // Clean Firebase Error Handling
+                    let errorMsg = "Failed to create account.";
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMsg = "This email is already registered. Please log in.";
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMsg = "Please enter a valid email address.";
+                    }
+                    showToast(errorMsg, "error"); 
                 } finally {
                     // Hide Spinner
                     btnText.classList.remove('opacity-0');
@@ -3194,7 +3249,7 @@
             });
         }
 
-        // --- EMAIL LOGIN ---
+        // --- EMAIL LOGIN WITH SPINNER ---
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
@@ -3204,8 +3259,9 @@
                 const btnText = document.getElementById('loginBtnText');
                 const spinner = document.getElementById('loginSpinner');
                 const submitBtn = document.getElementById('loginSubmitBtn');
-                if (!auth) { showToast("System configuration error.", "error"); return; }
 
+                if (!auth) { showToast("System configuration error.", "error"); return; }
+                
                 // Show Spinner
                 btnText.classList.add('opacity-0');
                 spinner.classList.remove('hidden');
@@ -3215,8 +3271,58 @@
                     await signInWithEmailAndPassword(auth, email, password);
                     showToast("Welcome back! You are successfully logged in.", "success");
                     closeModal('loginModal');
+                    document.getElementById('loginForm').reset(); // Clear form
                 } catch (error) { 
-                    showToast("Incorrect email or password.", "error");
+                    // Clean Firebase Error Handling
+                    let errorMsg = "Login failed. Please try again.";
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                        errorMsg = "Incorrect email or password.";
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMsg = "Too many failed attempts. Try resetting your password.";
+                    }
+                    showToast(errorMsg, "error"); 
+                } finally {
+                    // Hide Spinner
+                    btnText.classList.remove('opacity-0');
+                    spinner.classList.add('hidden');
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        // --- FORGOT PASSWORD WITH SPINNER ---
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        if (forgotPasswordForm) {
+            forgotPasswordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('resetEmail').value;
+                const btnText = document.getElementById('resetBtnText');
+                const spinner = document.getElementById('resetSpinner');
+                const submitBtn = document.getElementById('resetSubmitBtn');
+
+                if (!auth) { showToast("System configuration error.", "error"); return; }
+                
+                // Show Spinner
+                btnText.classList.add('opacity-0');
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = true;
+
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    showToast("Password reset link sent! Check your email inbox.", "success");
+                    // Auto-switch back to login modal
+                    switchModal('forgotPasswordModal', 'loginModal');
+                    // Pre-fill the login email so they don't have to type it again
+                    document.getElementById('loginEmail').value = email;
+                } catch (error) { 
+                    // Handle specific Firebase errors cleanly
+                    let errorMsg = "Failed to send reset link.";
+                    if (error.code === 'auth/user-not-found') {
+                        errorMsg = "No account found with this email address.";
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMsg = "Please enter a valid email address.";
+                    }
+                    showToast(errorMsg, "error"); 
                 } finally {
                     // Hide Spinner
                     btnText.classList.remove('opacity-0');
