@@ -166,7 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
             semesterWrapper.classList.remove('hidden');
             semesterSelect.setAttribute('required', 'true');
 
-            if (dLower.includes('6 month') || dLower.includes('1 year')) {
+            if (dLower.includes('6 month')) {
+                semesterSelect.innerHTML += '<option value="1st Semester">1st Semester</option>';
+            } else if (dLower.includes('1 year')) {
                 semesterSelect.innerHTML += '<option value="1st Semester">1st Semester</option><option value="2nd Semester">2nd Semester</option>';
             } else if (dLower.includes('18 month')) {
                 semesterSelect.innerHTML += '<option value="1st Semester">1st Semester</option><option value="2nd Semester">2nd Semester</option><option value="3rd Semester">3rd Semester</option>';
