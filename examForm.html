@@ -45,15 +45,17 @@
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            /* FIXED: Changed to linear for smooth, non-stop rotation */
+            animation: smooth-spin 0.8s linear infinite; 
             width: 24px;
             height: 24px;
+            box-sizing: border-box;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        /* FIXED: Renamed to avoid Tailwind conflict and added 0% state */
+        @keyframes smooth-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -125,10 +127,14 @@
 
         <div class="p-6 sm:p-8 min-h-[400px] flex flex-col justify-center">
 
-            <div id="state-loading" class="flex flex-col items-center justify-center text-center py-10">
-                <div class="spinner mb-4 border-slate-300 dark:border-slate-700 !border-top-blue-600"></div>
-                <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Verifying Enrollment...</h2>
-                <p class="text-sm text-slate-500">Checking your records securely.</p>
+            <div id="state-loading" class="flex flex-col items-center justify-center text-center py-12">
+                <div class="relative w-14 h-14 mb-6">
+                    <div class="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-slate-800"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-600 animate-spin"></div>
+                </div>
+                
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Verifying Enrollment...</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Checking your records securely.</p>
             </div>
 
             <div id="state-unregistered"
