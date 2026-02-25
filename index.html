@@ -3384,21 +3384,49 @@
         };
 
         // --- TAB SWITCHING & RENDERING LOGIC ---
+        // --- TAB SWITCHING & RENDERING LOGIC ---
         window.renderMyCoursesList = function(filterType) {
             const listContainer = document.getElementById('myCoursesDetailedList');
             let dataToRender = [];
 
-            // Reset Tab Styling
-            ['total', 'active', 'completed'].forEach(tab => {
-                document.getElementById(`mc-tab-${tab}`).classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
-            });
-            // Highlight Active Tab
-            document.getElementById(`mc-tab-${filterType}`).classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+            // 1. Define the specific visual styles for each tab state
+            const tabStyles = {
+                total: {
+                    active: ['border-indigo-500', 'bg-indigo-50', 'dark:border-indigo-500', 'dark:bg-indigo-900/30', 'ring-2', 'ring-indigo-500/20'],
+                    inactive: ['border-slate-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800']
+                },
+                active: {
+                    active: ['border-blue-500', 'bg-blue-50', 'dark:border-blue-500', 'dark:bg-blue-900/30', 'ring-2', 'ring-blue-500/20'],
+                    inactive: ['border-slate-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800']
+                },
+                completed: {
+                    active: ['border-emerald-500', 'bg-emerald-50', 'dark:border-emerald-500', 'dark:bg-emerald-900/30', 'ring-2', 'ring-emerald-500/20'],
+                    inactive: ['border-slate-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800']
+                }
+            };
 
+            // 2. Reset ALL tabs to their "Inactive" state
+            ['total', 'active', 'completed'].forEach(tab => {
+                const el = document.getElementById(`mc-tab-${tab}`);
+                if (el) {
+                    el.classList.remove(...tabStyles[tab].active);
+                    el.classList.add(...tabStyles[tab].inactive);
+                }
+            });
+
+            // 3. Apply the "Active" state exclusively to the clicked tab
+            const selectedEl = document.getElementById(`mc-tab-${filterType}`);
+            if (selectedEl) {
+                selectedEl.classList.remove(...tabStyles[filterType].inactive);
+                selectedEl.classList.add(...tabStyles[filterType].active);
+            }
+
+            // 4. Filter the data based on selection
             if (filterType === 'total') dataToRender = window.userEnrolledData;
             if (filterType === 'active') dataToRender = window.userActiveCourses;
             if (filterType === 'completed') dataToRender = window.userCompletedCourses;
 
+            // 5. Render the HTML
             if (dataToRender.length === 0) {
                 listContainer.innerHTML = `
                     <div class="text-center py-8">
