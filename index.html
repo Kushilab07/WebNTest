@@ -1724,7 +1724,8 @@
                             class="w-24 h-24 shrink-0 rounded-full border-4 border-white dark:border-slate-900 overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-md">
                             <img id="profile-avatar-lg" src="" alt="Profile" class="w-full h-full object-cover">
                         </div>
-                        <button onclick="openEditProfile()" class="mb-2 px-4 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border border-blue-200 dark:border-blue-800/50">
+                        <button onclick="openEditProfile()"
+                            class="mb-2 px-4 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border border-blue-200 dark:border-blue-800/50">
                             <i data-lucide="edit-3" class="w-3 h-3 inline-block mr-1"></i> Edit Profile
                         </button>
                     </div>
@@ -1735,16 +1736,14 @@
                     </p>
 
                     <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div
-                            class="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-center">
-                            <div
-                                class="w-10 h-10 mx-auto bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mb-2">
+                        <div onclick="openActiveCoursesOnly()" class="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 mx-auto bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                                 <i data-lucide="book-open" class="w-5 h-5"></i>
                             </div>
-                            <p class="text-2xl font-extrabold text-slate-900 dark:text-white leading-none mb-1">2</p>
-                            <p
-                                class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
-                                Active Courses</p>
+                            <p id="active-courses-count" class="text-2xl font-extrabold text-slate-900 dark:text-white leading-none mb-1">
+                                <span class="inline-block w-5 h-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></span>
+                            </p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Active Courses</p>
                         </div>
                         <div
                             class="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-center">
@@ -1768,11 +1767,20 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl group-hover:scale-110 transition-transform">
-                                    <i data-lucide="calendar" class="w-5 h-5"></i></div>
+                                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">My Schedule</span>
                             </div>
                             <span
                                 class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md">Mon-Wed</span>
+                        </div>
+
+                        <div onclick="openMyCourses('total')" class="mt-3 flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition-all cursor-pointer group hover:shadow-md">
+                            <div class="flex items-center gap-4">
+                                <div class="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl group-hover:scale-110 transition-transform"><i data-lucide="layers" class="w-5 h-5"></i></div>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200">My Courses</span>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors"></i>
                         </div>
 
                         <div onclick="openModal('marksheetModal')"
@@ -1780,7 +1788,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-xl group-hover:scale-110 transition-transform">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i></div>
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Exam Results</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1794,7 +1803,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl group-hover:scale-110 transition-transform">
-                                    <i data-lucide="credit-card" class="w-5 h-5"></i></div>
+                                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Fee Status</span>
                             </div>
                             <span
@@ -1806,7 +1816,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-xl group-hover:scale-110 transition-transform">
-                                    <i data-lucide="life-buoy" class="w-5 h-5"></i></div>
+                                    <i data-lucide="life-buoy" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Help Center</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1824,8 +1835,10 @@
     </div>
 
     <!-- Edit Profile Model -->
-    <div id="editProfileModal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in overscroll-none">
+    <div id="editProfileModal"
+        class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in overscroll-none">
             <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit Profile</h3>
                 <button onclick="closeModal('editProfileModal')"
@@ -1834,25 +1847,78 @@
                 </button>
             </div>
             <div class="p-8">
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Update your display name. Your avatar will automatically update to match your initials!</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Update your display name. Your avatar will
+                    automatically update to match your initials!</p>
                 <form id="editProfileForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full
+                            Name</label>
                         <input type="text" id="editFullName"
                             class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="e.g. John Doe" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
-                        <input type="email" id="editEmail" class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 rounded-lg outline-none cursor-not-allowed" readonly>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email
+                            Address</label>
+                        <input type="email" id="editEmail"
+                            class="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 rounded-lg outline-none cursor-not-allowed"
+                            readonly>
                     </div>
                     <button type="submit" id="editSubmitBtn"
                         class="relative w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-6 flex justify-center items-center overflow-hidden">
                         <span id="editBtnText" class="transition-opacity duration-300">Save Changes</span>
-                        <div id="editSpinner" class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <div id="editSpinner"
+                            class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin">
+                        </div>
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Active Courses Model -->
+    <div id="activeCoursesModal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden fade-in max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="book-open" class="text-blue-600 w-6 h-6"></i> Active Courses
+                </h3>
+                <button onclick="closeModal('activeCoursesModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50" id="activeCoursesOnlyList"></div>
+        </div>
+    </div>
+    
+    <!-- My Courses Model -->
+    <div id="myCoursesModal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden fade-in max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0 pb-4">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="layers" class="text-indigo-600 w-6 h-6"></i> My Courses
+                </h3>
+                <button onclick="closeModal('myCoursesModal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2 p-4 bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                <div id="mc-tab-total" onclick="renderMyCoursesList('total')" class="cursor-pointer text-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all hover:border-slate-300 dark:hover:border-slate-600">
+                    <p class="text-lg font-bold text-slate-800 dark:text-white" id="mc-count-total">0</p>
+                    <p class="text-[10px] uppercase font-bold text-slate-500">Total</p>
+                </div>
+                <div id="mc-tab-active" onclick="renderMyCoursesList('active')" class="cursor-pointer text-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all hover:border-blue-300 dark:hover:border-blue-600">
+                    <p class="text-lg font-bold text-blue-600 dark:text-blue-400" id="mc-count-active">0</p>
+                    <p class="text-[10px] uppercase font-bold text-slate-500">Active</p>
+                </div>
+                <div id="mc-tab-completed" onclick="renderMyCoursesList('completed')" class="cursor-pointer text-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all hover:border-emerald-300 dark:hover:border-emerald-600">
+                    <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="mc-count-completed">0</p>
+                    <p class="text-[10px] uppercase font-bold text-slate-500">Completed</p>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50" id="myCoursesDetailedList"></div>
         </div>
     </div>
 
@@ -3174,6 +3240,12 @@
         let auth;
         let provider; // Google Provider
 
+        // Data sources from your exam form
+        const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyP_ScGUXfaUqYAf0N73oQUkkIcxstuebeJ5rACvvsWdK11yDwuRrf95JKnpeDuj9wv/exec";
+        const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz0gI2OJDcwyI-J4SR3P9SrDUJoRKd6J_h68YZ0at3OLJKjT4dQRSxsc-pASKzQuR2thw/exec";
+        
+        window.userEnrolledData = []; // Store fetched courses globally
+
         try {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
@@ -3191,14 +3263,156 @@
                     // Optional: Auto-close modals if open
                     closeModal('loginModal');
                     closeModal('signupModal');
+                    // FETCH COURSES IN BACKGROUND AS SOON AS THEY LOG IN
+                    fetchUserCourses(user.email);
                 } else {
                     console.log("User Signed Out");
+                    // Reset if logged out
+                    window.userEnrolledData = [];
+                    const countEl = document.getElementById('active-courses-count');
+                    if (countEl) countEl.innerHTML = "0";
                 }
             });
 
         } catch (error) {
             console.error("Firebase Config Error:", error);
         }
+
+        // =========================================================
+        // --- DYNAMIC COURSE FETCHING & MY LEARNING UI LOGIC ---
+        // =========================================================
+        
+        window.userActiveCourses = [];
+        window.userCompletedCourses = [];
+
+        async function fetchUserCourses(email) {
+            try {
+                const encodedEmail = encodeURIComponent(email);
+                const [dataArikuchi, dataBagals] = await Promise.all([
+                    fetch(`${URL_ARIKUCHI}?email=${encodedEmail}`).then(res => res.json()).catch(() => null),
+                    fetch(`${URL_BAGALS}?email=${encodedEmail}`).then(res => res.json()).catch(() => null)
+                ]);
+
+                let allCourses = [];
+                if (dataArikuchi && dataArikuchi.found) allCourses.push(...dataArikuchi.enrolledCourses);
+                if (dataBagals && dataBagals.found) {
+                    dataBagals.enrolledCourses.forEach(c => {
+                        // Prevent duplicates
+                        if (!allCourses.find(existing => existing.courseName === c.courseName)) {
+                            allCourses.push(c);
+                        }
+                    });
+                }
+                
+                window.userEnrolledData = allCourses;
+                
+                // STRICT LOGIC: Only Completed if Certificate Status is "Completed"
+                window.userCompletedCourses = allCourses.filter(c => c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'completed');
+                window.userActiveCourses = allCourses.filter(c => !c.certificateStatus || String(c.certificateStatus).trim().toLowerCase() !== 'completed');
+                
+                // Update Top Profile Number
+                const countEl = document.getElementById('active-courses-count');
+                if (countEl) countEl.innerHTML = window.userActiveCourses.length;
+
+                // Update Modal Tab Numbers
+                if (document.getElementById('mc-count-total')) document.getElementById('mc-count-total').textContent = allCourses.length;
+                if (document.getElementById('mc-count-active')) document.getElementById('mc-count-active').textContent = window.userActiveCourses.length;
+                if (document.getElementById('mc-count-completed')) document.getElementById('mc-count-completed').textContent = window.userCompletedCourses.length;
+
+            } catch (error) {
+                console.error("Failed to fetch courses", error);
+                const countEl = document.getElementById('active-courses-count');
+                if (countEl) countEl.innerHTML = "0"; // Fallback on error
+            }
+        }
+
+        // --- COURSE CARD HTML GENERATOR ---
+        function generateCourseCardHTML(course) {
+            const certStatus = course.certificateStatus ? String(course.certificateStatus).trim().toLowerCase() : '';
+            const isCompleted = certStatus === 'completed';
+
+            const badgeHtml = isCompleted 
+                ? `<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200 dark:border-emerald-800">Completed</span>`
+                : `<span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200 dark:border-amber-800 animate-pulse">Active</span>`;
+
+            let actionHtml = isCompleted
+                ? `
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <button onclick="openModal('marksheetModal')" class="w-full py-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-xl text-xs font-bold flex justify-center items-center gap-1 transition-colors"><i data-lucide="file-text" class="w-4 h-4"></i> Marksheet</button>
+                    <button onclick="openModal('marksheetModal')" class="w-full py-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 rounded-xl text-xs font-bold flex justify-center items-center gap-1 transition-colors"><i data-lucide="award" class="w-4 h-4"></i> Certificate</button>
+                </div>
+                `
+                : `<button onclick="handleExamApplication()" class="mt-4 w-full py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl text-sm font-bold flex justify-center items-center gap-2 shadow-md transition-colors"><i data-lucide="file-edit" class="w-4 h-4"></i> Apply for Exam</button>`;
+
+            return `
+                <div class="mb-4 p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="pr-2">
+                            <h4 class="font-bold text-slate-800 dark:text-white leading-tight text-lg mb-1">${course.courseName}</h4>
+                            <p class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${course.branch || 'Pending Branch'}</p>
+                        </div>
+                        <div class="shrink-0 mt-1">${badgeHtml}</div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-100 dark:border-slate-700/50">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-0.5">Registration Number</p>
+                        <p class="font-mono font-medium text-slate-800 dark:text-slate-200 text-sm">${course.regNo || 'Awaiting assignment...'}</p>
+                    </div>
+                    ${actionHtml}
+                </div>
+            `;
+        }
+
+        // --- OPEN ACTIVE ONLY MODAL ---
+        window.openActiveCoursesOnly = function() {
+            if (!isUserLoggedIn) return;
+            openModal('activeCoursesModal');
+            const listContainer = document.getElementById('activeCoursesOnlyList');
+            
+            if (window.userActiveCourses.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-slate-500 py-6 font-medium">No active courses right now.</p>`;
+            } else {
+                listContainer.innerHTML = window.userActiveCourses.map(c => generateCourseCardHTML(c)).join('');
+            }
+            lucide.createIcons();
+        };
+
+        // --- OPEN FULL TABBED MODAL ---
+        window.openMyCourses = function(filterType = 'total') {
+            if (!isUserLoggedIn) return;
+            openModal('myCoursesModal');
+            renderMyCoursesList(filterType);
+        };
+
+        // --- TAB SWITCHING & RENDERING LOGIC ---
+        window.renderMyCoursesList = function(filterType) {
+            const listContainer = document.getElementById('myCoursesDetailedList');
+            let dataToRender = [];
+
+            // Reset Tab Styling
+            ['total', 'active', 'completed'].forEach(tab => {
+                document.getElementById(`mc-tab-${tab}`).classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+            });
+            // Highlight Active Tab
+            document.getElementById(`mc-tab-${filterType}`).classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+
+            if (filterType === 'total') dataToRender = window.userEnrolledData;
+            if (filterType === 'active') dataToRender = window.userActiveCourses;
+            if (filterType === 'completed') dataToRender = window.userCompletedCourses;
+
+            if (dataToRender.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                            <i data-lucide="inbox" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="text-slate-800 dark:text-white font-bold mb-1">Nothing to show here.</h4>
+                    </div>
+                `;
+            } else {
+                listContainer.innerHTML = dataToRender.map(c => generateCourseCardHTML(c)).join('');
+            }
+            lucide.createIcons();
+        };
 
         // --- LOGOUT FUNCTION (FIXED) ---
         window.handleLogout = async () => {
@@ -3419,15 +3633,15 @@
         if (googleSignupBtn) googleSignupBtn.addEventListener('click', handleGoogleLogin);
 
         // --- EDIT PROFILE LOGIC ---
-        
+
         // 1. Function to open the modal and pre-fill data
-        window.openEditProfile = function() {
+        window.openEditProfile = function () {
             if (!auth || !auth.currentUser) return;
-            
+
             // Pre-fill the inputs with current user data
             document.getElementById('editFullName').value = auth.currentUser.displayName || '';
             document.getElementById('editEmail').value = auth.currentUser.email || '';
-            
+
             // Open the modal (it will appear over the sidebar due to z-[300])
             openModal('editProfileModal');
         };
@@ -3461,7 +3675,7 @@
 
                     // Force the UI to refresh with the new data
                     window.updateAuthState(auth.currentUser);
-                    
+
                     showToast("Profile updated successfully!", "success");
                     closeModal('editProfileModal');
 
