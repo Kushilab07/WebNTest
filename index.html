@@ -2242,11 +2242,14 @@
         let scrollPosition = 0;
 
         function lockBodyScroll() {
-            scrollPosition = window.scrollY;
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollPosition}px`;
-            document.body.style.width = '100%';
-            document.body.style.overflowY = 'scroll'; // Prevents scrollbar layout shift
+            // THE FIX: Only save position and apply lock IF it's not already locked!
+            if (document.body.style.position !== 'fixed') {
+                scrollPosition = window.scrollY;
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollPosition}px`;
+                document.body.style.width = '100%';
+                document.body.style.overflowY = 'scroll'; // Prevents scrollbar layout shift
+            }
         }
 
         function unlockBodyScroll() {
