@@ -2238,24 +2238,40 @@
             }
         }
 
-        // --- 100% ROBUST SCROLL LOCKING (NO JUMPING) ---
-        function preventBackgroundScroll(e) {
-            // Allow scrolling INSIDE the modal's scrollable areas
-            const isScrollable = e.target.closest('.overflow-y-auto');
-            if (isScrollable) {
-                return;
-            }
-            // Otherwise, block the scroll (prevents background pulling on mobile)
-            e.preventDefault();
+        // --- 100% ROBUST SCROLL LOCKING (NO SCROLL, NO JUMPING) ---
+        let scrollPosition = 0;
+
+        function lockBodyScroll() {
+            scrollPosition = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollPosition}px`;
+            document.body.style.width = '100%';
+            document.body.style.overflowY = 'scroll'; // Prevents scrollbar layout shift
+        }
+
+        function unlockBodyScroll() {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.style.overflowY = '';
+
+            // THE MAGIC FIX: Temporarily disable smooth scrolling so the page doesn't jump!
+            document.documentElement.style.scrollBehavior = 'auto';
+            window.scrollTo(0, scrollPosition);
+
+            // Put smooth scrolling back on immediately after
+            requestAnimationFrame(() => {
+                document.documentElement.style.scrollBehavior = '';
+            });
         }
 
         window.openModal = function (modalId) {
             const modal = document.getElementById(modalId);
             
-            // 1. Remove hidden first so browser can calculate height
+            // Remove hidden first so browser can calculate height
             modal.classList.remove('hidden');
 
-            // 2. ALWAYS RESET SCROLL TO TOP ON OPEN
+            // ALWAYS RESET SCROLL TO TOP ON OPEN (While it's still off-screen)
             const scrollableAreas = modal.querySelectorAll('.overflow-y-auto');
             scrollableAreas.forEach(area => {
                 area.scrollTop = 0;
@@ -2263,24 +2279,17 @@
 
             if (modal.classList.contains('sidebar-modal')) {
                 // SIDEBAR LOGIC
-                const backdrop = modal.querySelector('.sidebar-backdrop');
-                const panel = modal.querySelector('.sidebar-panel');
-
-                // Simple body lock (No position:fixed jumping!)
-                document.body.style.overflow = 'hidden';
+                lockBodyScroll(); // 100% Freezes background
                 
-                // Prevent mobile bleed-through
-                modal.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
-
                 // Animate in
                 void modal.offsetWidth;
+                const backdrop = modal.querySelector('.sidebar-backdrop');
+                const panel = modal.querySelector('.sidebar-panel');
                 backdrop.classList.remove('opacity-0');
                 panel.classList.remove('translate-x-full');
             } else {
                 // POPUP LOGIC
-                document.body.style.overflow = 'hidden';
-                modal.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
-                modal.addEventListener('wheel', preventBackgroundScroll, { passive: false });
+                lockBodyScroll(); // 100% Freezes background
             }
         };
 
@@ -2297,21 +2306,18 @@
 
                 setTimeout(() => {
                     modal.classList.add('hidden');
-                    modal.removeEventListener('touchmove', preventBackgroundScroll);
 
                     // Only unlock scroll if NO other modals are still open
                     if (!document.querySelector('.fixed.inset-0:not(.hidden)')) {
-                        document.body.style.overflow = '';
+                        unlockBodyScroll();
                     }
-                }, 300);
+                }, 300); // 300ms matches the CSS animation duration
             } else {
                 // Standard Popup Close
                 modal.classList.add('hidden');
-                modal.removeEventListener('touchmove', preventBackgroundScroll);
-                modal.removeEventListener('wheel', preventBackgroundScroll);
 
                 if (!document.querySelector('.fixed.inset-0:not(.hidden)')) {
-                    document.body.style.overflow = '';
+                    unlockBodyScroll();
                 }
             }
         };
