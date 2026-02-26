@@ -3453,87 +3453,109 @@
             lucide.createIcons();
         };
 
-        // --- NEW: USER DOCUMENTS UI LOGIC ---
+        // --- NEW: USER DOCUMENTS UI LOGIC (BULLETPROOF) ---
         window.openUserDocumentsModal = function (docType) {
-            if (!isUserLoggedIn) {
-                showToast("Please log in to view your documents.", "info");
-                openModal('loginModal');
-                return;
-            }
-
-            const modalTitleSpan = document.getElementById('docsModalTitle').querySelector('span');
-            const modalIcon = document.getElementById('docsModalIcon');
-            const listContainer = document.getElementById('docsDetailedList');
-            const messageText = document.getElementById('docsModalMessageText');
-
-            // 1. Setup UI theme based on type (Marksheet vs Certificate)
-            if (docType === 'marksheet') {
-                modalTitleSpan.textContent = "My Marksheets";
-                modalIcon.setAttribute('data-lucide', 'file-text');
-                modalIcon.className = "text-purple-600 dark:text-purple-400 w-6 h-6";
-                messageText.textContent = "Marksheets are available for download once your final exam results are officially published.";
-            } else {
-                modalTitleSpan.textContent = "My Certificates";
-                modalIcon.setAttribute('data-lucide', 'award');
-                modalIcon.className = "text-fuchsia-600 dark:text-fuchsia-400 w-6 h-6";
-                messageText.textContent = "Certificates are available for download upon successful completion of your course and fee clearance.";
-            }
-
-            // 2. Filter courses based on specific document status
-            // IMPORTANT: This relies on your Code.gs sending 'marksheetStatus' and 'certificateStatus'
-            const availableDocs = window.userEnrolledData.filter(c => {
-                if (docType === 'marksheet') {
-                    return c.marksheetStatus && String(c.marksheetStatus).trim().toLowerCase() === 'completed';
-                } else {
-                    return c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'completed';
+            try {
+                // 1. Safety Check
+                if (!isUserLoggedIn) {
+                    showToast("Please log in to view your documents.", "info");
+                    openModal('loginModal');
+                    return;
                 }
-            });
 
-            // 3. Generate the List HTML
-            if (availableDocs.length === 0) {
-                listContainer.innerHTML = `
-                    <div class="text-center py-10">
-                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
-                            <i data-lucide="clock" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="text-slate-800 dark:text-white font-bold mb-1">No ${docType}s available yet</h4>
-                        <p class="text-sm text-slate-500 max-w-xs mx-auto">Your document will be displayed here once your status is updated by the administration.</p>
-                    </div>
-                `;
-            } else {
-                listContainer.innerHTML = availableDocs.map(course => {
-                    const btnClasses = docType === 'marksheet'
-                        ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/40'
-                        : 'bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-200 dark:border-fuchsia-800/50 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-900/40';
+                // 2. Safely grab HTML elements
+                const modalTitle = document.getElementById('docsModalTitle');
+                const modalIcon = document.getElementById('docsModalIcon');
+                const listContainer = document.getElementById('docsDetailedList');
+                const messageText = document.getElementById('docsModalMessageText');
 
-                    const btnText = docType === 'marksheet' ? 'Download Marksheet' : 'Download Certificate';
+                if (!modalTitle || !listContainer) {
+                    console.error("Missing HTML Elements: Cannot find docsModalTitle or docsDetailedList");
+                    alert("System Error: Modal HTML is missing or duplicated.");
+                    return;
+                }
 
-                    return `
-                        <div class="mb-4 p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md">
-                            <div class="mb-3 flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-bold text-slate-800 dark:text-white leading-tight text-md mb-1">${course.courseName}</h4>
-                                    <p class="text-xs text-slate-500 font-mono tracking-wider">${course.regNo || 'Reg No. Missing'}</p>
-                                </div>
-                                <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-md border border-emerald-200 dark:border-emerald-800 shrink-0">Verified</span>
+                // Safely grab the span inside the title
+                const titleSpan = modalTitle.querySelector('span');
+
+                // 3. Setup UI theme based on type (Marksheet vs Certificate)
+                if (docType === 'marksheet') {
+                    if (titleSpan) titleSpan.textContent = "My Marksheets";
+                    if (modalIcon) {
+                        modalIcon.setAttribute('data-lucide', 'file-text');
+                        modalIcon.className = "text-purple-600 dark:text-purple-400 w-6 h-6";
+                    }
+                    if (messageText) messageText.textContent = "Marksheets are available for download once your final exam results are officially published.";
+                } else {
+                    if (titleSpan) titleSpan.textContent = "My Certificates";
+                    if (modalIcon) {
+                        modalIcon.setAttribute('data-lucide', 'award');
+                        modalIcon.className = "text-fuchsia-600 dark:text-fuchsia-400 w-6 h-6";
+                    }
+                    if (messageText) messageText.textContent = "Certificates are available for download upon successful completion of your course and fee clearance.";
+                }
+
+                // Fallback if data isn't loaded yet
+                if (!window.userEnrolledData) window.userEnrolledData = [];
+
+                // 4. Filter courses based on specific document status
+                const availableDocs = window.userEnrolledData.filter(c => {
+                    if (docType === 'marksheet') {
+                        return c.marksheetStatus && String(c.marksheetStatus).trim().toLowerCase() === 'completed';
+                    } else {
+                        return c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'completed';
+                    }
+                });
+
+                // 5. Generate the List HTML
+                if (availableDocs.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="text-center py-10">
+                            <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                                <i data-lucide="clock" class="w-8 h-8"></i>
                             </div>
-                            <button onclick="downloadDocument('${course.regNo}', '${docType}')" class="w-full py-2.5 border rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors ${btnClasses}">
-                                <i data-lucide="download" class="w-4 h-4"></i> ${btnText}
-                            </button>
+                            <h4 class="text-slate-800 dark:text-white font-bold mb-1">No ${docType}s available yet</h4>
+                            <p class="text-sm text-slate-500 max-w-xs mx-auto">Your document will be displayed here once your status is updated by the administration.</p>
                         </div>
                     `;
-                }).join('');
-            }
+                } else {
+                    listContainer.innerHTML = availableDocs.map(course => {
+                        const btnClasses = docType === 'marksheet'
+                            ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/40'
+                            : 'bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-200 dark:border-fuchsia-800/50 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-900/40';
 
-            // Open the modal and render icons
-            openModal('userDocumentsModal');
-            lucide.createIcons();
+                        const btnText = docType === 'marksheet' ? 'Download Marksheet' : 'Download Certificate';
+
+                        return `
+                            <div class="mb-4 p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md">
+                                <div class="mb-3 flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 dark:text-white leading-tight text-md mb-1">${course.courseName}</h4>
+                                        <p class="text-xs text-slate-500 font-mono tracking-wider">${course.regNo || 'Reg No. Missing'}</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-md border border-emerald-200 dark:border-emerald-800 shrink-0">Verified</span>
+                                </div>
+                                <button onclick="downloadDocument('${course.regNo}', '${docType}')" class="w-full py-2.5 border rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors ${btnClasses}">
+                                    <i data-lucide="download" class="w-4 h-4"></i> ${btnText}
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // 6. Finally, open the modal
+                openModal('userDocumentsModal');
+                if (window.lucide) lucide.createIcons();
+
+            } catch (error) {
+                // If ANYTHING crashes, it will alert you here instead of doing nothing!
+                console.error("Error opening Document Modal:", error);
+                alert("Something went wrong opening the modal: " + error.message);
+            }
         };
 
-        // Placeholder for future Google Sheets Download Logic
         window.downloadDocument = function (regNo, docType) {
             showToast(`Searching database for ${docType.toUpperCase()}...`, "info");
-            // Later, you will hook this up to a fetch request that triggers your PDF generator script!
         };
 
         // --- LOGOUT FUNCTION (FIXED) ---
