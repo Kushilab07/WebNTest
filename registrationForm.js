@@ -1,27 +1,10 @@
 // registrationForm.js
 
 // --- CONFIGURATION ---
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyP_ScGUXfaUqYAf0N73oQUkkIcxstuebeJ5rACvvsWdK11yDwuRrf95JKnpeDuj9wv/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz0gI2OJDcwyI-J4SR3P9SrDUJoRKd6J_h68YZ0at3OLJKjT4dQRSxsc-pASKzQuR2thw/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbwALBsVTdQMzC8AONWISYIWYETy4tgLHvlZByD9dIfRy8zSdRM4e35Bi-M9B2e1y5j5/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbyXo00ncMu3M8mKaXHFK24iY6KE6SmnB5krLBNLotqOkg2Wfa3TeJWqXQPCZp_4LwbOEA/exec";
 const MAX_SIZE = 1 * 1024 * 1024; // 1MB Limit
 
-// --- 1. PRE-FILL DATA (Optional) ---
-// If you link from your site like: registrationForm.html?name=John&email=john@test.com
-// This code will auto-fill the form!
-// window.onload = function() {
-//     const params = new URLSearchParams(window.location.search);
-//     const nameInput = document.getElementsByName('studentName')[0];
-//     const emailInput = document.getElementById('email-field');
-
-//     if(params.has('name') && nameInput) {
-//         nameInput.value = params.get('name');
-//         nameInput.classList.add('filled-input');
-//     }
-//     if(params.has('email') && emailInput) {
-//         emailInput.value = params.get('email');
-//         emailInput.classList.add('filled-input');
-//     }
-// };
 // --- 1. PRE-FILL DATA & DYNAMIC FEES ---
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Fee Database based on your course categories
