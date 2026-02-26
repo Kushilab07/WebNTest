@@ -391,6 +391,12 @@
             animation: shake 0.4s ease-in-out;
             cursor: pointer;
         }
+
+        /* Enable hardware-accelerated momentum scrolling for smooth modal behavior */
+        .overflow-y-auto {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
     </style>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
@@ -1565,7 +1571,7 @@
                                 class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                                 Active Courses</p>
                         </div>
-                        <div
+                        <!-- <div
                             class="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-center">
                             <div
                                 class="w-10 h-10 mx-auto bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mb-2">
@@ -1575,6 +1581,22 @@
                             <p
                                 class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                                 Attendance</p>
+                        </div> -->
+                        <div onclick="openAttendanceModal()"
+                            class="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-center cursor-pointer hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 hover:shadow-md transition-all duration-100 ease-in-out flex flex-col items-center justify-center">
+                            <div
+                                class="w-10 h-10 mx-auto bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mb-2 transition-transform duration-100 hover:scale-110">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            </div>
+                            <p id="display-attendance-percent"
+                                class="text-2xl font-extrabold text-slate-900 dark:text-white leading-none mb-1">
+                                <span
+                                    class="inline-block w-5 h-5 border-2 border-slate-300 border-t-emerald-600 rounded-full animate-spin"></span>
+                            </p>
+                            <p id="display-attendance-course"
+                                class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider truncate w-full px-1">
+                                Loading...
+                            </p>
                         </div>
                     </div>
 
@@ -1587,7 +1609,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="calendar" class="w-5 h-5"></i></div>
+                                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">My Schedule</span>
                             </div>
                             <span
@@ -1599,7 +1622,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="layers" class="w-5 h-5"></i></div>
+                                    <i data-lucide="layers" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">My Courses</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1611,7 +1635,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i></div>
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Exam Results</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1625,7 +1650,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="credit-card" class="w-5 h-5"></i></div>
+                                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Fee Status</span>
                             </div>
                             <span
@@ -1637,7 +1663,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="life-buoy" class="w-5 h-5"></i></div>
+                                    <i data-lucide="life-buoy" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Help Center</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1755,6 +1782,37 @@
             </div>
 
             <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 grow" id="myCoursesDetailedList"></div>
+        </div>
+    </div>
+
+    <!-- Attendance Model -->
+    <div id="attendanceModal" class="sidebar-modal fixed inset-0 z-[300] hidden">
+        <div class="sidebar-backdrop absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+            onclick="closeModal('attendanceModal')"></div>
+
+        <div
+            class="sidebar-panel absolute top-0 right-0 bottom-0 w-full max-w-[400px] sm:max-w-[450px] bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col border-l border-slate-200 dark:border-slate-800">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="check-circle" class="text-emerald-600 w-6 h-6"></i> Attendance Record
+                </h3>
+                <button onclick="closeModal('attendanceModal')"
+                    class="text-slate-400 hover:text-red-500 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800/50 shrink-0">
+                <p class="text-xs font-medium text-blue-700 dark:text-blue-400 flex items-start gap-2 leading-relaxed">
+                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                    Attendance is officially updated once every month. Select an active course below to pin its
+                    attendance to your main profile.
+                </p>
+            </div>
+
+            <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 grow" id="attendanceDetailedList">
+            </div>
         </div>
     </div>
 
@@ -2270,7 +2328,7 @@
 
         window.openModal = function (modalId) {
             const modal = document.getElementById(modalId);
-            
+
             // Remove hidden first so browser can calculate height
             modal.classList.remove('hidden');
 
@@ -2283,7 +2341,7 @@
             if (modal.classList.contains('sidebar-modal')) {
                 // SIDEBAR LOGIC
                 lockBodyScroll(); // 100% Freezes background
-                
+
                 // Animate in
                 void modal.offsetWidth;
                 const backdrop = modal.querySelector('.sidebar-backdrop');
@@ -3094,25 +3152,175 @@
 
                 window.userEnrolledData = allCourses;
 
-                // STRICT LOGIC: Only Completed if Certificate Status is "Completed"
+                // STRICT LOGIC: Filter Active vs Completed
                 window.userCompletedCourses = allCourses.filter(c => c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'completed');
                 window.userActiveCourses = allCourses.filter(c => !c.certificateStatus || String(c.certificateStatus).trim().toLowerCase() !== 'completed');
 
-                // Update Top Profile Number
+                // --- 1. UPDATE PROFILE NUMBERS ---
                 const countEl = document.getElementById('active-courses-count');
                 if (countEl) countEl.innerHTML = window.userActiveCourses.length;
 
-                // Update Modal Tab Numbers
                 if (document.getElementById('mc-count-total')) document.getElementById('mc-count-total').textContent = allCourses.length;
                 if (document.getElementById('mc-count-active')) document.getElementById('mc-count-active').textContent = window.userActiveCourses.length;
                 if (document.getElementById('mc-count-completed')) document.getElementById('mc-count-completed').textContent = window.userCompletedCourses.length;
 
+                // --- 2. TRIGGER ATTENDANCE DISPLAY UPDATE ---
+                if (window.updateProfileAttendanceDisplay) {
+                    window.updateProfileAttendanceDisplay();
+                }
+
             } catch (error) {
                 console.error("Failed to fetch courses", error);
                 const countEl = document.getElementById('active-courses-count');
-                if (countEl) countEl.innerHTML = "0"; // Fallback on error
+                const percentEl = document.getElementById('display-attendance-percent');
+                if (countEl) countEl.innerHTML = "0";
+                if (percentEl) percentEl.innerHTML = "N/A";
             }
         }
+
+        // --- NEW: SMART ATTENDANCE PREFERENCE LOGIC ---
+
+        // Find which course to display based on LocalStorage OR fallback to Highest Attendance
+        window.getPreferredAttendanceCourse = function () {
+            if (window.userActiveCourses.length === 0) return null;
+
+            // 1. Check if user explicitly pinned a course previously (keyed by their unique email)
+            const savedPref = localStorage.getItem(`niat_attn_pref_${userEmail}`);
+            if (savedPref) {
+                const found = window.userActiveCourses.find(c => c.courseName === savedPref);
+                if (found) return found;
+            }
+
+            // 2. Fallback: Automatically pick the active course with the HIGHEST attendance
+            return window.userActiveCourses.reduce((prev, current) => {
+                let prevVal = parseFloat(String(prev.attendance || "0").replace(/[^0-9.]/g, "")) || 0;
+                let currVal = parseFloat(String(current.attendance || "0").replace(/[^0-9.]/g, "")) || 0;
+                return (currVal > prevVal) ? current : prev;
+            });
+        };
+
+        // Update the tiny UI Box in the Profile Sidebar
+        window.updateProfileAttendanceDisplay = function () {
+            const percentEl = document.getElementById('display-attendance-percent');
+            const courseEl = document.getElementById('display-attendance-course');
+
+            const prefCourse = window.getPreferredAttendanceCourse();
+
+            if (prefCourse) {
+                let attNum = parseFloat(String(prefCourse.attendance || "0").replace(/[^0-9.]/g, "")) || 0;
+                if (percentEl) percentEl.innerHTML = `${attNum}%`;
+
+                // Show Registration No if available, otherwise show short Course Name
+                let displayName = (prefCourse.regNo && prefCourse.regNo.trim() !== "") ? prefCourse.regNo : prefCourse.courseName;
+                if (courseEl) {
+                    courseEl.innerHTML = displayName;
+                    courseEl.title = prefCourse.courseName; // Shows full name on mouse hover
+                }
+            } else {
+                if (percentEl) percentEl.innerHTML = `N/A`;
+                if (courseEl) courseEl.innerHTML = `No Active Courses`;
+            }
+        };
+
+        // Triggered when user clicks "Set as Profile Display"
+        window.setPinnedAttendance = function (courseName) {
+            // Save to local storage explicitly linked to this user's email
+            localStorage.setItem(`niat_attn_pref_${userEmail}`, courseName);
+
+            // Instantly update the Profile Box
+            window.updateProfileAttendanceDisplay();
+
+            // Instantly Re-render the Modal to show the new "Pinned" styling
+            window.openAttendanceModal(true);
+        };
+
+        // --- NEW: ATTENDANCE MODAL UI GENERATOR ---
+        window.openAttendanceModal = function (isRefresh = false) {
+            if (!isUserLoggedIn) return;
+            if (!isRefresh) openModal('attendanceModal'); // Only open if not just refreshing the UI
+
+            const listContainer = document.getElementById('attendanceDetailedList');
+            if (!listContainer) return;
+
+            if (window.userEnrolledData.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-slate-500 py-6 font-medium">No courses found to show attendance for.</p>`;
+                return;
+            }
+
+            const prefCourse = window.getPreferredAttendanceCourse();
+            const prefCourseName = prefCourse ? prefCourse.courseName : null;
+
+            // Generate HTML for ALL courses (Active and Completed)
+            listContainer.innerHTML = window.userEnrolledData.map(course => {
+                let attStr = String(course.attendance || "0").trim();
+                let attNum = parseFloat(attStr.replace(/[^0-9.]/g, ""));
+                if (isNaN(attNum)) attNum = 0;
+
+                // Traffic light coloring
+                let barColor = "bg-emerald-500";
+                if (attNum < 50) barColor = "bg-red-500";
+                else if (attNum < 75) barColor = "bg-amber-500";
+
+                const isCompleted = course.certificateStatus && String(course.certificateStatus).trim().toLowerCase() === 'completed';
+
+                const badgeHtml = isCompleted
+                    ? `<span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-extrabold uppercase rounded-md border border-slate-200 dark:border-slate-700">Completed</span>`
+                    : `<span class="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-md border border-amber-200 dark:border-amber-800 animate-pulse">Active</span>`;
+
+                const isPinned = course.courseName === prefCourseName;
+
+                let actionBtnHtml = '';
+
+                // Only Active courses get action buttons
+                if (!isCompleted) {
+                    if (isPinned) {
+                        actionBtnHtml = `
+                            <button disabled class="w-full mt-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 rounded-lg text-xs font-bold flex items-center justify-center gap-1 cursor-default">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Pinned to Profile
+                            </button>
+                        `;
+                    } else {
+                        actionBtnHtml = `
+                            <button onclick="setPinnedAttendance('${course.courseName}')" class="w-full mt-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 rounded-lg text-xs font-bold transition-all shadow-sm">
+                                Set as Profile Display
+                            </button>
+                        `;
+                    }
+                }
+
+                // If pinned, give it a glowing ring border. If completed, make the bar grey.
+                return `
+                    <div class="mb-4 p-5 border ${isPinned ? 'border-emerald-400 dark:border-emerald-500 shadow-md ring-1 ring-emerald-400/20' : 'border-slate-200 dark:border-slate-700 shadow-sm'} rounded-2xl bg-white dark:bg-slate-800 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <div class="pr-3">
+                                <h4 class="font-bold text-slate-800 dark:text-white leading-tight text-md mb-1.5">${course.courseName}</h4>
+                                <div class="flex items-center gap-2">
+                                    ${badgeHtml}
+                                    <span class="text-[10px] text-slate-500 font-mono tracking-wider">${course.regNo || 'Awaiting Reg No'}</span>
+                                </div>
+                            </div>
+                            <span class="font-extrabold text-xl ${isCompleted ? 'text-slate-400 dark:text-slate-500' : barColor.replace('bg-', 'text-')}">${attNum}%</span>
+                        </div>
+                        
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 mt-4 overflow-hidden">
+                            <div class="${isCompleted ? 'bg-slate-300 dark:bg-slate-600' : barColor} h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%" data-target-width="${attNum}%"></div>
+                        </div>
+                        
+                        ${actionBtnHtml}
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+
+            // Trigger the progress bar sliding animation
+            setTimeout(() => {
+                const bars = listContainer.querySelectorAll('[data-target-width]');
+                bars.forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-target-width');
+                });
+            }, 50);
+        };
 
         // --- COURSE CARD HTML GENERATOR ---
         function generateCourseCardHTML(course) {
