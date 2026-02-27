@@ -41,6 +41,7 @@ window.showToast = function (message, type = 'success') {
 onAuthStateChanged(auth, async (user) => {
     const loginScreen = document.getElementById('login-screen');
     const dashboard = document.getElementById('dashboard-screen');
+    const btn = document.getElementById('loginBtn'); // Grab the button to reset it later
 
     if (user) {
         // VERIFICATION STEP: Check if user exists in the 'admins' Firestore collection
@@ -63,11 +64,25 @@ onAuthStateChanged(auth, async (user) => {
                 // Boot them out instantly
                 await signOut(auth);
                 window.showToast("Unauthorized Access. Incident Logged.", "error");
+                
+                // Stop the spinner
+                if(btn) {
+                    btn.innerHTML = `<span>Authenticate</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                    btn.disabled = false;
+                    lucide.createIcons();
+                }
             }
         } catch (error) {
             console.error("Verification Error:", error);
             await signOut(auth);
-            window.showToast("Database verification failed.", "error");
+            window.showToast("Database verification failed. Check Firestore Rules.", "error");
+            
+            // Stop the spinner
+            if(btn) {
+                btn.innerHTML = `<span>Authenticate</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
         }
     } else {
         // Show Login Screen
