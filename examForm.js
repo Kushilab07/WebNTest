@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
     // --- PASTE YOUR URLS HERE ---
-    const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbwALBsVTdQMzC8AONWISYIWYETy4tgLHvlZByD9dIfRy8zSdRM4e35Bi-M9B2e1y5j5/exec";
-    const URL_BAGALS = "https://script.google.com/macros/s/AKfycbyXo00ncMu3M8mKaXHFK24iY6KE6SmnB5krLBNLotqOkg2Wfa3TeJWqXQPCZp_4LwbOEA/exec";
+    const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmrZnj7tj1l7EobN-gaDyjsJAXjWVo5Lwwok5f8N_1zHdgVp4_vv/exec";
+    const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz5sDaroUh90_yXFRLZ-zdUy6ih5bXBrGrBQGXDOTq3V6o6gpcyYDbrggnXdBAX2EyrNQ/exec";
     const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbzm2qrBOHNyhOW7NQ3q2mvkIjlECqyOrtLettA7z2Et6GKMm0DzjwVLlRFeJ6uwQ23NNw/exec";
 
     // 1. UI Elements
