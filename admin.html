@@ -61,38 +61,44 @@
 
     <div id="dashboard-screen" class="hidden h-full flex flex-col opacity-0 transition-opacity duration-500">
         
-        <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 shrink-0 flex items-center justify-between px-6 z-20 shadow-sm">
-            <div class="flex items-center gap-4">
-                <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md">
-                    <i data-lucide="database" class="w-4 h-4"></i>
+        <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-auto sm:h-16 shrink-0 flex flex-col sm:flex-row items-center justify-between p-4 sm:px-6 z-20 shadow-sm gap-4 sm:gap-0">
+            <div class="flex items-center justify-between w-full sm:w-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                    </div>
+                    <h1 class="font-bold text-base sm:text-lg tracking-tight truncate">NIAT Control Center</h1>
                 </div>
-                <h1 class="font-bold text-lg tracking-tight">NIAT Control Center</h1>
+                
+                <button onclick="window.handleAdminLogout()" class="sm:hidden text-slate-400 hover:text-red-500 transition-colors p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
             </div>
             
-            <div class="flex items-center gap-4">
-                <div class="bg-slate-100 dark:bg-slate-950 p-1 rounded-lg flex gap-1 border border-slate-200 dark:border-slate-800">
-                    <button onclick="window.switchBranch('Arikuchi')" id="btn-arikuchi" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white dark:bg-slate-800 text-blue-600 shadow-sm transition-all">Arikuchi</button>
-                    <button onclick="window.switchBranch('Bagals')" id="btn-bagals" class="px-4 py-1.5 text-xs font-bold rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all">Bagals Road</button>
+            <div class="flex items-center w-full sm:w-auto gap-4">
+                <div class="bg-slate-100 dark:bg-slate-950 p-1 rounded-lg flex gap-1 border border-slate-200 dark:border-slate-800 w-full sm:w-auto">
+                    <button onclick="window.switchBranch('Arikuchi')" id="btn-arikuchi" class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-bold rounded-md bg-white dark:bg-slate-800 text-blue-600 shadow-sm transition-all">Arikuchi</button>
+                    <button onclick="window.switchBranch('Bagals')" id="btn-bagals" class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-bold rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap">Bagals Road</button>
                 </div>
                 
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
+                <div class="hidden sm:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
                 
-                <button onclick="window.handleAdminLogout()" class="text-slate-500 hover:text-red-500 transition-colors flex items-center gap-2 text-sm font-bold">
+                <button onclick="window.handleAdminLogout()" class="hidden sm:flex text-slate-500 hover:text-red-500 transition-colors items-center gap-2 text-sm font-bold shrink-0">
                     <i data-lucide="log-out" class="w-4 h-4"></i> Logout
                 </button>
             </div>
         </nav>
 
-        <main class="flex-1 flex flex-col p-6 overflow-hidden">
+        <main class="flex-1 flex flex-col p-3 sm:p-6 overflow-hidden">
             
-            <div class="flex justify-between items-center mb-4 shrink-0">
-                <div class="relative w-full max-w-md">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 shrink-0">
+                <div class="relative w-full sm:max-w-md">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="adminSearch" placeholder="Search by Name or Reg No..." class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+                    <input type="text" id="adminSearch" placeholder="Search Name or Reg No..." class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
                 </div>
                 
-                <button class="px-4 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm rounded-xl border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-2 hover:bg-emerald-100 transition-colors">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sync Database
+                <button class="w-full sm:w-auto px-4 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm rounded-xl border border-emerald-200 dark:border-emerald-800/50 flex items-center justify-center gap-2 hover:bg-emerald-100 transition-colors shrink-0">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sync Data
                 </button>
             </div>
 
@@ -103,8 +109,8 @@
                     <p class="text-sm font-bold text-slate-500 animate-pulse">Fetching Secure Data...</p>
                 </div>
 
-                <div class="table-container flex-1 overflow-auto">
-                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                <div class="table-container flex-1 overflow-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
                         <thead class="sticky top-0 bg-slate-50 dark:bg-slate-950/80 backdrop-blur-md z-10 border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th class="py-3 px-4 text-xs font-extrabold text-slate-500 uppercase tracking-wider">Reg No</th>
