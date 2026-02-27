@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 // YOUR EXISTING FIREBASE CONFIG
@@ -103,6 +103,10 @@ document.getElementById('adminLoginForm').addEventListener('submit', async (e) =
     btn.disabled = true;
 
     try {
+        // NEW: Force Firebase to forget the session if the page is refreshed or closed
+        await setPersistence(auth, inMemoryPersistence);
+        
+        // Then log them in
         await signInWithEmailAndPassword(auth, email, password);
         window.showToast("Authenticating...", "info");
     } catch (error) {
