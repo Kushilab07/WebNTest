@@ -20,8 +20,8 @@ const db = getFirestore(app);
 setPersistence(auth, browserSessionPersistence).catch(console.error);
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbwALBsVTdQMzC8AONWISYIWYETy4tgLHvlZByD9dIfRy8zSdRM4e35Bi-M9B2e1y5j5/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbyXo00ncMu3M8mKaXHFK24iY6KE6SmnB5krLBNLotqOkg2Wfa3TeJWqXQPCZp_4LwbOEA/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmrZnj7tj1l7EobN-gaDyjsJAXjWVo5Lwwok5f8N_1zHdgVp4_vv/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz5sDaroUh90_yXFRLZ-zdUy6ih5bXBrGrBQGXDOTq3V6o6gpcyYDbrggnXdBAX2EyrNQ/exec";
 
 window.adminData = []; 
 window.currentEditingRegNo = null; 
