@@ -125,6 +125,13 @@
             </div>
 
             <div class="flex items-center w-full sm:w-auto gap-3 sm:gap-4">
+                <button onclick="window.setFilterStatus('fee'); window.switchFeeTab('requests');"
+                    class="p-2 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors relative"
+                    title="View Pending Requests">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <span id="adminNotificationDot"
+                        class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full hidden border border-white dark:border-slate-800"></span>
+                </button>
                 <button onclick="window.toggleTheme()"
                     class="p-2 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors">
                     <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
@@ -187,7 +194,8 @@
                 </div>
             </div>
 
-            <div class="flex-1 flex flex-col p-3 sm:p-6 overflow-hidden">
+            <div id="students-workspace"
+                class="flex-1 flex flex-col p-3 sm:p-6 overflow-hidden relative transition-opacity duration-300">
 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 shrink-0">
                     <div class="relative w-full sm:max-w-md flex gap-2">
@@ -294,6 +302,62 @@
                         </table>
                     </div>
                 </div>
+            </div>
+            <div id="fees-workspace"
+                class="hidden flex-1 flex flex-col p-3 sm:p-6 overflow-hidden transition-opacity duration-300 opacity-0">
+
+                <div class="flex items-center gap-2 mb-4 p-1.5 bg-slate-200 dark:bg-slate-800/50 rounded-xl w-max">
+                    <button onclick="window.switchFeeTab('requests')" id="fee-tab-requests"
+                        class="px-5 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm transition-all">Verification
+                        Requests</button>
+                    <button onclick="window.switchFeeTab('pricing')" id="fee-tab-pricing"
+                        class="px-5 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all">Course
+                        Pricing</button>
+                </div>
+
+                <div id="fee-panel-requests"
+                    class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
+                    <div
+                        class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i
+                                data-lucide="inbox" class="w-5 h-5 text-blue-500"></i> Live Verification Requests</h3>
+                    </div>
+                    <div class="table-container flex-1 overflow-auto w-full">
+                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                            <thead
+                                class="sticky top-0 bg-slate-50 dark:bg-slate-950/90 backdrop-blur-md z-10 border-b border-slate-200 dark:border-slate-800">
+                                <tr>
+                                    <th class="py-3 px-4 text-xs font-extrabold text-slate-500 uppercase">Date</th>
+                                    <th class="py-3 px-4 text-xs font-extrabold text-slate-500 uppercase">Student Info
+                                    </th>
+                                    <th class="py-3 px-4 text-xs font-extrabold text-slate-500 uppercase">Course</th>
+                                    <th class="py-3 px-4 text-xs font-extrabold text-slate-500 uppercase text-right">
+                                        Amount Claimed</th>
+                                    <th class="py-3 px-4 text-xs font-extrabold text-slate-500 uppercase text-center">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feeRequestsTableBody"
+                                class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="fee-panel-pricing"
+                    class="hidden flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                        <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i
+                                data-lucide="tag" class="w-5 h-5 text-purple-500"></i> Global Course Pricing</h3>
+                        <p class="text-xs text-slate-500 mt-1">Set the total tuition fee for each course. This is
+                            required before approving payments.</p>
+                    </div>
+                    <div class="table-container flex-1 overflow-auto w-full p-4">
+                        <div id="coursePricingGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
