@@ -464,11 +464,13 @@
                             </button>
                             <!-- Notification Popup -->
                             <div id="notification-popup">
-                                <h4 class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2 text-slate-800 dark:text-white">
+                                <h4
+                                    class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2 text-slate-800 dark:text-white">
                                     Notifications
                                 </h4>
                                 <ul class="space-y-2 text-sm max-h-64 overflow-y-auto">
-                                    <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.</li>
+                                    <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -2015,24 +2017,45 @@
             }
         }
 
-        // Notification Logic
+        // --- NOTIFICATION UX & READ STATE LOGIC ---
+        window.unreadNotifIds = []; // Global array to hold unread message IDs
+
         function toggleNotification() {
-            document.getElementById('notification-popup').classList.toggle('active');
+            const popup = document.getElementById('notification-popup');
+            popup.classList.toggle('active');
+
+            // If the popup just opened and there are unread messages, mark them read in Firebase!
+            if (popup.classList.contains('active') && window.unreadNotifIds.length > 0) {
+                markNotificationsAsRead();
+            }
         }
 
-        // --- NEW: CLOSE NOTIFICATION ON OUTSIDE CLICK ---
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const popup = document.getElementById('notification-popup');
             const bellBtn = document.querySelector('button[onclick="toggleNotification()"]');
-            
-            // Check if popup exists and is currently open
+
             if (popup && popup.classList.contains('active')) {
-                // If the user clicked OUTSIDE the popup AND OUTSIDE the bell button
                 if (!popup.contains(event.target) && (!bellBtn || !bellBtn.contains(event.target))) {
-                    popup.classList.remove('active'); // Close it
+                    popup.classList.remove('active');
                 }
             }
         });
+
+        window.markNotificationsAsRead = async function () {
+            if (!db || window.unreadNotifIds.length === 0) return;
+            try {
+                const batch = writeBatch(db);
+                window.unreadNotifIds.forEach(id => {
+                    const ref = doc(db, "notifications", id);
+                    batch.update(ref, { read: true });
+                });
+                await batch.commit();
+                window.unreadNotifIds = [];
+                // Note: The onSnapshot listener will auto-detect this change and instantly remove the red dot!
+            } catch (e) {
+                console.error("Failed to mark notifications as read:", e);
+            }
+        }
 
         // Profile Animation Logic (Now greatly simplified!)
         window.openProfile = function () {
@@ -2899,7 +2922,7 @@
         // FIREBASE AUTH LOGIC
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, writeBatch, doc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
         // --- NEW: CUSTOM TOAST NOTIFICATION SYSTEM ---
         window.showToast = function (message, type = 'success') {
@@ -2998,7 +3021,6 @@
                     fetchUserCourses(user.email);
 
                     // --- NEW: START NOTIFICATION LISTENER ---
-                    // FIX 4: Removed orderBy to prevent "Index Required" crash
                     const q = query(
                         collection(db, "notifications"),
                         where("email", "==", user.email.toLowerCase().trim())
@@ -3010,45 +3032,53 @@
                         const list = document.querySelector('#notification-popup ul');
                         if (!list) return;
                         list.innerHTML = '';
+                        window.unreadNotifIds = []; // Reset unread array
 
                         let unreadCount = 0;
                         let docsArray = [];
 
-                        // 1. Gather all docs
-                        snapshot.forEach((doc) => {
-                            docsArray.push({ id: doc.id, ...doc.data() });
+                        snapshot.forEach((docSnap) => {
+                            docsArray.push({ id: docSnap.id, ...docSnap.data() });
                         });
 
-                        // 2. Sort by timestamp descending (newest on top) manually
+                        // Sort by timestamp descending (newest on top) manually
                         docsArray.sort((a, b) => {
                             const timeA = a.timestamp ? a.timestamp.toMillis() : 0;
                             const timeB = b.timestamp ? b.timestamp.toMillis() : 0;
                             return timeB - timeA;
                         });
 
-                        // 3. Render HTML
                         docsArray.forEach((data) => {
-                            if (!data.read) unreadCount++;
+                            if (!data.read) {
+                                unreadCount++;
+                                window.unreadNotifIds.push(data.id); // Save ID to mark read later
+                            }
+                            
+                            // Visual Distinction: Unread messages get a blue background and a tiny blue dot!
+                            const bgClass = data.read ? "bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700/50" : "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 relative";
+                            const badge = data.read ? "" : `<span class="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full"></span>`;
+
                             list.innerHTML += `
-                                <li class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-2 border border-blue-100 dark:border-blue-800">
-                                    <span class="font-bold block text-blue-600 text-xs mb-1">Admin Update</span>
-                                    <p class="text-sm text-slate-700 dark:text-slate-300">${data.message}</p>
+                                <li class="p-3 rounded-lg mb-2 border ${bgClass}">
+                                    ${badge}
+                                    <span class="font-bold block text-blue-600 text-[10px] uppercase tracking-wider mb-1">Admin Update</span>
+                                    <p class="text-sm text-slate-700 dark:text-slate-300 font-medium">${data.message}</p>
                                 </li>
                             `;
                         });
 
                         if (docsArray.length === 0) {
-                            list.innerHTML = `<li class="p-4 text-center text-slate-500 text-sm">No new notifications.</li>`;
+                            list.innerHTML = `<li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.</li>`;
                         }
 
-                        // 4. Trigger Red Dot & Toasts
+                        // Trigger Red Dot & Toasts
                         const bellBtn = document.querySelector('button[onclick="toggleNotification()"]');
                         if (bellBtn) {
                             const dot = bellBtn.querySelector('span');
                             if (unreadCount > 0) {
                                 if (dot) dot.classList.remove('hidden');
 
-                                // Only pop the Toast if it's a NEW message (not on initial page load)
+                                // Only pop the Toast if it's a NEW message
                                 if (!isInitialLoad) {
                                     snapshot.docChanges().forEach((change) => {
                                         if (change.type === "added" && !change.doc.data().read) {
@@ -3060,10 +3090,8 @@
                                 if (dot) dot.classList.add('hidden');
                             }
                         }
-
-                        isInitialLoad = false; // Mark initial load complete
-                    }, (error) => {
-                        console.error("Firebase Notification Error:", error);
+                        
+                        isInitialLoad = false;
                     });
 
                 } else {
