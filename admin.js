@@ -102,22 +102,13 @@ onAuthStateChanged(auth, async (user) => {
                     window.loadTableData(window.currentBranch);
                 }, 300);
             } else {
-                // FIX: Do NOT signOut() here, as it logs them out of the student site globally.
-                // Instead, gracefully block access and offer an explicit sign-out button.
+                // If a student logs in here, instantly sign them out and show a clean error toast.
+                await signOut(auth);
                 resetLoginButton();
                 window.showToast("Access Denied: Not an Admin Account.", "error");
-                
-                const form = document.getElementById('adminLoginForm');
-                form.innerHTML = `
-                    <div class="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl mb-4 text-sm font-bold text-center border border-red-200 dark:border-red-800">
-                        You are logged in with a Student account.<br>Access Denied.
-                    </div>
-                    <button type="button" onclick="window.handleAdminLogout()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all">
-                        Sign Out & Switch Account
-                    </button>
-                `;
             }
         } catch (error) {
+            await signOut(auth);
             resetLoginButton();
             window.showToast("Database verification failed.", "error");
         }
