@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
@@ -23,8 +23,9 @@ const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmr
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz5sDaroUh90_yXFRLZ-zdUy6ih5bXBrGrBQGXDOTq3V6o6gpcyYDbrggnXdBAX2EyrNQ/exec";
 
 // --- GLOBAL STATE ---
-window.adminData = []; 
-window.currentEditingRegNo = null; 
+window.adminData = [];
+window.currentEditingRegNo = null;
+window.currentEditingEmail = null; // Stored for notifications
 window.currentBranch = 'Arikuchi';
 let sortDirection = 1;
 
@@ -42,7 +43,7 @@ window.filters = {
 };
 
 // --- THEME TOGGLE ---
-window.toggleTheme = function() {
+window.toggleTheme = function () {
     const html = document.documentElement;
     if (html.classList.contains('dark')) {
         html.classList.remove('dark');
@@ -60,13 +61,13 @@ window.showToast = function (message, type = 'success') {
     const toast = document.createElement('div');
     let borderClass = type === 'success' ? 'border-l-emerald-500' : (type === 'error' ? 'border-l-red-500' : 'border-l-blue-500');
     let iconColor = type === 'success' ? 'text-emerald-500' : (type === 'error' ? 'text-red-500' : 'text-blue-500');
-    
+
     toast.className = `flex items-center gap-3 p-4 rounded-xl shadow-xl bg-white dark:bg-slate-800 border-l-4 ${borderClass} transform transition-all duration-300 translate-x-full opacity-0`;
     toast.innerHTML = `<i data-lucide="info" class="w-5 h-5 ${iconColor}"></i><p class="text-sm font-bold">${message}</p>`;
-    
+
     container.appendChild(toast);
     lucide.createIcons();
-    
+
     requestAnimationFrame(() => toast.classList.remove('translate-x-full', 'opacity-0'));
     setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-x-full');
@@ -79,7 +80,7 @@ const resetLoginButton = () => {
     if (btn) {
         btn.innerHTML = `<span id="loginBtnText">Authenticate</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
         btn.disabled = false;
-        if(window.lucide) lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     }
 };
 
@@ -104,12 +105,12 @@ onAuthStateChanged(auth, async (user) => {
             } else {
                 await signOut(auth);
                 window.showToast("Unauthorized Access.", "error");
-                resetLoginButton(); 
+                resetLoginButton();
             }
         } catch (error) {
             await signOut(auth);
             window.showToast("Database verification failed.", "error");
-            resetLoginButton(); 
+            resetLoginButton();
         }
     } else {
         dashboard.classList.add('hidden', 'opacity-0');
@@ -123,7 +124,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', async (e) =
     const email = document.getElementById('adminEmail').value;
     const password = document.getElementById('adminPassword').value;
     const btn = document.getElementById('loginBtn');
-    
+
     btn.innerHTML = `<div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>`;
     btn.disabled = true;
 
@@ -142,37 +143,37 @@ window.handleAdminLogout = async () => {
 };
 
 // --- DATA FETCHING & STATS ---
-window.switchBranch = function(branch) {
+window.switchBranch = function (branch) {
     if (window.currentBranch === branch) return;
     window.currentBranch = branch;
-    
+
     const btnAri = document.getElementById('btn-arikuchi');
     const btnBag = document.getElementById('btn-bagals');
-    
-    if(branch === 'Arikuchi') {
+
+    if (branch === 'Arikuchi') {
         btnAri.className = "flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-bold rounded-md bg-white dark:bg-slate-800 text-blue-600 shadow-sm transition-all";
         btnBag.className = "flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-bold rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap";
     } else {
         btnBag.className = "flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-bold rounded-md bg-white dark:bg-slate-800 text-blue-600 shadow-sm transition-all";
         btnAri.className = "flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-bold rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap";
     }
-    
+
     window.setFilterStatus('all'); // Reset filter on branch switch
     window.loadTableData(branch);
 };
 
-window.loadTableData = async function(branch) {
+window.loadTableData = async function (branch) {
     const loader = document.getElementById('tableLoader');
     loader.classList.remove('hidden');
-    
+
     const targetUrl = branch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
-    
+
     try {
         const response = await fetch(`${targetUrl}?action=getAdminData`);
         const result = await response.json();
-        
+
         if (result.status === 'success') {
-            window.adminData = result.data; 
+            window.adminData = result.data;
             updateStats(window.adminData);
             window.applyFilters(); // Renders table
         } else {
@@ -188,12 +189,12 @@ window.loadTableData = async function(branch) {
 function updateStats(data) {
     let active = 0, completed = 0, dropout = 0;
     data.forEach(s => {
-        const stat = String(s[21] || '').toLowerCase(); 
-        if(stat === 'completed') completed++;
-        else if(stat === 'dropout') dropout++;
-        else active++; 
+        const stat = String(s[21] || '').toLowerCase();
+        if (stat === 'completed') completed++;
+        else if (stat === 'dropout') dropout++;
+        else active++;
     });
-    
+
     document.getElementById('statTotal').innerText = data.length;
     document.getElementById('statActive').innerText = active;
     document.getElementById('statCompleted').innerText = completed;
@@ -206,45 +207,45 @@ document.getElementById('adminSearch').addEventListener('input', (e) => {
     window.applyFilters();
 });
 
-window.setFilterStatus = function(status) {
+window.setFilterStatus = function (status) {
     window.filters.status = status;
-    
+
     // UI Update for Cards
     const cards = document.querySelectorAll('.metric-card');
     cards.forEach(c => {
         c.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
         c.classList.add('border-transparent', 'bg-white', 'dark:bg-slate-800');
     });
-    
+
     const targetCard = document.getElementById(`card-${status}`);
-    if(targetCard) {
+    if (targetCard) {
         targetCard.classList.remove('border-transparent', 'bg-white', 'dark:bg-slate-800');
         targetCard.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
     }
-    
+
     window.applyFilters();
 };
 
-window.toggleFilterMenu = function() {
+window.toggleFilterMenu = function () {
     const menu = document.getElementById('filterMenu');
     menu.classList.toggle('hidden');
 };
 
-window.applyFilters = function() {
+window.applyFilters = function () {
     let filtered = window.adminData;
 
     // 1. Search (RegNo, Name, Course)
-    if(window.filters.search) {
+    if (window.filters.search) {
         const q = window.filters.search;
-        filtered = filtered.filter(s => 
-            String(s[1]).toLowerCase().includes(q) || 
-            String(s[2]).toLowerCase().includes(q) || 
+        filtered = filtered.filter(s =>
+            String(s[1]).toLowerCase().includes(q) ||
+            String(s[2]).toLowerCase().includes(q) ||
             String(s[11]).toLowerCase().includes(q)
         );
     }
 
     // 2. Status Card
-    if(window.filters.status !== 'all') {
+    if (window.filters.status !== 'all') {
         filtered = filtered.filter(s => {
             const stat = String(s[21] || 'active').toLowerCase();
             return stat === window.filters.status;
@@ -254,11 +255,11 @@ window.applyFilters = function() {
     // 3. Dropdown Filters
     const markFilter = document.getElementById('filterMarksheet').value;
     const certFilter = document.getElementById('filterCert').value;
-    
-    if(markFilter !== 'all') {
+
+    if (markFilter !== 'all') {
         filtered = filtered.filter(s => String(s[22] || 'pending').toLowerCase() === markFilter);
     }
-    if(certFilter !== 'all') {
+    if (certFilter !== 'all') {
         filtered = filtered.filter(s => String(s[24] || 'pending').toLowerCase() === certFilter);
     }
 
@@ -267,8 +268,8 @@ window.applyFilters = function() {
     renderTable(filtered);
 };
 
-window.sortTable = function(colIndex) {
-    sortDirection *= -1; 
+window.sortTable = function (colIndex) {
+    sortDirection *= -1;
     const sorted = [...window.adminData].sort((a, b) => {
         const valA = String(a[colIndex] || '').toLowerCase();
         const valB = String(b[colIndex] || '').toLowerCase();
@@ -291,30 +292,30 @@ function renderTable(dataArray) {
     }
 
     dataArray.forEach((student) => {
-        const regNo = student[1]; 
+        const regNo = student[1];
         const safeRegNo = String(regNo).replace(/\//g, '-'); // Safe for HTML IDs
         const name = student[2];
         const course = student[11];
-        
+
         // Handle Attendance (Strip % for display)
         let rawAtt = String(student[20] || '0').replace('%', '').trim();
-        if(rawAtt === '') rawAtt = '0';
+        if (rawAtt === '') rawAtt = '0';
 
-        const status = String(student[21] || 'active').toLowerCase(); 
+        const status = String(student[21] || 'active').toLowerCase();
         const marksheetStatus = String(student[22] || 'pending').toLowerCase();
         const certStatus = String(student[24] || 'pending').toLowerCase();
 
         let statusPill = `<span class="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Active</span>`;
-        if(status === 'completed') statusPill = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200">Completed</span>`;
-        if(status === 'dropout') statusPill = `<span class="px-2.5 py-1 bg-red-100 text-red-700 text-[10px] font-extrabold uppercase rounded-lg border border-red-200">Dropout</span>`;
+        if (status === 'completed') statusPill = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200">Completed</span>`;
+        if (status === 'dropout') statusPill = `<span class="px-2.5 py-1 bg-red-100 text-red-700 text-[10px] font-extrabold uppercase rounded-lg border border-red-200">Dropout</span>`;
 
         // Interactive Links or Dots
-        const markHtml = marksheetStatus === 'approved' 
-            ? `<a href="${student[23] || '#'}" target="_blank" title="Marksheet Approved" class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded hover:scale-110 transition-transform"><i data-lucide="file-check-2" class="w-4 h-4"></i></a>` 
+        const markHtml = marksheetStatus === 'approved'
+            ? `<a href="${student[23] || '#'}" target="_blank" title="Marksheet Approved" class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded hover:scale-110 transition-transform"><i data-lucide="file-check-2" class="w-4 h-4"></i></a>`
             : `<span class="w-1.5 h-1.5 rounded-full bg-slate-300 mx-1.5" title="Marksheet Pending"></span>`;
-            
-        const certHtml = certStatus === 'approved' 
-            ? `<a href="${student[25] || '#'}" target="_blank" title="Certificate Approved" class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded hover:scale-110 transition-transform"><i data-lucide="award" class="w-4 h-4"></i></a>` 
+
+        const certHtml = certStatus === 'approved'
+            ? `<a href="${student[25] || '#'}" target="_blank" title="Certificate Approved" class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded hover:scale-110 transition-transform"><i data-lucide="award" class="w-4 h-4"></i></a>`
             : `<span class="w-1.5 h-1.5 rounded-full bg-slate-300 mx-1.5" title="Certificate Pending"></span>`;
 
         const row = `
@@ -343,18 +344,18 @@ function renderTable(dataArray) {
         tbody.insertAdjacentHTML('beforeend', row);
     });
 
-    if(window.lucide) lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
 }
 
 // --- CSV EXPORT ---
-window.exportToCSV = function() {
-    if(window.adminData.length === 0) {
+window.exportToCSV = function () {
+    if (window.adminData.length === 0) {
         window.showToast("No data to export", "info");
         return;
     }
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Reg No,Student Name,Course,Attendance %,Status,Marksheet Status,Certificate Status\n";
-    
+
     window.adminData.forEach(row => {
         const reg = String(row[1] || '').replace(/,/g, '');
         const name = String(row[2] || '').replace(/,/g, '');
@@ -365,7 +366,7 @@ window.exportToCSV = function() {
         const cs = String(row[24] || 'Pending').replace(/,/g, '');
         csvContent += `${reg},${name},${course},${att},${stat},${ms},${cs}\n`;
     });
-    
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -376,10 +377,10 @@ window.exportToCSV = function() {
 };
 
 // --- INLINE ATTENDANCE EDIT ---
-window.startEditAttendance = function(regNo, currentVal) {
+window.startEditAttendance = function (regNo, currentVal) {
     const safeRegNo = regNo.replace(/\//g, '-');
     const td = document.getElementById(`att-td-${safeRegNo}`);
-    
+
     // Convert to input field
     td.innerHTML = `
         <div class="flex items-center gap-1 w-max">
@@ -392,18 +393,18 @@ window.startEditAttendance = function(regNo, currentVal) {
     document.getElementById(`att-input-${safeRegNo}`).focus();
 }
 
-window.cancelAttendanceEdit = function() {
+window.cancelAttendanceEdit = function () {
     window.applyFilters(); // Re-render table completely restores state
 }
 
-window.saveAttendanceEdit = async function(regNo) {
+window.saveAttendanceEdit = async function (regNo) {
     const safeRegNo = regNo.replace(/\//g, '-');
     const input = document.getElementById(`att-input-${safeRegNo}`);
     let newVal = input.value.trim();
-    if(newVal === '') newVal = '0'; // default empty
-    
+    if (newVal === '') newVal = '0'; // default empty
+
     const studentIndex = window.adminData.findIndex(s => s[1] === regNo);
-    if(studentIndex > -1) {
+    if (studentIndex > -1) {
         window.adminData[studentIndex][20] = newVal; // Save raw number
         window.applyFilters(); // instantly updates UI
     }
@@ -415,7 +416,7 @@ window.saveAttendanceEdit = async function(regNo) {
             body: new URLSearchParams({
                 action: 'adminUpdateCell',
                 regNo: regNo,
-                colIndex: 20, 
+                colIndex: 20,
                 value: newVal
             })
         });
@@ -425,8 +426,8 @@ window.saveAttendanceEdit = async function(regNo) {
     }
 }
 
-// --- MODAL LOGIC (Manage Student) ---
-window.openManageModal = function(regNo) {
+// --- MODAL LOGIC (Manage Student & Strict Generation) ---
+window.openManageModal = function (regNo) {
     window.scrollYPosition = window.scrollY;
     document.body.style.position = 'fixed';
     document.body.style.top = `-${window.scrollYPosition}px`;
@@ -435,40 +436,44 @@ window.openManageModal = function(regNo) {
 
     const modal = document.getElementById('manageModal');
     const overlay = document.getElementById('manageModalOverlay');
-    
+
     const student = window.adminData.find(s => s[1] === regNo);
     if (!student) return;
-    window.currentEditingRegNo = regNo;
 
-    // Build State Trackers
+    window.currentEditingRegNo = regNo;
+    window.currentEditingEmail = student[17]; // Index 17 is Email in your sheet
+
     let cStatus = student[21] || 'Active';
     cStatus = cStatus.charAt(0).toUpperCase() + cStatus.slice(1).toLowerCase();
-    if(!['Active', 'Completed', 'Dropout'].includes(cStatus)) cStatus = 'Active';
-    
+    if (!['Active', 'Completed', 'Dropout'].includes(cStatus)) cStatus = 'Active';
+
+    // Check if links exist to determine generation state
+    const msGen = student[23] && student[23].trim() !== ""; // Index 23: Marksheet Link
+    const certGen = student[25] && student[25].trim() !== ""; // Index 25: Cert Link
+
     window.initialModalState = {
         course: cStatus,
         marksheet: String(student[22] || 'pending').toLowerCase(),
-        cert: String(student[24] || 'pending').toLowerCase()
+        cert: String(student[24] || 'pending').toLowerCase(),
+        msGenerated: msGen,
+        certGenerated: certGen
     };
-    
-    // Copy to current state
+
     window.currentModalState = { ...window.initialModalState };
-    window.currentMarksAdded = false; // Reset mock flag
+    window.currentMarksAdded = false;
 
     // Populate UI
     document.getElementById('modalStudentName').innerText = student[2];
     document.getElementById('modalRegNo').innerText = regNo;
     document.getElementById('modalCourseStatus').value = currentModalState.course;
-    
     document.getElementById('marksheetCurrentStatus').innerText = currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = currentModalState.cert.toUpperCase();
-    
-    // Reset Add Marks button UI
+
+    // Reset Buttons
     const addMarksBtn = document.getElementById('btnAddMarks');
-    addMarksBtn.innerText = "Add Marks";
+    addMarksBtn.innerHTML = "Add Marks";
     addMarksBtn.className = "px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-indigo-700 transition-colors";
 
-    // Run evaluation to set disabled states properly
     window.evaluateModalState();
 
     overlay.classList.remove('hidden');
@@ -478,7 +483,7 @@ window.openManageModal = function(regNo) {
     });
 };
 
-window.closeManageModal = function() {
+window.closeManageModal = function () {
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.width = '';
@@ -487,16 +492,15 @@ window.closeManageModal = function() {
 
     const modal = document.getElementById('manageModal');
     const overlay = document.getElementById('manageModalOverlay');
-    
     modal.classList.add('translate-x-full');
     overlay.classList.add('opacity-0');
     setTimeout(() => overlay.classList.add('hidden'), 300);
-    
+
     window.currentEditingRegNo = null;
 };
 
-// Dummy Add Marks Function
-window.simulateAddMarks = function() {
+// --- STRICT CONDITIONAL LOGIC ENGINE ---
+window.simulateAddMarks = function () {
     window.currentMarksAdded = true;
     const btn = document.getElementById('btnAddMarks');
     btn.innerHTML = `Marks Added <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
@@ -505,7 +509,23 @@ window.simulateAddMarks = function() {
     window.evaluateModalState();
 }
 
-window.toggleDocumentStatus = function(docType) {
+window.generateDocument = function (docType) {
+    window.showToast(`Generating ${docType}... please wait.`, "info");
+
+    // Simulate generation delay (Replace with actual fetch to GAS later)
+    setTimeout(() => {
+        if (docType === 'marksheet') {
+            window.currentModalState.msGenerated = true;
+            window.showToast("Marksheet Generated Successfully!", "success");
+        } else {
+            window.currentModalState.certGenerated = true;
+            window.showToast("Certificate Generated Successfully!", "success");
+        }
+        window.evaluateModalState();
+    }, 1500);
+}
+
+window.toggleDocumentStatus = function (docType) {
     if (docType === 'marksheet') {
         window.currentModalState.marksheet = window.currentModalState.marksheet === 'approved' ? 'pending' : 'approved';
         document.getElementById('marksheetCurrentStatus').innerText = window.currentModalState.marksheet.toUpperCase();
@@ -516,47 +536,85 @@ window.toggleDocumentStatus = function(docType) {
     window.evaluateModalState();
 };
 
-window.evaluateModalState = function() {
+window.evaluateModalState = function () {
     const courseStatus = document.getElementById('modalCourseStatus').value;
     window.currentModalState.course = courseStatus;
 
-    const btnMark = document.getElementById('btnMarksheetToggle');
-    const btnCert = document.getElementById('btnCertToggle');
+    // DOM Elements
+    const cardMS = document.getElementById('marksheetCard');
+    const btnGenMS = document.getElementById('btnGenerateMarksheet');
+    const btnTogMS = document.getElementById('btnMarksheetToggle');
+
+    const cardCert = document.getElementById('certCard');
+    const btnGenCert = document.getElementById('btnGenerateCert');
+    const btnTogCert = document.getElementById('btnCertToggle');
     const btnSave = document.getElementById('btnSaveEdits');
 
-    // 1. Marksheet Logic (Needs Course=Completed AND Marks Added)
-    if (courseStatus === 'Completed' && window.currentMarksAdded) {
-        btnMark.disabled = false;
-        btnMark.classList.remove('opacity-50', 'cursor-not-allowed');
+    const isCompleted = (courseStatus === 'Completed');
+
+    // 1. MARKSHEET LOGIC: Needs Course=Completed AND Marks Added
+    if (isCompleted && window.currentMarksAdded) {
+        cardMS.classList.remove('opacity-50');
+
+        if (window.currentModalState.msGenerated) {
+            btnGenMS.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> Marksheet Generated`;
+            btnGenMS.className = "w-full py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 flex justify-center items-center gap-2 cursor-default";
+            btnGenMS.disabled = true;
+
+            btnTogMS.disabled = false; // Unlocks Approve button
+        } else {
+            btnGenMS.innerHTML = `<i data-lucide="file-cog" class="w-3 h-3"></i> Generate Marksheet`;
+            btnGenMS.className = "w-full py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-bold rounded-lg border border-purple-200 dark:border-purple-800 flex justify-center items-center gap-2 hover:bg-purple-200 transition-colors";
+            btnGenMS.disabled = false;
+
+            btnTogMS.disabled = true; // Lock approve until generated
+            window.currentModalState.marksheet = 'pending';
+        }
     } else {
-        btnMark.disabled = true;
-        btnMark.classList.add('opacity-50', 'cursor-not-allowed');
-        // Force state back to pending if conditions break
+        cardMS.classList.add('opacity-50');
+        btnGenMS.disabled = true;
+        btnTogMS.disabled = true;
         window.currentModalState.marksheet = 'pending';
-        document.getElementById('marksheetCurrentStatus').innerText = 'PENDING';
     }
 
-    // 2. Certificate Logic (Needs Course=Completed)
-    if (courseStatus === 'Completed') {
-        btnCert.disabled = false;
-        btnCert.classList.remove('opacity-50', 'cursor-not-allowed');
+    // 2. CERTIFICATE LOGIC: Needs Course=Completed AND Marksheet Generated
+    if (isCompleted && window.currentModalState.msGenerated) {
+        cardCert.classList.remove('opacity-50');
+
+        if (window.currentModalState.certGenerated) {
+            btnGenCert.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> Certificate Generated`;
+            btnGenCert.className = "w-full py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 flex justify-center items-center gap-2 cursor-default";
+            btnGenCert.disabled = true;
+
+            btnTogCert.disabled = false; // Unlocks Approve
+        } else {
+            btnGenCert.innerHTML = `<i data-lucide="award" class="w-3 h-3"></i> Generate Certificate`;
+            btnGenCert.className = "w-full py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-200 dark:border-blue-800 flex justify-center items-center gap-2 hover:bg-blue-200 transition-colors";
+            btnGenCert.disabled = false;
+
+            btnTogCert.disabled = true;
+            window.currentModalState.cert = 'pending';
+        }
     } else {
-        btnCert.disabled = true;
-        btnCert.classList.add('opacity-50', 'cursor-not-allowed');
-        // Force state back to pending if conditions break
+        cardCert.classList.add('opacity-50');
+        btnGenCert.disabled = true;
+        btnTogCert.disabled = true;
         window.currentModalState.cert = 'pending';
-        document.getElementById('certCurrentStatus').innerText = 'PENDING';
     }
 
     // Update Button Texts
-    updateToggleButton(btnMark, window.currentModalState.marksheet);
-    updateToggleButton(btnCert, window.currentModalState.cert);
+    updateToggleButton(btnTogMS, window.currentModalState.marksheet);
+    updateToggleButton(btnTogCert, window.currentModalState.cert);
+    document.getElementById('marksheetCurrentStatus').innerText = window.currentModalState.marksheet.toUpperCase();
+    document.getElementById('certCurrentStatus').innerText = window.currentModalState.cert.toUpperCase();
 
-    // 3. Save Button Logic (Enable only if state differs from initial)
-    const hasChanged = 
+    // 3. Save Button Logic (Enable only if state differs)
+    const hasChanged =
         window.initialModalState.course !== window.currentModalState.course ||
         window.initialModalState.marksheet !== window.currentModalState.marksheet ||
-        window.initialModalState.cert !== window.currentModalState.cert;
+        window.initialModalState.cert !== window.currentModalState.cert ||
+        window.initialModalState.msGenerated !== window.currentModalState.msGenerated ||
+        window.initialModalState.certGenerated !== window.currentModalState.certGenerated;
 
     if (hasChanged) {
         btnSave.disabled = false;
@@ -565,6 +623,7 @@ window.evaluateModalState = function() {
         btnSave.disabled = true;
         btnSave.classList.add('opacity-50', 'cursor-not-allowed');
     }
+    if (window.lucide) lucide.createIcons();
 }
 
 function updateToggleButton(btn, status) {
@@ -572,27 +631,72 @@ function updateToggleButton(btn, status) {
         btn.className = "px-3 py-1.5 text-xs font-bold rounded shadow-sm transition-colors bg-emerald-100 text-emerald-700 border border-emerald-300 hover:bg-emerald-200";
         btn.innerText = "Revert to Pending";
     } else {
-        // preserve disabled classes if they exist
         const extraClasses = btn.disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50";
         btn.className = `px-3 py-1.5 text-xs font-bold rounded shadow-sm transition-colors bg-white border border-slate-300 text-slate-700 ${extraClasses}`;
         btn.innerText = "Set Approved";
     }
 }
 
+// --- FIREBASE NOTIFICATION ENGINE ---
+window.toggleCustomNotif = function () {
+    const box = document.getElementById('customNotifBox');
+    if (document.getElementById('notifTemplate').value === 'custom') {
+        box.classList.remove('hidden');
+    } else {
+        box.classList.add('hidden');
+    }
+}
+
+window.sendNotification = async function () {
+    const template = document.getElementById('notifTemplate').value;
+    const customTxt = document.getElementById('customNotifBox').value;
+    const msg = template === 'custom' ? customTxt : template;
+
+    if (!msg.trim()) return window.showToast("Message cannot be empty.", "error");
+    if (!window.currentEditingEmail) return window.showToast("Student email not found.", "error");
+
+    const btn = document.getElementById('btnSendNotif');
+    const ogText = btn.innerHTML;
+    btn.innerHTML = `<div class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Sending...`;
+    btn.disabled = true;
+
+    try {
+        await addDoc(collection(db, "notifications"), {
+            email: window.currentEditingEmail.toLowerCase().trim(),
+            message: msg,
+            read: false,
+            timestamp: serverTimestamp()
+        });
+        window.showToast("Notification sent to student portal!", "success");
+        document.getElementById('customNotifBox').value = '';
+    } catch (e) {
+        console.error(e);
+        window.showToast("Failed to send notification.", "error");
+    } finally {
+        btn.innerHTML = ogText;
+        btn.disabled = false;
+        if (window.lucide) lucide.createIcons();
+    }
+}
+
 // --- SAVE EDITS BUTTON ---
-window.saveStudentEdits = async function() {
+window.saveStudentEdits = async function () {
     const btn = document.getElementById('btnSaveEdits');
     const originalText = btn.innerHTML;
     btn.innerHTML = `<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...`;
     btn.disabled = true;
 
     const student = window.adminData.find(s => s[1] === window.currentEditingRegNo);
-    
+
     // Update local state arrays
     student[21] = window.currentModalState.course;
     student[22] = window.currentModalState.marksheet;
     student[24] = window.currentModalState.cert;
-    
+
+    // Check if generation state was mocked (For UI purposes until GAS handles generation)
+    if (window.currentModalState.msGenerated) student[23] = "MOCK_URL";
+    if (window.currentModalState.certGenerated) student[25] = "MOCK_URL";
+
     const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
 
     try {
@@ -602,11 +706,11 @@ window.saveStudentEdits = async function() {
                 action: 'adminSaveStudent',
                 regNo: student[1],
                 courseStatus: student[21],
-                markStatus: student[22], 
-                certStatus: student[24]  
+                markStatus: student[22],
+                certStatus: student[24]
             })
         });
-        
+
         window.showToast("Student profile updated!", "success");
         updateStats(window.adminData);
         window.applyFilters(); // Re-render table
@@ -616,6 +720,6 @@ window.saveStudentEdits = async function() {
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
-        if(window.lucide) lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     }
 };
