@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
@@ -18,8 +18,8 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbzpgzSFhNvXrTYON3dqHZXNdGnv2uroRimIcl3qR4JQ4Oa0iAVUUVePSgVDC3MMQHaS/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbwuEjeuSox5oZvmBML69NocNbmLSItB-4QvD4IxW2PULVo9EmyltpzutltqM2chP4TGVA/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbwBaRgBUEDGpw5xP-C4AKTaCii6ywoYE0srI7n10Fy57ED-edP36bQU6A6hO9RenEdP/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbxVgsXc4KuAsmgntswKZhJrbdMKrKs4DuHq6NUCrg5jQPt0PtQ1QlPhrL0RBuNAMHZ3SQ/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
@@ -159,6 +159,7 @@ window.switchBranch = function (branch) {
     }
 
     window.setFilterStatus('all'); // Reset filter on branch switch
+    if (window.filters.status === 'fee') window.loadFeeDashboard(); // NEW: Reload fee data if on fee tab
     window.loadTableData(branch);
 };
 
@@ -223,7 +224,31 @@ window.setFilterStatus = function (status) {
         targetCard.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
     }
 
-    window.applyFilters();
+    const studentsWorkspace = document.getElementById('students-workspace');
+    const feesWorkspace = document.getElementById('fees-workspace');
+
+    // WORKSPACE TOGGLE LOGIC
+    if (status === 'fee') {
+        if (studentsWorkspace) studentsWorkspace.classList.add('opacity-0');
+        setTimeout(() => {
+            if (studentsWorkspace) studentsWorkspace.classList.add('hidden');
+            if (feesWorkspace) {
+                feesWorkspace.classList.remove('hidden');
+                setTimeout(() => feesWorkspace.classList.remove('opacity-0'), 50);
+            }
+            window.loadFeeDashboard(); // Boot up Fee engine
+        }, 300);
+    } else {
+        if (feesWorkspace) feesWorkspace.classList.add('opacity-0');
+        setTimeout(() => {
+            if (feesWorkspace) feesWorkspace.classList.add('hidden');
+            if (studentsWorkspace) {
+                studentsWorkspace.classList.remove('hidden');
+                setTimeout(() => studentsWorkspace.classList.remove('opacity-0'), 50);
+            }
+            window.applyFilters();
+        }, 300);
+    }
 };
 
 window.toggleFilterMenu = function () {
@@ -244,8 +269,8 @@ window.applyFilters = function () {
         );
     }
 
-    // 2. Status Card
-    if (window.filters.status !== 'all') {
+    // 2. Status Card (Excludes 'fee' from standard status match)
+    if (window.filters.status !== 'all' && window.filters.status !== 'fee') {
         filtered = filtered.filter(s => {
             const stat = String(s[21] || 'active').toLowerCase();
             return stat === window.filters.status;
@@ -441,7 +466,7 @@ window.openManageModal = function (regNo) {
     if (!student) return;
 
     window.currentEditingRegNo = regNo;
-    window.currentEditingEmail = student[17]; 
+    window.currentEditingEmail = student[17];
 
     let cStatus = student[21] || 'Active';
     cStatus = cStatus.charAt(0).toUpperCase() + cStatus.slice(1).toLowerCase();
@@ -511,7 +536,7 @@ window.closeManageModal = function () {
 window.simulateAddMarks = function () {
     window.currentMarksAdded = true;
     if (!window.currentModalState.markLink) window.currentModalState.markLink = "MARKS_ADDED";
-    
+
     const btn = document.getElementById('btnAddMarks');
     btn.innerHTML = `Marks Added <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
     btn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
@@ -567,12 +592,12 @@ window.evaluateModalState = function () {
             btnGenMS.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> Marksheet Generated`;
             btnGenMS.className = "w-full py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 flex justify-center items-center gap-2 cursor-default";
             btnGenMS.disabled = true;
-            btnTogMS.disabled = false; 
+            btnTogMS.disabled = false;
         } else {
             btnGenMS.innerHTML = `<i data-lucide="file-cog" class="w-3 h-3"></i> Generate Marksheet`;
             btnGenMS.className = "w-full py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-bold rounded-lg border border-purple-200 dark:border-purple-800 flex justify-center items-center gap-2 hover:bg-purple-200 transition-colors";
             btnGenMS.disabled = false;
-            btnTogMS.disabled = true; 
+            btnTogMS.disabled = true;
             window.currentModalState.marksheet = 'pending';
         }
     } else {
@@ -588,7 +613,7 @@ window.evaluateModalState = function () {
             btnGenCert.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> Certificate Generated`;
             btnGenCert.className = "w-full py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 flex justify-center items-center gap-2 cursor-default";
             btnGenCert.disabled = true;
-            btnTogCert.disabled = false; 
+            btnTogCert.disabled = false;
         } else {
             btnGenCert.innerHTML = `<i data-lucide="award" class="w-3 h-3"></i> Generate Certificate`;
             btnGenCert.className = "w-full py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-200 dark:border-blue-800 flex justify-center items-center gap-2 hover:bg-blue-200 transition-colors";
@@ -709,13 +734,232 @@ window.saveStudentEdits = async function () {
 
         window.showToast("Student profile updated!", "success");
         updateStats(window.adminData);
-        window.applyFilters(); 
+        window.applyFilters();
         window.closeManageModal();
     } catch (error) {
         window.showToast("Failed to save changes.", "error");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
+        if (window.lucide) lucide.createIcons();
+    }
+};
+
+// ============================================================================
+// --- FEE DASHBOARD ENGINE ---
+// ============================================================================
+
+window.globalCoursePrices = {};
+window.feeUnsubscribe = null;
+
+// 1. Sub-Tab Switcher
+window.switchFeeTab = function (tabName) {
+    const btnReq = document.getElementById('fee-tab-requests');
+    const btnPri = document.getElementById('fee-tab-pricing');
+    const panelReq = document.getElementById('fee-panel-requests');
+    const panelPri = document.getElementById('fee-panel-pricing');
+
+    if (tabName === 'requests') {
+        btnReq.className = "px-5 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm transition-all";
+        btnPri.className = "px-5 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all";
+        panelPri.classList.add('hidden');
+        panelReq.classList.remove('hidden');
+    } else {
+        btnPri.className = "px-5 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-sm transition-all";
+        btnReq.className = "px-5 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all";
+        panelReq.classList.add('hidden');
+        panelPri.classList.remove('hidden');
+    }
+};
+
+// 2. Main Bootstrapper
+window.loadFeeDashboard = async function () {
+    window.showToast("Loading Financial Data...", "info");
+    await fetchCoursePrices();
+    renderCoursePricingGrid();
+    startFeeRequestListener();
+};
+
+// 3. Pricing Manager (Fetches prices specific to current Branch)
+async function fetchCoursePrices() {
+    try {
+        const docRef = doc(db, "admin_settings", `prices_${window.currentBranch}`);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            window.globalCoursePrices = docSnap.data();
+        } else {
+            window.globalCoursePrices = {};
+        }
+    } catch (e) {
+        console.error("Error fetching prices:", e);
+    }
+}
+
+function renderCoursePricingGrid() {
+    const grid = document.getElementById('coursePricingGrid');
+    grid.innerHTML = '';
+
+    // Extract unique courses dynamically from current branch's students
+    const uniqueCourses = [...new Set(window.adminData.map(s => s[11]).filter(c => c && c !== "None"))];
+
+    if (uniqueCourses.length === 0) {
+        grid.innerHTML = `<p class="text-slate-500 text-sm col-span-full p-4">No courses detected in this branch yet.</p>`;
+        return;
+    }
+
+    uniqueCourses.forEach((courseName, index) => {
+        const currentPrice = window.globalCoursePrices[courseName] || "";
+        const safeId = `price-input-${index}`;
+
+        grid.innerHTML += `
+            <div class="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex flex-col gap-3">
+                <h4 class="font-bold text-slate-800 dark:text-white text-sm truncate" title="${courseName}">${courseName}</h4>
+                <div class="flex gap-2">
+                    <div class="relative w-full">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                        <input type="number" id="${safeId}" value="${currentPrice}" placeholder="0" class="w-full pl-7 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg dark:bg-slate-900 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-sm font-bold">
+                    </div>
+                    <button onclick="window.saveCoursePrice('${courseName}', '${safeId}')" class="px-4 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded-lg font-bold text-sm transition-colors shadow-sm">Save</button>
+                </div>
+            </div>
+        `;
+    });
+    if (window.lucide) lucide.createIcons();
+}
+
+window.saveCoursePrice = async function (courseName, inputId) {
+    const val = document.getElementById(inputId).value;
+    const num = parseFloat(val);
+
+    if (isNaN(num) || num < 0) return window.showToast("Enter a valid amount.", "error");
+
+    try {
+        window.globalCoursePrices[courseName] = num;
+        const docRef = doc(db, "admin_settings", `prices_${window.currentBranch}`);
+
+        // Use setDoc with merge: true to update or create if doesn't exist
+        await setDoc(docRef, { [courseName]: num }, { merge: true });
+        window.showToast(`${courseName} price updated to ₹${num}`, "success");
+    } catch (e) {
+        window.showToast("Failed to save price.", "error");
+        console.error(e);
+    }
+};
+
+// 4. Live Verification Requests Engine
+function startFeeRequestListener() {
+    if (window.feeUnsubscribe) window.feeUnsubscribe();
+
+    // Query fee requests for the active branch (Manual sorting avoids index errors)
+    const q = query(
+        collection(db, "fee_requests"),
+        where("branch", "==", window.currentBranch)
+    );
+
+    window.feeUnsubscribe = onSnapshot(q, (snapshot) => {
+        const tbody = document.getElementById('feeRequestsTableBody');
+        tbody.innerHTML = '';
+
+        let pendingCount = 0;
+        let requestsArray = [];
+
+        snapshot.forEach((docSnap) => {
+            requestsArray.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Sort manually by timestamp (newest first)
+        requestsArray.sort((a, b) => {
+            const timeA = a.timestamp ? a.timestamp.toMillis() : 0;
+            const timeB = b.timestamp ? b.timestamp.toMillis() : 0;
+            return timeB - timeA;
+        });
+
+        requestsArray.forEach((req) => {
+            if (req.status === 'Pending') pendingCount++;
+            if (req.status !== 'Pending') return; // Only show pending
+
+            const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : "Just now";
+
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 group border-b border-slate-100 dark:border-slate-800/50">
+                    <td class="py-4 px-4 text-xs font-bold text-slate-500">${dateStr}</td>
+                    <td class="py-4 px-4">
+                        <p class="font-bold text-slate-900 dark:text-white text-sm">${req.studentName}</p>
+                        <p class="font-mono text-[10px] text-slate-500">${req.regNo}</p>
+                    </td>
+                    <td class="py-4 px-4 text-xs font-medium text-slate-600 dark:text-slate-400 max-w-[200px] truncate" title="${req.courseName}">${req.courseName}</td>
+                    <td class="py-4 px-4 text-right">
+                        <span class="inline-block px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-500 font-extrabold rounded-lg border border-amber-200 dark:border-amber-800/50">₹${req.amount}</span>
+                    </td>
+                    <td class="py-4 px-4 text-center">
+                        <div class="flex items-center justify-center gap-2" id="action-box-${req.id}">
+                            <button onclick="window.processFeeRequest('${req.id}', '${req.regNo}', '${req.courseName}', ${req.amount}, 'Approve')" class="p-2 bg-emerald-100 text-emerald-600 hover:bg-emerald-200 rounded-lg transition-colors" title="Approve Payment"><i data-lucide="check" class="w-4 h-4"></i></button>
+                            <button onclick="window.processFeeRequest('${req.id}', null, null, null, 'Reject')" class="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors" title="Reject Payment"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        if (tbody.innerHTML === '') {
+            tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 font-medium">No pending verification requests.</td></tr>`;
+        }
+
+        // Update Notification Bell logic (Red dot if pending requests exist)
+        const bellDot = document.getElementById('adminNotificationDot');
+        if (bellDot) {
+            if (pendingCount > 0) bellDot.classList.remove('hidden');
+            else bellDot.classList.add('hidden');
+        }
+
+        if (window.lucide) lucide.createIcons();
+    });
+}
+
+// 5. The Approval Ledger Logic (Talking to GAS)
+window.processFeeRequest = async function (reqId, regNo, courseName, amount, actionType) {
+    const box = document.getElementById(`action-box-${reqId}`);
+    const ogHtml = box.innerHTML;
+    box.innerHTML = `<div class="w-5 h-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></div>`;
+
+    try {
+        if (actionType === 'Approve') {
+            // CRITICAL CHECK: Does this course have a global price set?
+            const courseTotalFee = window.globalCoursePrices[courseName];
+            if (courseTotalFee === undefined || courseTotalFee === "" || isNaN(courseTotalFee)) {
+                window.showToast(`Action Blocked: Please set the Course Pricing for ${courseName} first!`, "error");
+                box.innerHTML = ogHtml;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            // Send Math logic to Google Apps Script
+            const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
+
+            const response = await fetch(targetUrl, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    action: 'approveFee',
+                    regNo: regNo,
+                    amount: amount,
+                    courseFee: courseTotalFee
+                })
+            });
+
+            const result = await response.json();
+            if (result.status !== 'success') throw new Error("GAS Math Failed");
+        }
+
+        // Regardless of Approve or Reject, update the Firestore Document status
+        const docRef = doc(db, "fee_requests", reqId);
+        await updateDoc(docRef, { status: actionType === 'Approve' ? 'Approved' : 'Rejected' });
+
+        window.showToast(`Request ${actionType}d Successfully!`, "success");
+
+    } catch (e) {
+        console.error("Fee Process Error:", e);
+        window.showToast("System failed to process request.", "error");
+        box.innerHTML = ogHtml;
         if (window.lucide) lucide.createIcons();
     }
 };
