@@ -460,21 +460,15 @@
                                 class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
                                 <i data-lucide="bell" class="w-6 h-6"></i>
                                 <span
-                                    class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+                                    class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 hidden"></span>
                             </button>
                             <!-- Notification Popup -->
                             <div id="notification-popup">
-                                <h4 class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">
-                                    Notifications</h4>
-                                <ul class="space-y-2 text-sm">
-                                    <li class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                        <span class="font-semibold block text-blue-600">New Schedule</span>
-                                        Tally Batch starts tomorrow at 10 AM.
-                                    </li>
-                                    <li class="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
-                                        <span class="font-semibold block">Exam Result</span>
-                                        Basics of Computer marks published.
-                                    </li>
+                                <h4 class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2 text-slate-800 dark:text-white">
+                                    Notifications
+                                </h4>
+                                <ul class="space-y-2 text-sm max-h-64 overflow-y-auto">
+                                    <li class="p-4 text-center text-slate-500 text-sm">Please log in to view notifications.</li>
                                 </ul>
                             </div>
                         </div>
@@ -1463,20 +1457,28 @@
                                 class="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors"></i>
                         </div>
 
-                        <div onclick="openUserDocumentsModal('marksheet')" class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer group hover:border-purple-500 hover:bg-purple-50 dark:hover:border-purple-500 dark:hover:bg-purple-900/20 hover:shadow-md transition-colors duration-75">
+                        <div onclick="openUserDocumentsModal('marksheet')"
+                            class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer group hover:border-purple-500 hover:bg-purple-50 dark:hover:border-purple-500 dark:hover:bg-purple-900/20 hover:shadow-md transition-colors duration-75">
                             <div class="flex items-center gap-4">
-                                <div class="p-2.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl group-hover:scale-110 transition-transform duration-200"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                                <div
+                                    class="p-2.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i></div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Marksheets</span>
                             </div>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-purple-500 transition-colors"></i>
+                            <i data-lucide="chevron-right"
+                                class="w-4 h-4 text-slate-400 group-hover:text-purple-500 transition-colors"></i>
                         </div>
 
-                        <div onclick="openUserDocumentsModal('certificate')" class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer group hover:border-fuchsia-500 hover:bg-fuchsia-50 dark:hover:border-fuchsia-500 dark:hover:bg-fuchsia-900/20 hover:shadow-md transition-colors duration-75">
+                        <div onclick="openUserDocumentsModal('certificate')"
+                            class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer group hover:border-fuchsia-500 hover:bg-fuchsia-50 dark:hover:border-fuchsia-500 dark:hover:bg-fuchsia-900/20 hover:shadow-md transition-colors duration-75">
                             <div class="flex items-center gap-4">
-                                <div class="p-2.5 bg-fuchsia-50 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl group-hover:scale-110 transition-transform duration-200"><i data-lucide="award" class="w-5 h-5"></i></div>
+                                <div
+                                    class="p-2.5 bg-fuchsia-50 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
+                                    <i data-lucide="award" class="w-5 h-5"></i></div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Certificates</span>
                             </div>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-fuchsia-500 transition-colors"></i>
+                            <i data-lucide="chevron-right"
+                                class="w-4 h-4 text-slate-400 group-hover:text-fuchsia-500 transition-colors"></i>
                         </div>
 
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-8">Support</h4>
@@ -1641,27 +1643,35 @@
 
     <!-- Document Model -->
     <div id="userDocumentsModal" class="sidebar-modal fixed inset-0 z-[300] hidden">
-        <div class="sidebar-backdrop absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="closeModal('userDocumentsModal')"></div>
+        <div class="sidebar-backdrop absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+            onclick="closeModal('userDocumentsModal')"></div>
 
-        <div class="sidebar-panel absolute top-0 right-0 bottom-0 w-full max-w-[400px] sm:max-w-[450px] bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col border-l border-slate-200 dark:border-slate-800">
-            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0">
-                <h3 id="docsModalTitle" class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <i id="docsModalIcon" data-lucide="file-text" class="text-purple-600 w-6 h-6"></i> <span>Documents</span>
+        <div
+            class="sidebar-panel absolute top-0 right-0 bottom-0 w-full max-w-[400px] sm:max-w-[450px] bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col border-l border-slate-200 dark:border-slate-800">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0">
+                <h3 id="docsModalTitle"
+                    class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i id="docsModalIcon" data-lucide="file-text" class="text-purple-600 w-6 h-6"></i>
+                    <span>Documents</span>
                 </h3>
-                <button onclick="closeModal('userDocumentsModal')" class="text-slate-400 hover:text-red-500 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <button onclick="closeModal('userDocumentsModal')"
+                    class="text-slate-400 hover:text-red-500 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            
+
             <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 shrink-0">
-                <p id="docsModalMessage" class="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-start gap-2 leading-relaxed">
+                <p id="docsModalMessage"
+                    class="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-start gap-2 leading-relaxed">
                     <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
-                    <span id="docsModalMessageText">Your official documents will appear here once released by the administration.</span>
+                    <span id="docsModalMessageText">Your official documents will appear here once released by the
+                        administration.</span>
                 </p>
             </div>
 
             <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 grow" id="docsDetailedList">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -2868,6 +2878,7 @@
         // FIREBASE AUTH LOGIC
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
         // --- NEW: CUSTOM TOAST NOTIFICATION SYSTEM ---
         window.showToast = function (message, type = 'success') {
@@ -2934,6 +2945,7 @@
 
         let auth;
         let provider; // Google Provider
+        let db;
 
         // Data sources from your exam form
         const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmrZnj7tj1l7EobN-gaDyjsJAXjWVo5Lwwok5f8N_1zHdgVp4_vv/exec";
@@ -2945,6 +2957,7 @@
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             provider = new GoogleAuthProvider(); // Initialize Google Provider
+            db = getFirestore(app);
 
             // Listen for Auth Changes to update global state
             onAuthStateChanged(auth, (user) => {
@@ -2955,17 +2968,76 @@
 
                 if (user) {
                     console.log("User Logged In:", user.email);
-                    // Optional: Auto-close modals if open
+
+                    // Close modals if open
                     closeModal('loginModal');
                     closeModal('signupModal');
+
                     // FETCH COURSES IN BACKGROUND AS SOON AS THEY LOG IN
                     fetchUserCourses(user.email);
+
+                    // --- START NOTIFICATION LISTENER ---
+                    const q = query(
+                        collection(db, "notifications"),
+                        where("email", "==", user.email.toLowerCase().trim()),
+                        orderBy("timestamp", "desc")
+                    );
+
+                    window.notifUnsubscribe = onSnapshot(q, (snapshot) => {
+                        const list = document.querySelector('#notification-popup ul');
+                        if (!list) return;
+                        list.innerHTML = '';
+
+                        let unreadCount = 0;
+
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            if (!data.read) unreadCount++;
+
+                            list.innerHTML += `
+                                <li class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-2 border border-blue-100 dark:border-blue-800">
+                                    <span class="font-bold block text-blue-600 text-xs mb-1">Admin Update</span>
+                                    <p class="text-sm text-slate-700 dark:text-slate-300">${data.message}</p>
+                                </li>
+                            `;
+                        });
+
+                        if (snapshot.empty) {
+                            list.innerHTML = `<li class="p-4 text-center text-slate-500 text-sm">No new notifications.</li>`;
+                        }
+
+                        // Trigger Red Dot
+                        const bellBtn = document.querySelector('button[onclick="toggleNotification()"]');
+                        if (bellBtn) {
+                            const dot = bellBtn.querySelector('span');
+                            if (unreadCount > 0) {
+                                if (dot) dot.classList.remove('hidden');
+
+                                // Show live toast for new messages
+                                snapshot.docChanges().forEach((change) => {
+                                    if (change.type === "added" && !change.doc.data().read) {
+                                        showToast("New Notification: " + change.doc.data().message, "info");
+                                    }
+                                });
+                            } else {
+                                if (dot) dot.classList.add('hidden');
+                            }
+                        }
+                    });
+
                 } else {
                     console.log("User Signed Out");
+
                     // Reset if logged out
                     window.userEnrolledData = [];
                     const countEl = document.getElementById('active-courses-count');
                     if (countEl) countEl.innerHTML = "0";
+
+                    // --- STOP LISTENING TO NOTIFICATIONS ---
+                    if (window.notifUnsubscribe) {
+                        window.notifUnsubscribe();
+                        window.notifUnsubscribe = null;
+                    }
                 }
             });
 
