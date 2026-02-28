@@ -468,7 +468,7 @@
                                     Notifications
                                 </h4>
                                 <ul class="space-y-2 text-sm max-h-64 overflow-y-auto">
-                                    <li class="p-4 text-center text-slate-500 text-sm">Please log in to view notifications.</li>
+                                    <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.</li>
                                 </ul>
                             </div>
                         </div>
@@ -1462,7 +1462,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i></div>
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Marksheets</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1474,7 +1475,8 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="p-2.5 bg-fuchsia-50 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                                    <i data-lucide="award" class="w-5 h-5"></i></div>
+                                    <i data-lucide="award" class="w-5 h-5"></i>
+                                </div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Certificates</span>
                             </div>
                             <i data-lucide="chevron-right"
@@ -1603,6 +1605,11 @@
                     class="cursor-pointer text-center p-2 rounded-xl border transition-all duration-150">
                     <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="mc-count-completed">0</p>
                     <p class="text-[10px] uppercase font-bold text-slate-500">Completed</p>
+                </div>
+                <div id="mc-tab-dropout" onclick="renderMyCoursesList('dropout')"
+                    class="hidden cursor-pointer text-center p-2 rounded-xl border transition-all duration-150">
+                    <p class="text-lg font-bold text-red-600 dark:text-red-400" id="mc-count-dropout">0</p>
+                    <p class="text-[10px] uppercase font-bold text-slate-500">Dropout</p>
                 </div>
             </div>
 
@@ -2008,10 +2015,24 @@
             }
         }
 
-        // Notification
+        // Notification Logic
         function toggleNotification() {
             document.getElementById('notification-popup').classList.toggle('active');
         }
+
+        // --- NEW: CLOSE NOTIFICATION ON OUTSIDE CLICK ---
+        document.addEventListener('click', function(event) {
+            const popup = document.getElementById('notification-popup');
+            const bellBtn = document.querySelector('button[onclick="toggleNotification()"]');
+            
+            // Check if popup exists and is currently open
+            if (popup && popup.classList.contains('active')) {
+                // If the user clicked OUTSIDE the popup AND OUTSIDE the bell button
+                if (!popup.contains(event.target) && (!bellBtn || !bellBtn.contains(event.target))) {
+                    popup.classList.remove('active'); // Close it
+                }
+            }
+        });
 
         // Profile Animation Logic (Now greatly simplified!)
         window.openProfile = function () {
@@ -2976,12 +2997,14 @@
                     // FETCH COURSES IN BACKGROUND AS SOON AS THEY LOG IN
                     fetchUserCourses(user.email);
 
-                    // --- START NOTIFICATION LISTENER ---
+                    // --- NEW: START NOTIFICATION LISTENER ---
+                    // FIX 4: Removed orderBy to prevent "Index Required" crash
                     const q = query(
                         collection(db, "notifications"),
-                        where("email", "==", user.email.toLowerCase().trim()),
-                        orderBy("timestamp", "desc")
+                        where("email", "==", user.email.toLowerCase().trim())
                     );
+
+                    let isInitialLoad = true;
 
                     window.notifUnsubscribe = onSnapshot(q, (snapshot) => {
                         const list = document.querySelector('#notification-popup ul');
@@ -2989,11 +3012,23 @@
                         list.innerHTML = '';
 
                         let unreadCount = 0;
+                        let docsArray = [];
 
+                        // 1. Gather all docs
                         snapshot.forEach((doc) => {
-                            const data = doc.data();
-                            if (!data.read) unreadCount++;
+                            docsArray.push({ id: doc.id, ...doc.data() });
+                        });
 
+                        // 2. Sort by timestamp descending (newest on top) manually
+                        docsArray.sort((a, b) => {
+                            const timeA = a.timestamp ? a.timestamp.toMillis() : 0;
+                            const timeB = b.timestamp ? b.timestamp.toMillis() : 0;
+                            return timeB - timeA;
+                        });
+
+                        // 3. Render HTML
+                        docsArray.forEach((data) => {
+                            if (!data.read) unreadCount++;
                             list.innerHTML += `
                                 <li class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-2 border border-blue-100 dark:border-blue-800">
                                     <span class="font-bold block text-blue-600 text-xs mb-1">Admin Update</span>
@@ -3002,27 +3037,33 @@
                             `;
                         });
 
-                        if (snapshot.empty) {
+                        if (docsArray.length === 0) {
                             list.innerHTML = `<li class="p-4 text-center text-slate-500 text-sm">No new notifications.</li>`;
                         }
 
-                        // Trigger Red Dot
+                        // 4. Trigger Red Dot & Toasts
                         const bellBtn = document.querySelector('button[onclick="toggleNotification()"]');
                         if (bellBtn) {
                             const dot = bellBtn.querySelector('span');
                             if (unreadCount > 0) {
                                 if (dot) dot.classList.remove('hidden');
 
-                                // Show live toast for new messages
-                                snapshot.docChanges().forEach((change) => {
-                                    if (change.type === "added" && !change.doc.data().read) {
-                                        showToast("New Notification: " + change.doc.data().message, "info");
-                                    }
-                                });
+                                // Only pop the Toast if it's a NEW message (not on initial page load)
+                                if (!isInitialLoad) {
+                                    snapshot.docChanges().forEach((change) => {
+                                        if (change.type === "added" && !change.doc.data().read) {
+                                            showToast("New Notification: " + change.doc.data().message, "info");
+                                        }
+                                    });
+                                }
                             } else {
                                 if (dot) dot.classList.add('hidden');
                             }
                         }
+
+                        isInitialLoad = false; // Mark initial load complete
+                    }, (error) => {
+                        console.error("Firebase Notification Error:", error);
                     });
 
                 } else {
@@ -3051,6 +3092,7 @@
 
         window.userActiveCourses = [];
         window.userCompletedCourses = [];
+        window.userDropoutCourses = [];
 
         async function fetchUserCourses(email) {
             try {
@@ -3064,7 +3106,6 @@
                 if (dataArikuchi && dataArikuchi.found) allCourses.push(...dataArikuchi.enrolledCourses);
                 if (dataBagals && dataBagals.found) {
                     dataBagals.enrolledCourses.forEach(c => {
-                        // Prevent duplicates
                         if (!allCourses.find(existing => existing.courseName === c.courseName)) {
                             allCourses.push(c);
                         }
@@ -3073,11 +3114,15 @@
 
                 window.userEnrolledData = allCourses;
 
-                // STRICT LOGIC: Filter Active vs Completed
-                window.userCompletedCourses = allCourses.filter(c => c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'completed');
-                window.userActiveCourses = allCourses.filter(c => !c.certificateStatus || String(c.certificateStatus).trim().toLowerCase() !== 'completed');
+                // FIX 2: Check strictly against COURSE STATUS
+                window.userCompletedCourses = allCourses.filter(c => String(c.courseStatus || '').trim().toLowerCase() === 'completed');
+                window.userDropoutCourses = allCourses.filter(c => String(c.courseStatus || '').trim().toLowerCase() === 'dropout');
+                window.userActiveCourses = allCourses.filter(c => {
+                    const stat = String(c.courseStatus || '').trim().toLowerCase();
+                    return stat !== 'completed' && stat !== 'dropout';
+                });
 
-                // --- 1. UPDATE PROFILE NUMBERS ---
+                // --- 1. UPDATE PROFILE NUMBERS & DYNAMIC TABS ---
                 const countEl = document.getElementById('active-courses-count');
                 if (countEl) countEl.innerHTML = window.userActiveCourses.length;
 
@@ -3085,34 +3130,33 @@
                 if (document.getElementById('mc-count-active')) document.getElementById('mc-count-active').textContent = window.userActiveCourses.length;
                 if (document.getElementById('mc-count-completed')) document.getElementById('mc-count-completed').textContent = window.userCompletedCourses.length;
 
-                // --- 2. TRIGGER ATTENDANCE DISPLAY UPDATE ---
+                const dropoutTab = document.getElementById('mc-tab-dropout');
+                const tabsContainer = document.getElementById('mc-tabs-container');
+                if (window.userDropoutCourses.length > 0) {
+                    if (dropoutTab) dropoutTab.classList.remove('hidden');
+                    if (tabsContainer) { tabsContainer.classList.remove('grid-cols-3'); tabsContainer.classList.add('grid-cols-4'); }
+                    if (document.getElementById('mc-count-dropout')) document.getElementById('mc-count-dropout').textContent = window.userDropoutCourses.length;
+                } else {
+                    if (dropoutTab) dropoutTab.classList.add('hidden');
+                    if (tabsContainer) { tabsContainer.classList.remove('grid-cols-4'); tabsContainer.classList.add('grid-cols-3'); }
+                }
+
                 if (window.updateProfileAttendanceDisplay) {
                     window.updateProfileAttendanceDisplay();
                 }
 
             } catch (error) {
                 console.error("Failed to fetch courses", error);
-                const countEl = document.getElementById('active-courses-count');
-                const percentEl = document.getElementById('display-attendance-percent');
-                if (countEl) countEl.innerHTML = "0";
-                if (percentEl) percentEl.innerHTML = "N/A";
             }
         }
 
-        // --- NEW: SMART ATTENDANCE PREFERENCE LOGIC ---
-
-        // Find which course to display based on LocalStorage OR fallback to Highest Attendance
         window.getPreferredAttendanceCourse = function () {
             if (window.userActiveCourses.length === 0) return null;
-
-            // 1. Check if user explicitly pinned a course previously (keyed by their unique email)
             const savedPref = localStorage.getItem(`niat_attn_pref_${userEmail}`);
             if (savedPref) {
                 const found = window.userActiveCourses.find(c => c.courseName === savedPref);
                 if (found) return found;
             }
-
-            // 2. Fallback: Automatically pick the active course with the HIGHEST attendance
             return window.userActiveCourses.reduce((prev, current) => {
                 let prevVal = parseFloat(String(prev.attendance || "0").replace(/[^0-9.]/g, "")) || 0;
                 let currVal = parseFloat(String(current.attendance || "0").replace(/[^0-9.]/g, "")) || 0;
@@ -3120,22 +3164,18 @@
             });
         };
 
-        // Update the tiny UI Box in the Profile Sidebar
         window.updateProfileAttendanceDisplay = function () {
             const percentEl = document.getElementById('display-attendance-percent');
             const courseEl = document.getElementById('display-attendance-course');
-
             const prefCourse = window.getPreferredAttendanceCourse();
 
             if (prefCourse) {
                 let attNum = parseFloat(String(prefCourse.attendance || "0").replace(/[^0-9.]/g, "")) || 0;
                 if (percentEl) percentEl.innerHTML = `${attNum}%`;
-
-                // Show Registration No if available, otherwise show short Course Name
                 let displayName = (prefCourse.regNo && prefCourse.regNo.trim() !== "") ? prefCourse.regNo : prefCourse.courseName;
                 if (courseEl) {
                     courseEl.innerHTML = displayName;
-                    courseEl.title = prefCourse.courseName; // Shows full name on mouse hover
+                    courseEl.title = prefCourse.courseName;
                 }
             } else {
                 if (percentEl) percentEl.innerHTML = `N/A`;
@@ -3143,22 +3183,15 @@
             }
         };
 
-        // Triggered when user clicks "Set as Profile Display"
         window.setPinnedAttendance = function (courseName) {
-            // Save to local storage explicitly linked to this user's email
             localStorage.setItem(`niat_attn_pref_${userEmail}`, courseName);
-
-            // Instantly update the Profile Box
             window.updateProfileAttendanceDisplay();
-
-            // Instantly Re-render the Modal to show the new "Pinned" styling
             window.openAttendanceModal(true);
         };
 
-        // --- NEW: ATTENDANCE MODAL UI GENERATOR ---
         window.openAttendanceModal = function (isRefresh = false) {
             if (!isUserLoggedIn) return;
-            if (!isRefresh) openModal('attendanceModal'); // Only open if not just refreshing the UI
+            if (!isRefresh) openModal('attendanceModal');
 
             const listContainer = document.getElementById('attendanceDetailedList');
             if (!listContainer) return;
@@ -3171,29 +3204,24 @@
             const prefCourse = window.getPreferredAttendanceCourse();
             const prefCourseName = prefCourse ? prefCourse.courseName : null;
 
-            // Generate HTML for ALL courses (Active and Completed)
             listContainer.innerHTML = window.userEnrolledData.map(course => {
                 let attStr = String(course.attendance || "0").trim();
                 let attNum = parseFloat(attStr.replace(/[^0-9.]/g, ""));
                 if (isNaN(attNum)) attNum = 0;
 
-                // Traffic light coloring
                 let barColor = "bg-emerald-500";
                 if (attNum < 50) barColor = "bg-red-500";
                 else if (attNum < 75) barColor = "bg-amber-500";
 
-                const isCompleted = course.certificateStatus && String(course.certificateStatus).trim().toLowerCase() === 'completed';
-
-                const badgeHtml = isCompleted
-                    ? `<span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-extrabold uppercase rounded-md border border-slate-200 dark:border-slate-700">Completed</span>`
-                    : `<span class="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-md border border-amber-200 dark:border-amber-800 animate-pulse">Active</span>`;
+                const cStatus = String(course.courseStatus || '').trim().toLowerCase();
+                let badgeHtml = `<span class="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-md border border-amber-200 dark:border-amber-800 animate-pulse">Active</span>`;
+                if (cStatus === 'completed') badgeHtml = `<span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-extrabold uppercase rounded-md border border-slate-200 dark:border-slate-700">Completed</span>`;
+                if (cStatus === 'dropout') badgeHtml = `<span class="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[10px] font-extrabold uppercase rounded-md border border-red-200 dark:border-red-800">Dropout</span>`;
 
                 const isPinned = course.courseName === prefCourseName;
-
                 let actionBtnHtml = '';
 
-                // Only Active courses get action buttons
-                if (!isCompleted) {
+                if (cStatus !== 'completed' && cStatus !== 'dropout') {
                     if (isPinned) {
                         actionBtnHtml = `
                             <button disabled class="w-full mt-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 rounded-lg text-xs font-bold flex items-center justify-center gap-1 cursor-default">
@@ -3209,7 +3237,6 @@
                     }
                 }
 
-                // If pinned, give it a glowing ring border. If completed, make the bar grey.
                 return `
                     <div class="mb-4 p-5 border ${isPinned ? 'border-emerald-400 dark:border-emerald-500 shadow-md ring-1 ring-emerald-400/20' : 'border-slate-200 dark:border-slate-700 shadow-sm'} rounded-2xl bg-white dark:bg-slate-800 transition-all">
                         <div class="flex justify-between items-start mb-1">
@@ -3220,11 +3247,11 @@
                                     <span class="text-[10px] text-slate-500 font-mono tracking-wider">${course.regNo || 'Awaiting Reg No'}</span>
                                 </div>
                             </div>
-                            <span class="font-extrabold text-xl ${isCompleted ? 'text-slate-400 dark:text-slate-500' : barColor.replace('bg-', 'text-')}">${attNum}%</span>
+                            <span class="font-extrabold text-xl ${cStatus === 'completed' ? 'text-slate-400 dark:text-slate-500' : barColor.replace('bg-', 'text-')}">${attNum}%</span>
                         </div>
                         
                         <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 mt-4 overflow-hidden">
-                            <div class="${isCompleted ? 'bg-slate-300 dark:bg-slate-600' : barColor} h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%" data-target-width="${attNum}%"></div>
+                            <div class="${cStatus === 'completed' ? 'bg-slate-300 dark:bg-slate-600' : barColor} h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%" data-target-width="${attNum}%"></div>
                         </div>
                         
                         ${actionBtnHtml}
@@ -3234,7 +3261,6 @@
 
             lucide.createIcons();
 
-            // Trigger the progress bar sliding animation
             setTimeout(() => {
                 const bars = listContainer.querySelectorAll('[data-target-width]');
                 bars.forEach(bar => {
@@ -3243,23 +3269,37 @@
             }, 50);
         };
 
-        // --- COURSE CARD HTML GENERATOR ---
         function generateCourseCardHTML(course) {
-            const certStatus = course.certificateStatus ? String(course.certificateStatus).trim().toLowerCase() : '';
-            const isCompleted = certStatus === 'completed';
+            const cStatus = String(course.courseStatus || 'active').trim().toLowerCase();
+            const markStatus = String(course.marksheetStatus || 'pending').trim().toLowerCase();
+            const certStatus = String(course.certificateStatus || 'pending').trim().toLowerCase();
 
-            const badgeHtml = isCompleted
-                ? `<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200 dark:border-emerald-800">Completed</span>`
-                : `<span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200 dark:border-amber-800 animate-pulse">Active</span>`;
+            let badgeHtml = `<span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200 dark:border-amber-800 animate-pulse">Active</span>`;
+            if (cStatus === 'completed') badgeHtml = `<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200 dark:border-emerald-800">Completed</span>`;
+            else if (cStatus === 'dropout') badgeHtml = `<span class="px-2.5 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[10px] font-extrabold uppercase rounded-lg border border-red-200 dark:border-red-800">Dropout</span>`;
 
-            let actionHtml = isCompleted
-                ? `
+            let actionHtml = '';
+            if (cStatus === 'completed') {
+                const mClass = markStatus === 'approved'
+                    ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 border-purple-200 hover:bg-purple-100 cursor-pointer'
+                    : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 opacity-50 cursor-not-allowed';
+                const mClick = markStatus === 'approved' ? `onclick="openUserDocumentsModal('marksheet')"` : `onclick="window.showToast('Marksheet not approved yet.', 'info')"`;
+
+                const cClass = certStatus === 'approved'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 border-emerald-200 hover:bg-emerald-100 cursor-pointer'
+                    : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 opacity-50 cursor-not-allowed';
+                const cClick = certStatus === 'approved' ? `onclick="openUserDocumentsModal('certificate')"` : `onclick="window.showToast('Certificate not approved yet.', 'info')"`;
+
+                actionHtml = `
                 <div class="grid grid-cols-2 gap-2 mt-4">
-                    <button onclick="openModal('marksheetModal')" class="w-full py-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-xl text-xs font-bold flex justify-center items-center gap-1 transition-colors"><i data-lucide="file-text" class="w-4 h-4"></i> Marksheet</button>
-                    <button onclick="openModal('marksheetModal')" class="w-full py-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 rounded-xl text-xs font-bold flex justify-center items-center gap-1 transition-colors"><i data-lucide="award" class="w-4 h-4"></i> Certificate</button>
-                </div>
-                `
-                : `<button onclick="handleExamApplication()" class="mt-4 w-full py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl text-sm font-bold flex justify-center items-center gap-2 shadow-md transition-colors"><i data-lucide="file-edit" class="w-4 h-4"></i> Apply for Exam</button>`;
+                    <button ${mClick} class="w-full py-2 border rounded-xl text-xs font-bold flex justify-center items-center gap-1 transition-colors ${mClass}"><i data-lucide="file-text" class="w-4 h-4"></i> Marksheet</button>
+                    <button ${cClick} class="w-full py-2 border rounded-xl text-xs font-bold flex justify-center items-center gap-1 transition-colors ${cClass}"><i data-lucide="award" class="w-4 h-4"></i> Certificate</button>
+                </div>`;
+            } else if (cStatus === 'active') {
+                actionHtml = `<button onclick="handleExamApplication()" class="mt-4 w-full py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl text-sm font-bold flex justify-center items-center gap-2 shadow-md transition-colors"><i data-lucide="file-edit" class="w-4 h-4"></i> Apply for Exam</button>`;
+            } else {
+                actionHtml = `<p class="mt-4 text-center text-xs text-red-500 font-bold bg-red-50 p-2 rounded-lg border border-red-100">Course Discontinued</p>`;
+            }
 
             return `
                 <div class="mb-4 p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all">
@@ -3279,7 +3319,6 @@
             `;
         }
 
-        // --- OPEN ACTIVE ONLY MODAL ---
         window.openActiveCoursesOnly = function () {
             if (!isUserLoggedIn) return;
             openModal('activeCoursesModal');
@@ -3293,19 +3332,16 @@
             lucide.createIcons();
         };
 
-        // --- OPEN FULL TABBED MODAL ---
         window.openMyCourses = function (filterType = 'total') {
             if (!isUserLoggedIn) return;
             openModal('myCoursesModal');
             renderMyCoursesList(filterType);
         };
 
-        // --- TAB SWITCHING & RENDERING LOGIC ---
         window.renderMyCoursesList = function (filterType) {
             const listContainer = document.getElementById('myCoursesDetailedList');
             let dataToRender = [];
 
-            // 1. Define the specific visual styles for each tab state
             const tabStyles = {
                 total: {
                     active: ['border-indigo-500', 'bg-indigo-50', 'dark:border-indigo-500', 'dark:bg-indigo-900/30', 'ring-2', 'ring-indigo-500/20'],
@@ -3318,11 +3354,14 @@
                 completed: {
                     active: ['border-emerald-500', 'bg-emerald-50', 'dark:border-emerald-500', 'dark:bg-emerald-900/30', 'ring-2', 'ring-emerald-500/20'],
                     inactive: ['border-slate-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800']
+                },
+                dropout: {
+                    active: ['border-red-500', 'bg-red-50', 'dark:border-red-500', 'dark:bg-red-900/30', 'ring-2', 'ring-red-500/20'],
+                    inactive: ['border-slate-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800']
                 }
             };
 
-            // 2. Reset ALL tabs to their "Inactive" state
-            ['total', 'active', 'completed'].forEach(tab => {
+            ['total', 'active', 'completed', 'dropout'].forEach(tab => {
                 const el = document.getElementById(`mc-tab-${tab}`);
                 if (el) {
                     el.classList.remove(...tabStyles[tab].active);
@@ -3330,19 +3369,17 @@
                 }
             });
 
-            // 3. Apply the "Active" state exclusively to the clicked tab
             const selectedEl = document.getElementById(`mc-tab-${filterType}`);
             if (selectedEl) {
                 selectedEl.classList.remove(...tabStyles[filterType].inactive);
                 selectedEl.classList.add(...tabStyles[filterType].active);
             }
 
-            // 4. Filter the data based on selection
             if (filterType === 'total') dataToRender = window.userEnrolledData;
             if (filterType === 'active') dataToRender = window.userActiveCourses;
             if (filterType === 'completed') dataToRender = window.userCompletedCourses;
+            if (filterType === 'dropout') dataToRender = window.userDropoutCourses;
 
-            // 5. Render the HTML
             if (dataToRender.length === 0) {
                 listContainer.innerHTML = `
                     <div class="text-center py-8">
@@ -3358,28 +3395,18 @@
             lucide.createIcons();
         };
 
-        // --- NEW: USER DOCUMENTS UI LOGIC (SVG BUG FIXED) ---
         window.openUserDocumentsModal = function (docType) {
             try {
-                // 1. Safety Check
                 if (!isUserLoggedIn) {
                     showToast("Please log in to view your documents.", "info");
                     openModal('loginModal');
                     return;
                 }
 
-                // 2. Safely grab HTML elements
                 const modalTitle = document.getElementById('docsModalTitle');
                 const listContainer = document.getElementById('docsDetailedList');
                 const messageText = document.getElementById('docsModalMessageText');
 
-                if (!modalTitle || !listContainer) {
-                    console.error("Missing HTML Elements: Cannot find docsModalTitle or docsDetailedList");
-                    alert("System Error: Modal HTML is missing or duplicated.");
-                    return;
-                }
-
-                // 3. Setup UI theme (FIXED: Safely overriding innerHTML to avoid SVG errors)
                 if (docType === 'marksheet') {
                     modalTitle.innerHTML = `<i data-lucide="file-text" class="text-purple-600 dark:text-purple-400 w-6 h-6"></i> <span>My Marksheets</span>`;
                     if (messageText) messageText.textContent = "Marksheets are available for download once your final exam results are officially published.";
@@ -3388,19 +3415,14 @@
                     if (messageText) messageText.textContent = "Certificates are available for download upon successful completion of your course and fee clearance.";
                 }
 
-                // Fallback if data isn't loaded yet
                 if (!window.userEnrolledData) window.userEnrolledData = [];
 
-                // 4. Filter courses based on specific document status
+                // FIX 3: Check for 'Approved'
                 const availableDocs = window.userEnrolledData.filter(c => {
-                    if (docType === 'marksheet') {
-                        return c.marksheetStatus && String(c.marksheetStatus).trim().toLowerCase() === 'completed';
-                    } else {
-                        return c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'completed';
-                    }
+                    if (docType === 'marksheet') return c.marksheetStatus && String(c.marksheetStatus).trim().toLowerCase() === 'approved';
+                    else return c.certificateStatus && String(c.certificateStatus).trim().toLowerCase() === 'approved';
                 });
 
-                // 5. Generate the List HTML
                 if (availableDocs.length === 0) {
                     listContainer.innerHTML = `
                         <div class="text-center py-10">
@@ -3416,7 +3438,6 @@
                         const btnClasses = docType === 'marksheet'
                             ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/40'
                             : 'bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-200 dark:border-fuchsia-800/50 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-900/40';
-
                         const btnText = docType === 'marksheet' ? 'Download Marksheet' : 'Download Certificate';
 
                         return `
@@ -3426,7 +3447,7 @@
                                         <h4 class="font-bold text-slate-800 dark:text-white leading-tight text-md mb-1">${course.courseName}</h4>
                                         <p class="text-xs text-slate-500 font-mono tracking-wider">${course.regNo || 'Reg No. Missing'}</p>
                                     </div>
-                                    <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-md border border-emerald-200 dark:border-emerald-800 shrink-0">Verified</span>
+                                    <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-md border border-emerald-200 dark:border-emerald-800 shrink-0">Approved</span>
                                 </div>
                                 <button onclick="downloadDocument('${course.regNo}', '${docType}')" class="w-full py-2.5 border rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors ${btnClasses}">
                                     <i data-lucide="download" class="w-4 h-4"></i> ${btnText}
@@ -3436,14 +3457,12 @@
                     }).join('');
                 }
 
-                // 6. Finally, open the modal
                 openModal('userDocumentsModal');
                 if (window.lucide) lucide.createIcons();
 
             } catch (error) {
-                // If ANYTHING crashes, it will alert you here instead of doing nothing!
                 console.error("Error opening Document Modal:", error);
-                showToast("Something went wrong opening the modal: " + error.message);
+                showToast("Something went wrong opening the modal.", "error");
             }
         };
 
