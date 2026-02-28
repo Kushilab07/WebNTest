@@ -1697,6 +1697,96 @@
         </div>
     </div>
 
+    <!-- Fee Details Model -->
+    <div id="feeDetailsModal" class="sidebar-modal fixed inset-0 z-[300] hidden">
+        <div class="sidebar-backdrop absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+            onclick="closeModal('feeDetailsModal')"></div>
+        <div
+            class="sidebar-panel absolute top-0 right-0 bottom-0 w-full max-w-[400px] sm:max-w-[450px] bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col border-l border-slate-200 dark:border-slate-800">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="indian-rupee" class="text-purple-600 w-6 h-6"></i> Fee Details
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.openFeeHistory()"
+                        class="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
+                        title="View History">
+                        <i data-lucide="history" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="closeModal('feeDetailsModal')"
+                        class="text-slate-400 hover:text-red-500 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 grow" id="feeCoursesList">
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Request Model -->
+    <div id="feeRequestModal"
+        class="fixed inset-0 z-[400] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in relative">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="send" class="w-5 h-5 text-blue-500"></i> Verify Payment
+                </h3>
+                <button onclick="closeModal('feeRequestModal')"
+                    class="text-slate-400 hover:text-red-500 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-500 mb-4">Submit the amount you have paid to the institute. The admin will
+                    verify and update your official ledger.</p>
+                <form id="feeRequestForm" class="space-y-4">
+                    <input type="hidden" id="feeReqCourse">
+                    <input type="hidden" id="feeReqRegNo">
+                    <input type="hidden" id="feeReqBranch">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Amount Paid
+                            (₹)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-500">₹</span>
+                            <input type="number" id="feeReqAmount" required min="1" placeholder="e.g. 1000"
+                                class="w-full pl-8 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white font-bold">
+                        </div>
+                    </div>
+                    <button type="submit" id="feeReqSubmitBtn"
+                        class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 mt-2">
+                        <span id="feeReqBtnText">Send Request</span>
+                        <div id="feeReqSpinner"
+                            class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin">
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--Fee History Model-->
+    <div id="feeHistoryModal" class="sidebar-modal fixed inset-0 z-[400] hidden">
+        <div class="sidebar-backdrop absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+            onclick="closeModal('feeHistoryModal')"></div>
+        <div
+            class="sidebar-panel absolute top-0 right-0 bottom-0 w-full max-w-[400px] sm:max-w-[450px] bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col border-l border-slate-200 dark:border-slate-800">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10 shrink-0">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="history" class="text-blue-500 w-6 h-6"></i> Request History
+                </h3>
+                <button onclick="closeModal('feeHistoryModal')"
+                    class="text-slate-400 hover:text-red-500 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 grow" id="feeHistoryList">
+            </div>
+        </div>
+    </div>
+
     <!-- Modals (Login/Signup - Dark Mode ready) -->
     <!-- Login Modal -->
     <div id="loginModal"
@@ -2921,7 +3011,7 @@
         // FIREBASE AUTH LOGIC
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, writeBatch, doc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, writeBatch, doc, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
         // --- NEW: CUSTOM TOAST NOTIFICATION SYSTEM ---
         window.showToast = function (message, type = 'success') {
@@ -2991,8 +3081,8 @@
         let db;
 
         // Data sources from your exam form
-        const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmrZnj7tj1l7EobN-gaDyjsJAXjWVo5Lwwok5f8N_1zHdgVp4_vv/exec";
-        const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz5sDaroUh90_yXFRLZ-zdUy6ih5bXBrGrBQGXDOTq3V6o6gpcyYDbrggnXdBAX2EyrNQ/exec";
+        const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbwBaRgBUEDGpw5xP-C4AKTaCii6ywoYE0srI7n10Fy57ED-edP36bQU6A6hO9RenEdP/exec";
+        const URL_BAGALS = "https://script.google.com/macros/s/AKfycbxVgsXc4KuAsmgntswKZhJrbdMKrKs4DuHq6NUCrg5jQPt0PtQ1QlPhrL0RBuNAMHZ3SQ/exec";
 
         window.userEnrolledData = []; // Store fetched courses globally
 
@@ -3510,6 +3600,217 @@
 
         window.downloadDocument = function (regNo, docType) {
             showToast(`Searching database for ${docType.toUpperCase()}...`, "info");
+        };
+
+        // =========================================================
+        // --- STUDENT FEE MANAGEMENT ENGINE ---
+        // =========================================================
+
+        window.openFeeDetails = function () {
+            if (!isUserLoggedIn) {
+                showToast("Please log in to view fee details.", "info");
+                openModal('loginModal');
+                return;
+            }
+
+            const listContainer = document.getElementById('feeCoursesList');
+            if (!window.userEnrolledData || window.userEnrolledData.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-slate-500 py-6 font-medium">No courses found.</p>`;
+                openModal('feeDetailsModal');
+                return;
+            }
+
+            listContainer.innerHTML = window.userEnrolledData.map(course => {
+                let statusBadge = '';
+                let statusColor = '';
+
+                const feeStat = String(course.feeStatus || 'Pending').trim().toLowerCase();
+
+                if (feeStat === 'cleared') {
+                    statusBadge = 'Cleared';
+                    statusColor = 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-800';
+                } else if (feeStat === 'partial') {
+                    statusBadge = 'Partial';
+                    statusColor = 'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-800';
+                } else {
+                    statusBadge = 'Pending';
+                    statusColor = 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-800';
+                }
+
+                // Parse numbers safely
+                const total = parseFloat(course.totalFee) || 0;
+                const paid = parseFloat(course.paidFee) || 0;
+                const balance = Math.max(total - paid, 0);
+
+                // Progress Bar logic
+                let progress = total > 0 ? Math.min((paid / total) * 100, 100) : 0;
+
+                let actionBtn = '';
+                if (feeStat !== 'cleared') {
+                    actionBtn = `
+                        <button onclick="window.openFeeRequestForm('${course.courseName}', '${course.regNo}', '${course.branch}')" class="mt-4 w-full py-2.5 border border-purple-200 dark:border-purple-800/50 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors">
+                            <i data-lucide="send" class="w-4 h-4"></i> Send Verification Request
+                        </button>
+                    `;
+                } else {
+                    actionBtn = `
+                        <div class="mt-4 w-full py-2.5 bg-slate-50 dark:bg-slate-800/50 text-slate-500 rounded-xl text-sm font-bold flex justify-center items-center gap-2 cursor-default border border-slate-200 dark:border-slate-700">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Dues Cleared
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="mb-4 p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="pr-2">
+                                <h4 class="font-bold text-slate-800 dark:text-white leading-tight text-lg mb-1">${course.courseName}</h4>
+                                <p class="text-xs text-slate-500 font-mono tracking-wider">${course.regNo || 'Pending Reg No'}</p>
+                            </div>
+                            <span class="px-2.5 py-1 text-[10px] font-extrabold uppercase rounded-lg border ${statusColor} shrink-0">${statusBadge}</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                                <p class="text-[10px] text-slate-500 uppercase font-bold mb-0.5">Total Fee</p>
+                                <p class="font-bold text-slate-800 dark:text-slate-200">₹${total}</p>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                                <p class="text-[10px] text-slate-500 uppercase font-bold mb-0.5">Total Paid</p>
+                                <p class="font-bold text-emerald-600 dark:text-emerald-400">₹${paid}</p>
+                            </div>
+                        </div>
+
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 mb-1 overflow-hidden">
+                            <div class="bg-blue-500 h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%" data-target-width="${progress}%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-2">
+                            <span>0%</span>
+                            <span>${Math.round(progress)}% Paid</span>
+                        </div>
+
+                        ${actionBtn}
+                    </div>
+                `;
+            }).join('');
+
+            openModal('feeDetailsModal');
+            if (window.lucide) lucide.createIcons();
+
+            // Animate progress bars
+            setTimeout(() => {
+                const bars = listContainer.querySelectorAll('[data-target-width]');
+                bars.forEach(bar => { bar.style.width = bar.getAttribute('data-target-width'); });
+            }, 50);
+        };
+
+        window.openFeeRequestForm = function (courseName, regNo, branch) {
+            document.getElementById('feeReqCourse').value = courseName;
+            document.getElementById('feeReqRegNo').value = regNo;
+            document.getElementById('feeReqBranch').value = branch;
+            document.getElementById('feeReqAmount').value = ''; // Reset
+            openModal('feeRequestModal');
+        };
+
+        // Form Submission Logic
+        const feeRequestForm = document.getElementById('feeRequestForm');
+        if (feeRequestForm) {
+            feeRequestForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const amount = document.getElementById('feeReqAmount').value;
+                const courseName = document.getElementById('feeReqCourse').value;
+                const regNo = document.getElementById('feeReqRegNo').value;
+                const branch = document.getElementById('feeReqBranch').value;
+
+                const btnText = document.getElementById('feeReqBtnText');
+                const spinner = document.getElementById('feeReqSpinner');
+                const submitBtn = document.getElementById('feeReqSubmitBtn');
+
+                btnText.classList.add('hidden');
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = true;
+
+                try {
+                    await addDoc(collection(db, "fee_requests"), {
+                        email: userEmail.toLowerCase().trim(),
+                        studentName: auth.currentUser.displayName || 'Student',
+                        regNo: regNo,
+                        courseName: courseName,
+                        branch: branch,
+                        amount: parseFloat(amount),
+                        status: 'Pending',
+                        timestamp: serverTimestamp()
+                    });
+
+                    showToast("Verification request sent to Admin!", "success");
+                    closeModal('feeRequestModal');
+                } catch (err) {
+                    console.error(err);
+                    showToast("Failed to send request. Please try again.", "error");
+                } finally {
+                    btnText.classList.remove('hidden');
+                    spinner.classList.add('hidden');
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        // Fetch History
+        window.openFeeHistory = function () {
+            if (!isUserLoggedIn) return;
+            openModal('feeHistoryModal');
+            const listContainer = document.getElementById('feeHistoryList');
+            listContainer.innerHTML = `<div class="flex justify-center py-8"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div></div>`;
+
+            const q = query(
+                collection(db, "fee_requests"),
+                where("email", "==", userEmail.toLowerCase().trim())
+            );
+
+            // Fetch once (no need for live listener here unless requested)
+            onSnapshot(q, (snapshot) => {
+                let reqArray = [];
+                snapshot.forEach(doc => reqArray.push(doc.data()));
+
+                reqArray.sort((a, b) => {
+                    const tA = a.timestamp ? a.timestamp.toMillis() : 0;
+                    const tB = b.timestamp ? b.timestamp.toMillis() : 0;
+                    return tB - tA; // Newest first
+                });
+
+                if (reqArray.length === 0) {
+                    listContainer.innerHTML = `<p class="text-center text-slate-500 py-6 font-medium">No history found.</p>`;
+                    return;
+                }
+
+                listContainer.innerHTML = reqArray.map(req => {
+                    const stat = req.status || 'Pending';
+                    let badge = '';
+                    if (stat === 'Approved') badge = `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase rounded-md border border-emerald-200"><i data-lucide="check" class="w-3 h-3 inline"></i> Approved</span>`;
+                    else if (stat === 'Rejected') badge = `<span class="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-extrabold uppercase rounded-md border border-red-200"><i data-lucide="x" class="w-3 h-3 inline"></i> Rejected</span>`;
+                    else badge = `<span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-extrabold uppercase rounded-md border border-amber-200"><i data-lucide="clock" class="w-3 h-3 inline"></i> Pending</span>`;
+
+                    const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : "Just now";
+
+                    return `
+                        <div class="mb-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white text-sm">${req.courseName}</p>
+                                    <p class="text-xs text-slate-500">${dateStr}</p>
+                                </div>
+                                <span class="font-extrabold text-blue-600 dark:text-blue-400">₹${req.amount}</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                                <span class="text-[10px] text-slate-400 font-mono">${req.regNo}</span>
+                                ${badge}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                if (window.lucide) lucide.createIcons();
+            });
         };
 
         // --- LOGOUT FUNCTION (FIXED) ---
