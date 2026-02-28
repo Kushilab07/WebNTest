@@ -460,7 +460,9 @@ window.openManageModal = function (regNo) {
     };
 
     window.currentModalState = { ...window.initialModalState };
-    window.currentMarksAdded = false;
+
+    // FIX 1: If Marksheet is already generated, marks MUST have been added. Keep it true.
+    window.currentMarksAdded = msGen;
 
     // Populate UI
     document.getElementById('modalStudentName').innerText = student[2];
@@ -469,10 +471,15 @@ window.openManageModal = function (regNo) {
     document.getElementById('marksheetCurrentStatus').innerText = currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = currentModalState.cert.toUpperCase();
 
-    // Reset Buttons
+    // Reset Buttons based on if marks were already added
     const addMarksBtn = document.getElementById('btnAddMarks');
-    addMarksBtn.innerHTML = "Add Marks";
-    addMarksBtn.className = "px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-indigo-700 transition-colors";
+    if (window.currentMarksAdded) {
+        addMarksBtn.innerHTML = `Marks Added <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
+        addMarksBtn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
+    } else {
+        addMarksBtn.innerHTML = "Add Marks";
+        addMarksBtn.className = "px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-indigo-700 transition-colors";
+    }
 
     window.evaluateModalState();
 
