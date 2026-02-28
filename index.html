@@ -2024,9 +2024,11 @@
             const popup = document.getElementById('notification-popup');
             popup.classList.toggle('active');
 
-            // If the popup just opened and there are unread messages, mark them read in Firebase!
+            // If the popup just opened and there are unread messages, mark them read!
             if (popup.classList.contains('active') && window.unreadNotifIds.length > 0) {
-                markNotificationsAsRead();
+                if (typeof window.markNotificationsAsRead === 'function') {
+                    window.markNotificationsAsRead();
+                }
             }
         }
 
@@ -2040,22 +2042,6 @@
                 }
             }
         });
-
-        window.markNotificationsAsRead = async function () {
-            if (!db || window.unreadNotifIds.length === 0) return;
-            try {
-                const batch = writeBatch(db);
-                window.unreadNotifIds.forEach(id => {
-                    const ref = doc(db, "notifications", id);
-                    batch.update(ref, { read: true });
-                });
-                await batch.commit();
-                window.unreadNotifIds = [];
-                // Note: The onSnapshot listener will auto-detect this change and instantly remove the red dot!
-            } catch (e) {
-                console.error("Failed to mark notifications as read:", e);
-            }
-        }
 
         // Profile Animation Logic (Now greatly simplified!)
         window.openProfile = function () {
@@ -3002,6 +2988,21 @@
             auth = getAuth(app);
             provider = new GoogleAuthProvider(); // Initialize Google Provider
             db = getFirestore(app);
+
+            window.markNotificationsAsRead = async function () {
+                if (!db || window.unreadNotifIds.length === 0) return;
+                try {
+                    const batch = writeBatch(db);
+                    window.unreadNotifIds.forEach(id => {
+                        const ref = doc(db, "notifications", id);
+                        batch.update(ref, { read: true });
+                    });
+                    await batch.commit();
+                    window.unreadNotifIds = [];
+                } catch (e) {
+                    console.error("Failed to mark notifications as read:", e);
+                }
+            };
 
             // Listen for Auth Changes to update global state
             onAuthStateChanged(auth, (user) => {
