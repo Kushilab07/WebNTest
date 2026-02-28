@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -16,11 +16,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-setPersistence(auth, browserSessionPersistence).catch(console.error);
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmrZnj7tj1l7EobN-gaDyjsJAXjWVo5Lwwok5f8N_1zHdgVp4_vv/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz5sDaroUh90_yXFRLZ-zdUy6ih5bXBrGrBQGXDOTq3V6o6gpcyYDbrggnXdBAX2EyrNQ/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbzpgzSFhNvXrTYON3dqHZXNdGnv2uroRimIcl3qR4JQ4Oa0iAVUUVePSgVDC3MMQHaS/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbwuEjeuSox5oZvmBML69NocNbmLSItB-4QvD4IxW2PULVo9EmyltpzutltqM2chP4TGVA/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
@@ -103,14 +102,24 @@ onAuthStateChanged(auth, async (user) => {
                     window.loadTableData(window.currentBranch);
                 }, 300);
             } else {
-                await signOut(auth);
-                window.showToast("Unauthorized Access.", "error");
+                // FIX: Do NOT signOut() here, as it logs them out of the student site globally.
+                // Instead, gracefully block access and offer an explicit sign-out button.
                 resetLoginButton();
+                window.showToast("Access Denied: Not an Admin Account.", "error");
+                
+                const form = document.getElementById('adminLoginForm');
+                form.innerHTML = `
+                    <div class="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl mb-4 text-sm font-bold text-center border border-red-200 dark:border-red-800">
+                        You are logged in with a Student account.<br>Access Denied.
+                    </div>
+                    <button type="button" onclick="window.handleAdminLogout()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all">
+                        Sign Out & Switch Account
+                    </button>
+                `;
             }
         } catch (error) {
-            await signOut(auth);
-            window.showToast("Database verification failed.", "error");
             resetLoginButton();
+            window.showToast("Database verification failed.", "error");
         }
     } else {
         dashboard.classList.add('hidden', 'opacity-0');
@@ -441,37 +450,39 @@ window.openManageModal = function (regNo) {
     if (!student) return;
 
     window.currentEditingRegNo = regNo;
-    window.currentEditingEmail = student[17]; // Index 17 is Email in your sheet
+    window.currentEditingEmail = student[17]; 
 
     let cStatus = student[21] || 'Active';
     cStatus = cStatus.charAt(0).toUpperCase() + cStatus.slice(1).toLowerCase();
     if (!['Active', 'Completed', 'Dropout'].includes(cStatus)) cStatus = 'Active';
 
-    // Check if links exist to determine generation state
-    const msGen = student[23] && student[23].trim() !== ""; // Index 23: Marksheet Link
-    const certGen = student[25] && student[25].trim() !== ""; // Index 25: Cert Link
+    // Parse existing links to recreate state perfectly upon refresh
+    const markLinkVal = student[23] ? String(student[23]).trim() : "";
+    const certLinkVal = student[25] ? String(student[25]).trim() : "";
+
+    const hasMarks = markLinkVal === "MARKS_ADDED" || markLinkVal === "MOCK_URL" || markLinkVal.startsWith("http");
+    const msGen = markLinkVal === "MOCK_URL" || markLinkVal.startsWith("http");
+    const certGen = certLinkVal === "MOCK_URL" || certLinkVal.startsWith("http");
 
     window.initialModalState = {
         course: cStatus,
         marksheet: String(student[22] || 'pending').toLowerCase(),
         cert: String(student[24] || 'pending').toLowerCase(),
         msGenerated: msGen,
-        certGenerated: certGen
+        certGenerated: certGen,
+        markLink: markLinkVal,
+        certLink: certLinkVal
     };
 
     window.currentModalState = { ...window.initialModalState };
+    window.currentMarksAdded = hasMarks;
 
-    // FIX 1: If Marksheet is already generated, marks MUST have been added. Keep it true.
-    window.currentMarksAdded = msGen;
-
-    // Populate UI
     document.getElementById('modalStudentName').innerText = student[2];
     document.getElementById('modalRegNo').innerText = regNo;
     document.getElementById('modalCourseStatus').value = currentModalState.course;
     document.getElementById('marksheetCurrentStatus').innerText = currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = currentModalState.cert.toUpperCase();
 
-    // Reset Buttons based on if marks were already added
     const addMarksBtn = document.getElementById('btnAddMarks');
     if (window.currentMarksAdded) {
         addMarksBtn.innerHTML = `Marks Added <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
@@ -506,9 +517,10 @@ window.closeManageModal = function () {
     window.currentEditingRegNo = null;
 };
 
-// --- STRICT CONDITIONAL LOGIC ENGINE ---
 window.simulateAddMarks = function () {
     window.currentMarksAdded = true;
+    if (!window.currentModalState.markLink) window.currentModalState.markLink = "MARKS_ADDED";
+    
     const btn = document.getElementById('btnAddMarks');
     btn.innerHTML = `Marks Added <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
     btn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
@@ -518,14 +530,14 @@ window.simulateAddMarks = function () {
 
 window.generateDocument = function (docType) {
     window.showToast(`Generating ${docType}... please wait.`, "info");
-
-    // Simulate generation delay (Replace with actual fetch to GAS later)
     setTimeout(() => {
         if (docType === 'marksheet') {
             window.currentModalState.msGenerated = true;
+            window.currentModalState.markLink = "MOCK_URL";
             window.showToast("Marksheet Generated Successfully!", "success");
         } else {
             window.currentModalState.certGenerated = true;
+            window.currentModalState.certLink = "MOCK_URL";
             window.showToast("Certificate Generated Successfully!", "success");
         }
         window.evaluateModalState();
@@ -547,7 +559,6 @@ window.evaluateModalState = function () {
     const courseStatus = document.getElementById('modalCourseStatus').value;
     window.currentModalState.course = courseStatus;
 
-    // DOM Elements
     const cardMS = document.getElementById('marksheetCard');
     const btnGenMS = document.getElementById('btnGenerateMarksheet');
     const btnTogMS = document.getElementById('btnMarksheetToggle');
@@ -559,22 +570,18 @@ window.evaluateModalState = function () {
 
     const isCompleted = (courseStatus === 'Completed');
 
-    // 1. MARKSHEET LOGIC: Needs Course=Completed AND Marks Added
     if (isCompleted && window.currentMarksAdded) {
         cardMS.classList.remove('opacity-50');
-
         if (window.currentModalState.msGenerated) {
             btnGenMS.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> Marksheet Generated`;
             btnGenMS.className = "w-full py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 flex justify-center items-center gap-2 cursor-default";
             btnGenMS.disabled = true;
-
-            btnTogMS.disabled = false; // Unlocks Approve button
+            btnTogMS.disabled = false; 
         } else {
             btnGenMS.innerHTML = `<i data-lucide="file-cog" class="w-3 h-3"></i> Generate Marksheet`;
             btnGenMS.className = "w-full py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-bold rounded-lg border border-purple-200 dark:border-purple-800 flex justify-center items-center gap-2 hover:bg-purple-200 transition-colors";
             btnGenMS.disabled = false;
-
-            btnTogMS.disabled = true; // Lock approve until generated
+            btnTogMS.disabled = true; 
             window.currentModalState.marksheet = 'pending';
         }
     } else {
@@ -584,21 +591,17 @@ window.evaluateModalState = function () {
         window.currentModalState.marksheet = 'pending';
     }
 
-    // 2. CERTIFICATE LOGIC: Needs Course=Completed AND Marksheet Generated
     if (isCompleted && window.currentModalState.msGenerated) {
         cardCert.classList.remove('opacity-50');
-
         if (window.currentModalState.certGenerated) {
             btnGenCert.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> Certificate Generated`;
             btnGenCert.className = "w-full py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 flex justify-center items-center gap-2 cursor-default";
             btnGenCert.disabled = true;
-
-            btnTogCert.disabled = false; // Unlocks Approve
+            btnTogCert.disabled = false; 
         } else {
             btnGenCert.innerHTML = `<i data-lucide="award" class="w-3 h-3"></i> Generate Certificate`;
             btnGenCert.className = "w-full py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-200 dark:border-blue-800 flex justify-center items-center gap-2 hover:bg-blue-200 transition-colors";
             btnGenCert.disabled = false;
-
             btnTogCert.disabled = true;
             window.currentModalState.cert = 'pending';
         }
@@ -609,19 +612,17 @@ window.evaluateModalState = function () {
         window.currentModalState.cert = 'pending';
     }
 
-    // Update Button Texts
     updateToggleButton(btnTogMS, window.currentModalState.marksheet);
     updateToggleButton(btnTogCert, window.currentModalState.cert);
     document.getElementById('marksheetCurrentStatus').innerText = window.currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = window.currentModalState.cert.toUpperCase();
 
-    // 3. Save Button Logic (Enable only if state differs)
     const hasChanged =
         window.initialModalState.course !== window.currentModalState.course ||
         window.initialModalState.marksheet !== window.currentModalState.marksheet ||
         window.initialModalState.cert !== window.currentModalState.cert ||
-        window.initialModalState.msGenerated !== window.currentModalState.msGenerated ||
-        window.initialModalState.certGenerated !== window.currentModalState.certGenerated;
+        window.initialModalState.markLink !== window.currentModalState.markLink ||
+        window.initialModalState.certLink !== window.currentModalState.certLink;
 
     if (hasChanged) {
         btnSave.disabled = false;
@@ -644,7 +645,6 @@ function updateToggleButton(btn, status) {
     }
 }
 
-// --- FIREBASE NOTIFICATION ENGINE ---
 window.toggleCustomNotif = function () {
     const box = document.getElementById('customNotifBox');
     if (document.getElementById('notifTemplate').value === 'custom') {
@@ -677,7 +677,6 @@ window.sendNotification = async function () {
         window.showToast("Notification sent to student portal!", "success");
         document.getElementById('customNotifBox').value = '';
     } catch (e) {
-        console.error(e);
         window.showToast("Failed to send notification.", "error");
     } finally {
         btn.innerHTML = ogText;
@@ -695,14 +694,11 @@ window.saveStudentEdits = async function () {
 
     const student = window.adminData.find(s => s[1] === window.currentEditingRegNo);
 
-    // Update local state arrays
     student[21] = window.currentModalState.course;
     student[22] = window.currentModalState.marksheet;
     student[24] = window.currentModalState.cert;
-
-    // Check if generation state was mocked (For UI purposes until GAS handles generation)
-    if (window.currentModalState.msGenerated) student[23] = "MOCK_URL";
-    if (window.currentModalState.certGenerated) student[25] = "MOCK_URL";
+    student[23] = window.currentModalState.markLink;
+    student[25] = window.currentModalState.certLink;
 
     const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
 
@@ -714,13 +710,15 @@ window.saveStudentEdits = async function () {
                 regNo: student[1],
                 courseStatus: student[21],
                 markStatus: student[22],
-                certStatus: student[24]
+                certStatus: student[24],
+                markLink: student[23],
+                certLink: student[25]
             })
         });
 
         window.showToast("Student profile updated!", "success");
         updateStats(window.adminData);
-        window.applyFilters(); // Re-render table
+        window.applyFilters(); 
         window.closeManageModal();
     } catch (error) {
         window.showToast("Failed to save changes.", "error");
