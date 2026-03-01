@@ -177,6 +177,10 @@ window.loadTableData = async function (branch) {
             window.adminData = result.data;
             updateStats(window.adminData);
             window.applyFilters(); // Renders table
+            // FIX: Start the background listener for notifications immediately for the active branch!
+            if (typeof startFeeRequestListener === 'function') {
+                startFeeRequestListener();
+            }
         } else {
             window.showToast("Failed to fetch data.", "error");
         }
@@ -777,7 +781,6 @@ window.loadFeeDashboard = async function () {
     window.showToast("Loading Financial Data...", "info");
     await fetchCoursePrices();
     renderCoursePricingGrid();
-    startFeeRequestListener();
 };
 
 // 3. Pricing Manager (Fetches prices specific to current Branch)
