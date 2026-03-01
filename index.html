@@ -3242,8 +3242,14 @@
                 ]);
 
                 let allCourses = [];
-                if (dataArikuchi && dataArikuchi.found) allCourses.push(...dataArikuchi.enrolledCourses);
+                window.exactStudentName = ""; // NEW: Variable to hold exact sheet name
+
+                if (dataArikuchi && dataArikuchi.found) {
+                    window.exactStudentName = dataArikuchi.studentName; // Capture it
+                    allCourses.push(...dataArikuchi.enrolledCourses);
+                }
                 if (dataBagals && dataBagals.found) {
+                    window.exactStudentName = dataBagals.studentName; // Capture it
                     dataBagals.enrolledCourses.forEach(c => {
                         if (!allCourses.find(existing => existing.courseName === c.courseName)) {
                             allCourses.push(c);
@@ -3767,7 +3773,7 @@
                 try {
                     await addDoc(collection(db, "fee_requests"), {
                         email: userEmail.toLowerCase().trim(),
-                        studentName: auth.currentUser.displayName || 'Student',
+                        studentName: window.exactStudentName || auth.currentUser.displayName || 'Student',
                         regNo: regNo,
                         courseName: courseName,
                         branch: branch,
