@@ -339,7 +339,7 @@ function renderTable(dataArray) {
         if (rawAtt === '') rawAtt = '0';
 
         const status = String(student[21] || 'active').toLowerCase();
-        const feeStat = String(s[28] || 'Pending').trim();
+        const feeStat = String(student[28] || 'Pending').trim();
         const marksheetStatus = String(student[22] || 'pending').toLowerCase();
         const certStatus = String(student[24] || 'pending').toLowerCase();
 
