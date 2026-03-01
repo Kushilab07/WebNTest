@@ -986,7 +986,7 @@ window.processFeeRequest = async function (reqId, regNo, courseName, amount, act
 };
 
 // 6. NEW: Admin Fee History Modal
-window.openAdminFeeHistory = async function () {
+window.openAdminFeeHistory = function () {
     const modal = document.getElementById('adminFeeHistoryModal');
     const list = document.getElementById('adminFeeHistoryList');
     modal.classList.remove('hidden');
@@ -994,7 +994,8 @@ window.openAdminFeeHistory = async function () {
 
     try {
         const q = query(collection(db, "fee_requests"), where("branch", "==", window.currentBranch));
-        const snapshot = await getDoc(q).catch(() => null); // Fallback below using onSnapshot for easier data pull
+
+        // BUG 1 FIXED: Removed the invalid getDoc(q) line that was causing the crash!
 
         onSnapshot(q, (snap) => {
             let reqArray = [];
