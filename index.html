@@ -3011,7 +3011,7 @@
         // FIREBASE AUTH LOGIC
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, writeBatch, doc, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, writeBatch, doc, addDoc, serverTimestamp, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
         // --- NEW: CUSTOM TOAST NOTIFICATION SYSTEM ---
         window.showToast = function (message, type = 'success') {
@@ -3613,20 +3613,44 @@
         // --- STUDENT FEE MANAGEMENT ENGINE ---
         // =========================================================
 
-        window.openFeeDetails = function () {
+        window.openFeeDetails = async function () {
             if (!isUserLoggedIn) {
                 showToast("Please log in to view fee details.", "info");
                 openModal('loginModal');
                 return;
             }
 
+            openModal('feeDetailsModal'); // Open modal immediately so user sees something is happening
             const listContainer = document.getElementById('feeCoursesList');
+            
             if (!window.userEnrolledData || window.userEnrolledData.length === 0) {
                 listContainer.innerHTML = `<p class="text-center text-slate-500 py-6 font-medium">No courses found.</p>`;
-                openModal('feeDetailsModal');
                 return;
             }
 
+            // Show a spinner while we fetch the global prices
+            listContainer.innerHTML = `<div class="flex justify-center py-10"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div></div>`;
+
+            // BUG 2 FIXED: Guarantee we fetch global prices right now before rendering!
+            if (!window.globalBranchPrices) window.globalBranchPrices = {};
+            try {
+                // Find out which branches the student belongs to
+                const studentBranches = [...new Set(window.userEnrolledData.map(c => c.branch))];
+                
+                // Fetch the pricing document for those branches
+                for (const b of studentBranches) {
+                    const priceDoc = await getDoc(doc(db, "admin_settings", `prices_${b}`));
+                    if (priceDoc.exists()) {
+                        window.globalBranchPrices[b] = priceDoc.data();
+                    } else {
+                        window.globalBranchPrices[b] = {};
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load global prices:", err);
+            }
+
+            // Now render the cards with the correct prices
             listContainer.innerHTML = window.userEnrolledData.map(course => {
                 let statusBadge = '';
                 let statusColor = '';
@@ -3644,7 +3668,7 @@
                     statusColor = 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-800';
                 }
 
-                // FIX 4: Use Global Admin Price if Google Sheet price is 0
+                // Fetch global fee for this specific course and branch
                 const branchPrices = window.globalBranchPrices[course.branch] || {};
                 const globalFee = parseFloat(branchPrices[course.courseName]) || 0;
                 
@@ -3705,9 +3729,9 @@
                 `;
             }).join('');
 
-            openModal('feeDetailsModal');
             if (window.lucide) lucide.createIcons();
 
+            // Animate progress bars
             setTimeout(() => {
                 const bars = listContainer.querySelectorAll('[data-target-width]');
                 bars.forEach(bar => { bar.style.width = bar.getAttribute('data-target-width'); });
