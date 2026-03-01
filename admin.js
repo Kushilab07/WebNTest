@@ -846,19 +846,30 @@ window.saveCoursePrice = async function (courseName, inputId) {
     }
 };
 
-// 4. Live Verification Requests Engine
+// 4. Live Verification Requests Engine & Notification Bell
+window.toggleAdminNotification = function () {
+    document.getElementById('admin-notification-popup').classList.toggle('hidden');
+};
+
+// Close popup on outside click
+document.addEventListener('click', function (e) {
+    const popup = document.getElementById('admin-notification-popup');
+    const bell = document.querySelector('button[onclick="window.toggleAdminNotification()"]');
+    if (popup && !popup.classList.contains('hidden') && !popup.contains(e.target) && (!bell || !bell.contains(e.target))) {
+        popup.classList.add('hidden');
+    }
+});
+
 function startFeeRequestListener() {
     if (window.feeUnsubscribe) window.feeUnsubscribe();
 
-    // Query fee requests for the active branch (Manual sorting avoids index errors)
-    const q = query(
-        collection(db, "fee_requests"),
-        where("branch", "==", window.currentBranch)
-    );
+    const q = query(collection(db, "fee_requests"), where("branch", "==", window.currentBranch));
 
     window.feeUnsubscribe = onSnapshot(q, (snapshot) => {
         const tbody = document.getElementById('feeRequestsTableBody');
+        const notifList = document.getElementById('admin-notif-list');
         tbody.innerHTML = '';
+        notifList.innerHTML = '';
 
         let pendingCount = 0;
         let requestsArray = [];
@@ -875,37 +886,52 @@ function startFeeRequestListener() {
         });
 
         requestsArray.forEach((req) => {
-            if (req.status === 'Pending') pendingCount++;
-            if (req.status !== 'Pending') return; // Only show pending
+            // FIX 3: Detailed Time Formatting
+            const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : "Just now";
 
-            const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : "Just now";
+            if (req.status === 'Pending') {
+                pendingCount++;
 
-            tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 group border-b border-slate-100 dark:border-slate-800/50">
-                    <td class="py-4 px-4 text-xs font-bold text-slate-500">${dateStr}</td>
-                    <td class="py-4 px-4">
-                        <p class="font-bold text-slate-900 dark:text-white text-sm">${req.studentName}</p>
-                        <p class="font-mono text-[10px] text-slate-500">${req.regNo}</p>
-                    </td>
-                    <td class="py-4 px-4 text-xs font-medium text-slate-600 dark:text-slate-400 max-w-[200px] truncate" title="${req.courseName}">${req.courseName}</td>
-                    <td class="py-4 px-4 text-right">
-                        <span class="inline-block px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-500 font-extrabold rounded-lg border border-amber-200 dark:border-amber-800/50">₹${req.amount}</span>
-                    </td>
-                    <td class="py-4 px-4 text-center">
-                        <div class="flex items-center justify-center gap-2" id="action-box-${req.id}">
-                            <button onclick="window.processFeeRequest('${req.id}', '${req.regNo}', '${req.courseName}', ${req.amount}, 'Approve')" class="p-2 bg-emerald-100 text-emerald-600 hover:bg-emerald-200 rounded-lg transition-colors" title="Approve Payment"><i data-lucide="check" class="w-4 h-4"></i></button>
-                            <button onclick="window.processFeeRequest('${req.id}', null, null, null, 'Reject')" class="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors" title="Reject Payment"><i data-lucide="x" class="w-4 h-4"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+                // Add to Bell Notifications
+                notifList.innerHTML += `
+                    <li onclick="window.setFilterStatus('fee'); window.switchFeeTab('requests'); window.toggleAdminNotification();" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 cursor-pointer hover:shadow-md transition-all relative">
+                        <span class="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span class="font-bold block text-blue-600 text-xs mb-1">New Verification</span>
+                        <p class="text-xs text-slate-700 dark:text-slate-300"><b>${req.studentName}</b> sent ₹${req.amount} for ${req.courseName}.</p>
+                    </li>
+                `;
+
+                // Add to Main Live Table
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 group border-b border-slate-100 dark:border-slate-800/50">
+                        <td class="py-4 px-4 text-xs font-bold text-slate-500">${dateStr}</td>
+                        <td class="py-4 px-4">
+                            <p class="font-bold text-slate-900 dark:text-white text-sm">${req.studentName}</p>
+                            <p class="font-mono text-[10px] text-slate-500">${req.regNo}</p>
+                        </td>
+                        <td class="py-4 px-4 text-xs font-medium text-slate-600 dark:text-slate-400 max-w-[200px] truncate" title="${req.courseName}">${req.courseName}</td>
+                        <td class="py-4 px-4 text-right">
+                            <span class="inline-block px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-500 font-extrabold rounded-lg border border-amber-200 dark:border-amber-800/50">₹${req.amount}</span>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <div class="flex items-center justify-center gap-2" id="action-box-${req.id}">
+                                <button onclick="window.processFeeRequest('${req.id}', '${req.regNo}', '${req.courseName}', ${req.amount}, 'Approve')" class="p-2 bg-emerald-100 text-emerald-600 hover:bg-emerald-200 rounded-lg transition-colors" title="Approve Payment"><i data-lucide="check" class="w-4 h-4"></i></button>
+                                <button onclick="window.processFeeRequest('${req.id}', null, null, null, 'Reject')" class="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors" title="Reject Payment"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
         });
 
         if (tbody.innerHTML === '') {
             tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 font-medium">No pending verification requests.</td></tr>`;
         }
+        if (notifList.innerHTML === '') {
+            notifList.innerHTML = `<li class="p-3 text-center text-slate-500 text-xs">No pending requests.</li>`;
+        }
 
-        // Update Notification Bell logic (Red dot if pending requests exist)
+        // Red Dot Logic
         const bellDot = document.getElementById('adminNotificationDot');
         if (bellDot) {
             if (pendingCount > 0) bellDot.classList.remove('hidden');
@@ -916,7 +942,7 @@ function startFeeRequestListener() {
     });
 }
 
-// 5. The Approval Ledger Logic (Talking to GAS)
+// 5. The Approval Ledger Logic
 window.processFeeRequest = async function (reqId, regNo, courseName, amount, actionType) {
     const box = document.getElementById(`action-box-${reqId}`);
     const ogHtml = box.innerHTML;
@@ -924,7 +950,6 @@ window.processFeeRequest = async function (reqId, regNo, courseName, amount, act
 
     try {
         if (actionType === 'Approve') {
-            // CRITICAL CHECK: Does this course have a global price set?
             const courseTotalFee = window.globalCoursePrices[courseName];
             if (courseTotalFee === undefined || courseTotalFee === "" || isNaN(courseTotalFee)) {
                 window.showToast(`Action Blocked: Please set the Course Pricing for ${courseName} first!`, "error");
@@ -933,9 +958,7 @@ window.processFeeRequest = async function (reqId, regNo, courseName, amount, act
                 return;
             }
 
-            // Send Math logic to Google Apps Script
             const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
-
             const response = await fetch(targetUrl, {
                 method: 'POST',
                 body: new URLSearchParams({
@@ -950,16 +973,70 @@ window.processFeeRequest = async function (reqId, regNo, courseName, amount, act
             if (result.status !== 'success') throw new Error("GAS Math Failed");
         }
 
-        // Regardless of Approve or Reject, update the Firestore Document status
         const docRef = doc(db, "fee_requests", reqId);
         await updateDoc(docRef, { status: actionType === 'Approve' ? 'Approved' : 'Rejected' });
 
         window.showToast(`Request ${actionType}d Successfully!`, "success");
-
     } catch (e) {
         console.error("Fee Process Error:", e);
         window.showToast("System failed to process request.", "error");
         box.innerHTML = ogHtml;
         if (window.lucide) lucide.createIcons();
     }
+};
+
+// 6. NEW: Admin Fee History Modal
+window.openAdminFeeHistory = async function () {
+    const modal = document.getElementById('adminFeeHistoryModal');
+    const list = document.getElementById('adminFeeHistoryList');
+    modal.classList.remove('hidden');
+    list.innerHTML = `<div class="flex justify-center py-10"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div></div>`;
+
+    try {
+        const q = query(collection(db, "fee_requests"), where("branch", "==", window.currentBranch));
+        const snapshot = await getDoc(q).catch(() => null); // Fallback below using onSnapshot for easier data pull
+
+        onSnapshot(q, (snap) => {
+            let reqArray = [];
+            snap.forEach(doc => {
+                const data = doc.data();
+                if (data.status !== 'Pending') reqArray.push(data); // Only show processed
+            });
+
+            reqArray.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+            if (reqArray.length === 0) {
+                list.innerHTML = `<p class="text-center text-slate-500 py-6 font-medium">No processed requests found.</p>`;
+                return;
+            }
+
+            list.innerHTML = reqArray.map(req => {
+                const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : "Unknown";
+                const badge = req.status === 'Approved'
+                    ? `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase rounded-md border border-emerald-200"><i data-lucide="check" class="w-3 h-3 inline"></i> Approved</span>`
+                    : `<span class="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-extrabold uppercase rounded-md border border-red-200"><i data-lucide="x" class="w-3 h-3 inline"></i> Rejected</span>`;
+
+                return `
+                    <div class="mb-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-900 dark:text-white text-sm">${req.studentName} <span class="text-xs font-normal text-slate-500 font-mono ml-2">(${req.regNo})</span></p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">${req.courseName}</p>
+                            <p class="text-[10px] text-slate-400 mt-1">${dateStr}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-extrabold text-blue-600 dark:text-blue-400 mb-2">₹${req.amount}</p>
+                            ${badge}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
+        });
+    } catch (e) {
+        list.innerHTML = `<p class="text-center text-red-500 py-6 font-medium">Failed to load history.</p>`;
+    }
+};
+
+window.closeAdminFeeHistory = function () {
+    document.getElementById('adminFeeHistoryModal').classList.add('hidden');
 };
