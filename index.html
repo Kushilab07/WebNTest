@@ -3114,6 +3114,9 @@
                     window.updateAuthState(user);
                 }
 
+                // FIX 4: Prepare Global Price Array
+                window.globalBranchPrices = { "Arikuchi": {}, "Bagals Road": {} };
+
                 if (user) {
                     console.log("User Logged In:", user.email);
 
@@ -3123,6 +3126,10 @@
 
                     // FETCH COURSES IN BACKGROUND AS SOON AS THEY LOG IN
                     fetchUserCourses(user.email);
+
+                    // Fetch global prices quietly so the Fee Card never says "0"
+                    getDoc(doc(db, "admin_settings", "prices_Arikuchi")).then(d => { if(d.exists()) window.globalBranchPrices["Arikuchi"] = d.data(); });
+                    getDoc(doc(db, "admin_settings", "prices_Bagals Road")).then(d => { if(d.exists()) window.globalBranchPrices["Bagals Road"] = d.data(); });
 
                     // --- NEW: START NOTIFICATION LISTENER ---
                     const q = query(
@@ -3623,9 +3630,9 @@
             listContainer.innerHTML = window.userEnrolledData.map(course => {
                 let statusBadge = '';
                 let statusColor = '';
-
+                
                 const feeStat = String(course.feeStatus || 'Pending').trim().toLowerCase();
-
+                
                 if (feeStat === 'cleared') {
                     statusBadge = 'Cleared';
                     statusColor = 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/20 dark:border-emerald-800';
@@ -3637,12 +3644,16 @@
                     statusColor = 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-800';
                 }
 
-                // Parse numbers safely
-                const total = parseFloat(course.totalFee) || 0;
+                // FIX 4: Use Global Admin Price if Google Sheet price is 0
+                const branchPrices = window.globalBranchPrices[course.branch] || {};
+                const globalFee = parseFloat(branchPrices[course.courseName]) || 0;
+                
+                const sheetTotal = parseFloat(course.totalFee) || 0;
                 const paid = parseFloat(course.paidFee) || 0;
-                const balance = Math.max(total - paid, 0);
-
-                // Progress Bar logic
+                
+                // Prioritize Sheet Total if it exists, otherwise fallback to global pricing
+                const total = sheetTotal > 0 ? sheetTotal : globalFee;
+                
                 let progress = total > 0 ? Math.min((paid / total) * 100, 100) : 0;
 
                 let actionBtn = '';
@@ -3697,32 +3708,30 @@
             openModal('feeDetailsModal');
             if (window.lucide) lucide.createIcons();
 
-            // Animate progress bars
             setTimeout(() => {
                 const bars = listContainer.querySelectorAll('[data-target-width]');
                 bars.forEach(bar => { bar.style.width = bar.getAttribute('data-target-width'); });
             }, 50);
         };
 
-        window.openFeeRequestForm = function (courseName, regNo, branch) {
+        window.openFeeRequestForm = function(courseName, regNo, branch) {
             document.getElementById('feeReqCourse').value = courseName;
             document.getElementById('feeReqRegNo').value = regNo;
             document.getElementById('feeReqBranch').value = branch;
-            document.getElementById('feeReqAmount').value = ''; // Reset
+            document.getElementById('feeReqAmount').value = '';
             openModal('feeRequestModal');
         };
 
-        // Form Submission Logic
         const feeRequestForm = document.getElementById('feeRequestForm');
         if (feeRequestForm) {
             feeRequestForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
+                
                 const amount = document.getElementById('feeReqAmount').value;
                 const courseName = document.getElementById('feeReqCourse').value;
                 const regNo = document.getElementById('feeReqRegNo').value;
                 const branch = document.getElementById('feeReqBranch').value;
-
+                
                 const btnText = document.getElementById('feeReqBtnText');
                 const spinner = document.getElementById('feeReqSpinner');
                 const submitBtn = document.getElementById('feeReqSubmitBtn');
@@ -3745,7 +3754,7 @@
 
                     showToast("Verification request sent to Admin!", "success");
                     closeModal('feeRequestModal');
-                } catch (err) {
+                } catch(err) {
                     console.error(err);
                     showToast("Failed to send request. Please try again.", "error");
                 } finally {
@@ -3756,19 +3765,14 @@
             });
         }
 
-        // Fetch History
-        window.openFeeHistory = function () {
+        window.openFeeHistory = function() {
             if (!isUserLoggedIn) return;
             openModal('feeHistoryModal');
             const listContainer = document.getElementById('feeHistoryList');
             listContainer.innerHTML = `<div class="flex justify-center py-8"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div></div>`;
 
-            const q = query(
-                collection(db, "fee_requests"),
-                where("email", "==", userEmail.toLowerCase().trim())
-            );
+            const q = query(collection(db, "fee_requests"), where("email", "==", userEmail.toLowerCase().trim()));
 
-            // Fetch once (no need for live listener here unless requested)
             onSnapshot(q, (snapshot) => {
                 let reqArray = [];
                 snapshot.forEach(doc => reqArray.push(doc.data()));
@@ -3776,7 +3780,7 @@
                 reqArray.sort((a, b) => {
                     const tA = a.timestamp ? a.timestamp.toMillis() : 0;
                     const tB = b.timestamp ? b.timestamp.toMillis() : 0;
-                    return tB - tA; // Newest first
+                    return tB - tA;
                 });
 
                 if (reqArray.length === 0) {
@@ -3791,14 +3795,15 @@
                     else if (stat === 'Rejected') badge = `<span class="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-extrabold uppercase rounded-md border border-red-200"><i data-lucide="x" class="w-3 h-3 inline"></i> Rejected</span>`;
                     else badge = `<span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-extrabold uppercase rounded-md border border-amber-200"><i data-lucide="clock" class="w-3 h-3 inline"></i> Pending</span>`;
 
-                    const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : "Just now";
+                    // FIX 3: Detailed Time Formatting for Student History
+                    const dateStr = req.timestamp ? new Date(req.timestamp.toMillis()).toLocaleString('en-IN', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true}) : "Just now";
 
                     return `
                         <div class="mb-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <p class="font-bold text-slate-900 dark:text-white text-sm">${req.courseName}</p>
-                                    <p class="text-xs text-slate-500">${dateStr}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">${dateStr}</p>
                                 </div>
                                 <span class="font-extrabold text-blue-600 dark:text-blue-400">₹${req.amount}</span>
                             </div>
