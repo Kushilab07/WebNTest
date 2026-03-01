@@ -18,8 +18,8 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbwBaRgBUEDGpw5xP-C4AKTaCii6ywoYE0srI7n10Fy57ED-edP36bQU6A6hO9RenEdP/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbxVgsXc4KuAsmgntswKZhJrbdMKrKs4DuHq6NUCrg5jQPt0PtQ1QlPhrL0RBuNAMHZ3SQ/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyY58Kg6zA_xxIjcY68QwCGGtYchuz73pULz4bYS7SShDDloRY5IBmpai2WJ3klmlYg/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbzhTotJlNdqdd87Mzk5ugVJmDR6TfXWWUnojkGDvWFRckScQYD8aRXS2mgq2O4pPM_Z8w/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
@@ -282,9 +282,17 @@ window.applyFilters = function () {
     }
 
     // 3. Dropdown Filters
+    const courseFilter = document.getElementById('filterCourse').value;
+    const feeFilter = document.getElementById('filterFee').value;
     const markFilter = document.getElementById('filterMarksheet').value;
     const certFilter = document.getElementById('filterCert').value;
 
+    if (courseFilter !== 'all') {
+        filtered = filtered.filter(s => String(s[21] || 'active').toLowerCase() === courseFilter);
+    }
+    if (feeFilter !== 'all') {
+        filtered = filtered.filter(s => String(s[28] || 'pending').toLowerCase() === feeFilter);
+    }
     if (markFilter !== 'all') {
         filtered = filtered.filter(s => String(s[22] || 'pending').toLowerCase() === markFilter);
     }
@@ -331,12 +339,16 @@ function renderTable(dataArray) {
         if (rawAtt === '') rawAtt = '0';
 
         const status = String(student[21] || 'active').toLowerCase();
+        const feeStat = String(s[28] || 'Pending').trim();
         const marksheetStatus = String(student[22] || 'pending').toLowerCase();
         const certStatus = String(student[24] || 'pending').toLowerCase();
 
         let statusPill = `<span class="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Active</span>`;
+        let feeBadge = `<span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-lg">${feeStat}</span>`;
         if (status === 'completed') statusPill = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200">Completed</span>`;
         if (status === 'dropout') statusPill = `<span class="px-2.5 py-1 bg-red-100 text-red-700 text-[10px] font-extrabold uppercase rounded-lg border border-red-200">Dropout</span>`;
+        if (feeStat.toLowerCase() === 'cleared') feeBadge = `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-lg">${feeStat}</span>`;
+        else if (feeStat.toLowerCase() === 'pending') feeBadge = `<span class="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-lg">${feeStat}</span>`;
 
         // Interactive Links or Dots
         const markHtml = marksheetStatus === 'approved'
@@ -361,6 +373,7 @@ function renderTable(dataArray) {
                 </td>
 
                 <td class="py-4 px-4">${statusPill}</td>
+                <td class="py-3 px-4">${feeBadge}</td>
                 <td class="py-4 px-4 flex gap-1 items-center h-full mt-2">
                     ${markHtml}
                     ${certHtml}
@@ -500,6 +513,10 @@ window.openManageModal = function (regNo) {
     document.getElementById('modalStudentName').innerText = student[2];
     document.getElementById('modalRegNo').innerText = regNo;
     document.getElementById('modalCourseStatus').value = currentModalState.course;
+    let fStatus = student[28] ? String(student[28]).trim() : 'Pending';
+    fStatus = fStatus.charAt(0).toUpperCase() + fStatus.slice(1).toLowerCase(); // Capitalize first letter
+    if (!['Pending', 'Partial', 'Cleared'].includes(fStatus)) fStatus = 'Pending';
+    document.getElementById('modalFeeStatus').value = fStatus;
     document.getElementById('marksheetCurrentStatus').innerText = currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = currentModalState.cert.toUpperCase();
 
@@ -714,11 +731,15 @@ window.saveStudentEdits = async function () {
 
     const student = window.adminData.find(s => s[1] === window.currentEditingRegNo);
 
+    // NEW: Get the newly selected fee status from the modal
+    const newFeeStatus = document.getElementById('modalFeeStatus').value;
+
     student[21] = window.currentModalState.course;
     student[22] = window.currentModalState.marksheet;
     student[24] = window.currentModalState.cert;
     student[23] = window.currentModalState.markLink;
     student[25] = window.currentModalState.certLink;
+    student[28] = newFeeStatus; // NEW: Update local data array (Index 28)
 
     const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
 
@@ -732,7 +753,8 @@ window.saveStudentEdits = async function () {
                 markStatus: student[22],
                 certStatus: student[24],
                 markLink: student[23],
-                certLink: student[25]
+                certLink: student[25],
+                feeStatus: student[28] // NEW: Send exact fee status to Google Sheet
             })
         });
 
