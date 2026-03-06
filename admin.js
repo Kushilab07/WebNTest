@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
@@ -181,6 +181,10 @@ window.loadTableData = async function (branch) {
             if (typeof startFeeRequestListener === 'function') {
                 startFeeRequestListener();
             }
+            // NEW: Start listening for support chats instantly
+            if (typeof startSupportChatListListener === 'function') {
+                startSupportChatListListener();
+            }
         } else {
             window.showToast("Failed to fetch data.", "error");
         }
@@ -230,29 +234,35 @@ window.setFilterStatus = function (status) {
 
     const studentsWorkspace = document.getElementById('students-workspace');
     const feesWorkspace = document.getElementById('fees-workspace');
+    const supportWorkspace = document.getElementById('support-workspace');
 
     // WORKSPACE TOGGLE LOGIC
-    if (status === 'fee') {
-        if (studentsWorkspace) studentsWorkspace.classList.add('opacity-0');
-        setTimeout(() => {
-            if (studentsWorkspace) studentsWorkspace.classList.add('hidden');
-            if (feesWorkspace) {
-                feesWorkspace.classList.remove('hidden');
-                setTimeout(() => feesWorkspace.classList.remove('opacity-0'), 50);
-            }
-            window.loadFeeDashboard(); // Boot up Fee engine
-        }, 300);
-    } else {
-        if (feesWorkspace) feesWorkspace.classList.add('opacity-0');
-        setTimeout(() => {
-            if (feesWorkspace) feesWorkspace.classList.add('hidden');
-            if (studentsWorkspace) {
-                studentsWorkspace.classList.remove('hidden');
-                setTimeout(() => studentsWorkspace.classList.remove('opacity-0'), 50);
-            }
+    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace];
+
+    // Hide all workspaces first to ensure a clean transition
+    workspaces.forEach(ws => {
+        if (ws) {
+            ws.classList.add('opacity-0');
+            setTimeout(() => ws.classList.add('hidden'), 300);
+        }
+    });
+
+    // Reveal the target workspace after the fade-out delay
+    setTimeout(() => {
+        if (status === 'fee' && feesWorkspace) {
+            feesWorkspace.classList.remove('hidden');
+            setTimeout(() => feesWorkspace.classList.remove('opacity-0'), 50);
+            window.loadFeeDashboard(); 
+        } else if (status === 'support' && supportWorkspace) {
+            supportWorkspace.classList.remove('hidden');
+            setTimeout(() => supportWorkspace.classList.remove('opacity-0'), 50);
+        } else if (status !== 'fee' && status !== 'support' && studentsWorkspace) {
+            // This covers 'all', 'active', 'completed', and 'dropout' statuses
+            studentsWorkspace.classList.remove('hidden');
+            setTimeout(() => studentsWorkspace.classList.remove('opacity-0'), 50);
             window.applyFilters();
-        }, 300);
-    }
+        }
+    }, 300);
 };
 
 window.toggleFilterMenu = function () {
@@ -1066,3 +1076,158 @@ window.openAdminFeeHistory = function () {
 window.closeAdminFeeHistory = function () {
     document.getElementById('adminFeeHistoryModal').classList.add('hidden');
 };
+
+// ============================================================================
+// --- LIVE SUPPORT ENGINE (ADMIN SIDE) ---
+// ============================================================================
+
+window.supportListUnsubscribe = null;
+window.activeChatUnsubscribe = null;
+
+// 1. Start the Background Listener (Fires in loadTableData)
+window.startSupportChatListListener = function() {
+    if(window.supportListUnsubscribe) window.supportListUnsubscribe();
+
+    const listContainer = document.getElementById('adminSupportList');
+    const notifList = document.getElementById('support-notif-list');
+    
+    // We listen to all chats, sorted by newest activity
+    const q = query(collection(db, "support_chats"), orderBy("timestamp", "desc"));
+
+    window.supportListUnsubscribe = onSnapshot(q, (snapshot) => {
+        listContainer.innerHTML = '';
+        notifList.innerHTML = '';
+        let unreadCount = 0;
+
+        if(snapshot.empty) {
+            listContainer.innerHTML = `<div class="text-center text-xs text-slate-500 mt-10">No messages yet.</div>`;
+            return;
+        }
+
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const hasUnread = data.unreadAdmin > 0;
+            if(hasUnread) unreadCount++;
+
+            const timeStr = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+            const activeClass = (document.getElementById('adminActiveChatEmail').value === data.email) ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800' : 'bg-white border-transparent hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800';
+            const dotHtml = hasUnread ? `<span class="w-2.5 h-2.5 bg-red-500 rounded-full shrink-0 animate-pulse"></span>` : '';
+
+            // Render Left Sidebar List
+            listContainer.innerHTML += `
+                <div onclick="window.openAdminChat('${data.email}', '${data.studentName}')" class="p-3 rounded-xl border ${activeClass} cursor-pointer transition-colors flex items-center justify-between gap-3 group">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-baseline mb-1">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white truncate">${data.studentName}</h4>
+                            <span class="text-[10px] text-slate-400 shrink-0">${timeStr}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 truncate ${hasUnread ? 'font-bold text-slate-700 dark:text-slate-300' : ''}">${data.lastMessage || 'New interaction'}</p>
+                    </div>
+                    ${dotHtml}
+                </div>
+            `;
+
+            // Render Bell Notification Popup
+            if(hasUnread) {
+                notifList.innerHTML += `
+                    <li onclick="window.setFilterStatus('support'); window.openAdminChat('${data.email}', '${data.studentName}'); window.toggleAdminNotification();" class="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 cursor-pointer hover:shadow-md transition-all relative">
+                        <span class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
+                        <span class="font-bold block text-orange-600 text-xs mb-1 flex items-center gap-1"><i data-lucide="message-circle" class="w-3 h-3"></i> Support Ticket</span>
+                        <p class="text-xs text-slate-700 dark:text-slate-300"><b>${data.studentName}</b> needs help.</p>
+                    </li>
+                `;
+            }
+        });
+
+        // Manage UI states based on counts
+        const divider = document.getElementById('support-notif-divider');
+        const emptyMsg = document.getElementById('empty-notif-msg');
+        const bellDot = document.getElementById('adminNotificationDot');
+        
+        const feeCount = document.getElementById('fee-notif-list').children.length;
+        
+        if (unreadCount > 0 && feeCount > 0) divider.classList.remove('hidden');
+        else divider.classList.add('hidden');
+
+        if (unreadCount === 0 && feeCount === 0) emptyMsg.classList.remove('hidden');
+        else emptyMsg.classList.add('hidden');
+
+        if (unreadCount > 0 || feeCount > 0) bellDot.classList.remove('hidden');
+        else bellDot.classList.add('hidden');
+
+        if (window.lucide) lucide.createIcons();
+    });
+};
+
+// 2. Open a Chat Window
+window.openAdminChat = async function(email, studentName) {
+    document.getElementById('adminChatCover').classList.add('hidden');
+    document.getElementById('adminActiveChatEmail').value = email;
+    document.getElementById('adminChatHeaderName').innerText = studentName;
+    document.getElementById('adminChatHeaderEmail').innerText = email;
+
+    // Clear previous listener
+    if(window.activeChatUnsubscribe) window.activeChatUnsubscribe();
+
+    const chatArea = document.getElementById('adminSupportChatArea');
+    
+    // Mark as read in Firebase
+    await setDoc(doc(db, "support_chats", email), { unreadAdmin: 0 }, { merge: true });
+
+    // Listen to specific messages
+    const q = query(collection(db, `support_chats/${email}/messages`), orderBy("timestamp", "asc"));
+    
+    window.activeChatUnsubscribe = onSnapshot(q, (snapshot) => {
+        chatArea.innerHTML = '';
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const isMe = data.sender === 'admin';
+            const time = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '...';
+            
+            if(isMe) {
+                chatArea.innerHTML += `
+                    <div class="flex flex-col items-end w-full animate-fade-in-up">
+                        <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-sm max-w-[80%] shadow-sm text-sm">${data.text}</div>
+                        <span class="text-[9px] text-slate-400 mt-1 mr-1">${time}</span>
+                    </div>`;
+            } else {
+                chatArea.innerHTML += `
+                    <div class="flex flex-col items-start w-full animate-fade-in-up">
+                        <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200 p-3 rounded-2xl rounded-tl-sm max-w-[80%] shadow-sm text-sm">${data.text}</div>
+                        <span class="text-[9px] text-slate-400 mt-1 ml-1">${time}</span>
+                    </div>`;
+            }
+        });
+        chatArea.scrollTop = chatArea.scrollHeight;
+    });
+};
+
+// 3. Admin Sending a Reply
+const adminChatForm = document.getElementById('adminSupportChatForm');
+if(adminChatForm) {
+    adminChatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('adminSupportInput');
+        const email = document.getElementById('adminActiveChatEmail').value;
+        const text = input.value.trim();
+        
+        if(!text || !email) return;
+        input.value = ''; // UI Clear
+
+        try {
+            await setDoc(doc(db, "support_chats", email), {
+                lastMessage: text,
+                timestamp: serverTimestamp(),
+                unreadStudent: 1 // Notify Student!
+            }, { merge: true });
+
+            await addDoc(collection(db, `support_chats/${email}/messages`), {
+                text: text,
+                sender: 'admin',
+                timestamp: serverTimestamp()
+            });
+        } catch (err) {
+            window.showToast("Failed to send message", "error");
+        }
+    });
+}
