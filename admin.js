@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
@@ -781,6 +781,32 @@ window.saveStudentEdits = async function () {
     }
 };
 
+// --- MASTER NOTIFICATION BELL MANAGER ---
+window.pendingFeeCount = 0;
+window.pendingSupportCount = 0;
+
+window.updateAdminBell = function() {
+    const bellDot = document.getElementById('adminNotificationDot');
+    const divider = document.getElementById('support-notif-divider');
+    const emptyMsg = document.getElementById('empty-notif-msg');
+    
+    // Manage Divider
+    if (window.pendingFeeCount > 0 && window.pendingSupportCount > 0) {
+        if(divider) divider.classList.remove('hidden');
+    } else {
+        if(divider) divider.classList.add('hidden');
+    }
+
+    // Manage Empty Message & Red Dot
+    if (window.pendingFeeCount === 0 && window.pendingSupportCount === 0) {
+        if(emptyMsg) emptyMsg.classList.remove('hidden');
+        if(bellDot) bellDot.classList.add('hidden');
+    } else {
+        if(emptyMsg) emptyMsg.classList.add('hidden');
+        if(bellDot) bellDot.classList.remove('hidden');
+    }
+};
+
 // ============================================================================
 // --- FEE DASHBOARD ENGINE ---
 // ============================================================================
@@ -882,18 +908,38 @@ window.saveCoursePrice = async function (courseName, inputId) {
 };
 
 // 4. Live Verification Requests Engine & Notification Bell
-window.toggleAdminNotification = function () {
-    document.getElementById('admin-notification-popup').classList.toggle('hidden');
+window.toggleAdminNotification = function() {
+    const wrapper = document.getElementById('admin-notification-wrapper');
+    const backdrop = document.getElementById('admin-notif-backdrop');
+    const panel = document.getElementById('admin-notification-popup');
+
+    if (wrapper.classList.contains('hidden')) {
+        // OPEN OVERLAY
+        document.body.style.overflow = 'hidden'; // Make main page scrollbar invisible
+        wrapper.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('translate-x-full');
+        });
+    } else {
+        // CLOSE OVERLAY
+        document.body.style.overflow = ''; // Restore main scrollbar
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => {
+            wrapper.classList.add('hidden');
+        }, 300); // Wait for sliding animation to finish
+    }
 };
 
 // Close popup on outside click
-document.addEventListener('click', function (e) {
-    const popup = document.getElementById('admin-notification-popup');
-    const bell = document.querySelector('button[onclick="window.toggleAdminNotification()"]');
-    if (popup && !popup.classList.contains('hidden') && !popup.contains(e.target) && (!bell || !bell.contains(e.target))) {
-        popup.classList.add('hidden');
-    }
-});
+// document.addEventListener('click', function (e) {
+//     const popup = document.getElementById('admin-notification-popup');
+//     const bell = document.querySelector('button[onclick="window.toggleAdminNotification()"]');
+//     if (popup && !popup.classList.contains('hidden') && !popup.contains(e.target) && (!bell || !bell.contains(e.target))) {
+//         popup.classList.add('hidden');
+//     }
+// });
 
 function startFeeRequestListener() {
     if (window.feeUnsubscribe) window.feeUnsubscribe();
@@ -966,13 +1012,8 @@ function startFeeRequestListener() {
             notifList.innerHTML = `<li class="p-3 text-center text-slate-500 text-xs">No pending requests.</li>`;
         }
 
-        // Red Dot Logic
-        const bellDot = document.getElementById('adminNotificationDot');
-        if (bellDot) {
-            if (pendingCount > 0) bellDot.classList.remove('hidden');
-            else bellDot.classList.add('hidden');
-        }
-
+        window.pendingFeeCount = pendingCount; 
+        window.updateAdminBell();
         if (window.lucide) lucide.createIcons();
     });
 }
@@ -1078,7 +1119,7 @@ window.closeAdminFeeHistory = function () {
 };
 
 // ============================================================================
-// --- LIVE SUPPORT ENGINE (ADMIN SIDE) ---
+// --- SUPPORT ENGINE (ADMIN SIDE) ---
 // ============================================================================
 
 window.supportListUnsubscribe = null;
@@ -1140,21 +1181,8 @@ window.startSupportChatListListener = function() {
         });
 
         // Manage UI states based on counts
-        const divider = document.getElementById('support-notif-divider');
-        const emptyMsg = document.getElementById('empty-notif-msg');
-        const bellDot = document.getElementById('adminNotificationDot');
-        
-        const feeCount = document.getElementById('fee-notif-list').children.length;
-        
-        if (unreadCount > 0 && feeCount > 0) divider.classList.remove('hidden');
-        else divider.classList.add('hidden');
-
-        if (unreadCount === 0 && feeCount === 0) emptyMsg.classList.remove('hidden');
-        else emptyMsg.classList.add('hidden');
-
-        if (unreadCount > 0 || feeCount > 0) bellDot.classList.remove('hidden');
-        else bellDot.classList.add('hidden');
-
+        window.pendingSupportCount = unreadCount; 
+        window.updateAdminBell();
         if (window.lucide) lucide.createIcons();
     });
 };
@@ -1231,3 +1259,33 @@ if(adminChatForm) {
         }
     });
 }
+
+// 4. Close Active Chat Window (Keeps in list)
+window.closeAdminChatView = function() {
+    document.getElementById('adminChatCover').classList.remove('hidden');
+    document.getElementById('adminActiveChatEmail').value = '';
+    if(window.activeChatUnsubscribe) window.activeChatUnsubscribe();
+    
+    // Remove active highlight from the left list
+    const activeItems = document.querySelectorAll('#adminSupportList .bg-blue-50');
+    activeItems.forEach(item => {
+        item.classList.remove('bg-blue-50', 'border-blue-200', 'dark:bg-blue-900/20', 'dark:border-blue-800');
+        item.classList.add('bg-white', 'border-transparent', 'hover:bg-slate-50', 'dark:bg-slate-900', 'dark:hover:bg-slate-800');
+    });
+};
+
+// 5. Resolve Ticket (Removes from list permanently)
+window.resolveSupportTicket = async function() {
+    const email = document.getElementById('adminActiveChatEmail').value;
+    if(!email) return;
+    
+    if(!confirm("Resolve this ticket? This will remove the chat from your active list.")) return;
+
+    try {
+        await deleteDoc(doc(db, "support_chats", email));
+        window.showToast("Ticket Resolved & Closed", "success");
+        window.closeAdminChatView(); // Hide the window
+    } catch(e) {
+        window.showToast("Failed to resolve ticket", "error");
+    }
+};
