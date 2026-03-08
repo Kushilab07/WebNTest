@@ -463,7 +463,7 @@
                                     class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 hidden"></span>
                             </button>
                             <!-- Notification Popup -->
-                            <div id="notification-popup">
+                            <!-- <div id="notification-popup">
                                 <h4
                                     class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2 text-slate-800 dark:text-white">
                                     Notifications
@@ -472,7 +472,7 @@
                                     <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.
                                     </li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </div>
 
                         <!-- Profile Button -->
@@ -2104,6 +2104,29 @@
         </div>
     </div>
 
+    <!-- Notification Model -->
+    <div id="student-notification-wrapper" class="fixed inset-0 z-[1000] hidden">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="student-notif-backdrop" onclick="window.toggleNotification()"></div>
+        
+        <div id="notification-popup" class="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+            
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="bell" class="w-5 h-5 text-blue-500"></i> Notifications
+                </h3>
+                <button onclick="window.toggleNotification()" class="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <ul class="space-y-3">
+                    <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- Fee Details Model -->
     <div id="feeDetailsModal" class="sidebar-modal fixed inset-0 z-[300] hidden">
         <div class="sidebar-backdrop absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"
@@ -2530,28 +2553,39 @@
         // --- NOTIFICATION UX & READ STATE LOGIC ---
         window.unreadNotifIds = []; // Global array to hold unread message IDs
 
-        function toggleNotification() {
-            const popup = document.getElementById('notification-popup');
-            popup.classList.toggle('active');
+        window.toggleNotification = function() {
+            const wrapper = document.getElementById('student-notification-wrapper');
+            const backdrop = document.getElementById('student-notif-backdrop');
+            const panel = document.getElementById('notification-popup');
 
-            // If the popup just opened and there are unread messages, mark them read!
-            if (popup.classList.contains('active') && window.unreadNotifIds.length > 0) {
-                if (typeof window.markNotificationsAsRead === 'function') {
-                    window.markNotificationsAsRead();
+            if (wrapper.classList.contains('hidden')) {
+                // OPEN OVERLAY
+                document.body.style.overflow = 'hidden'; // Make main page scrollbar invisible
+                wrapper.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    backdrop.classList.remove('opacity-0');
+                    panel.classList.remove('translate-x-full');
+                });
+
+                // MARK AS READ LOGIC (Preserved from your original code!)
+                if (window.unreadNotifIds && window.unreadNotifIds.length > 0) {
+                    if (typeof window.markNotificationsAsRead === 'function') {
+                        window.markNotificationsAsRead();
+                    }
                 }
+            } else {
+                // CLOSE OVERLAY
+                document.body.style.overflow = ''; // Restore main scrollbar
+                backdrop.classList.add('opacity-0');
+                panel.classList.add('translate-x-full');
+                setTimeout(() => {
+                    wrapper.classList.add('hidden');
+                }, 300); // Wait for sliding animation to finish
             }
-        }
-
-        document.addEventListener('click', function (event) {
-            const popup = document.getElementById('notification-popup');
-            const bellBtn = document.querySelector('button[onclick="toggleNotification()"]');
-
-            if (popup && popup.classList.contains('active')) {
-                if (!popup.contains(event.target) && (!bellBtn || !bellBtn.contains(event.target))) {
-                    popup.classList.remove('active');
-                }
-            }
-        });
+        };
+        
+        // Note: The old document.addEventListener('click') has been intentionally removed 
+        // because clicking the dark background (student-notif-backdrop) now handles closing.
 
         // Profile Animation Logic (Now greatly simplified!)
         window.openProfile = function () {
@@ -4137,15 +4171,61 @@
         }
 
         // --- BACKGROUND LISTENER FOR UNREAD DOT ---
-        function startHelpCenterDotListener(email) {
+        // --- BACKGROUND LISTENER FOR UNREAD DOT & MAIN BELL ---
+        window.startHelpCenterDotListener = function(email) {
             const chatDoc = doc(db, "support_chats", email.toLowerCase().trim());
+            
             onSnapshot(chatDoc, (docSnap) => {
+                const bellDot = document.querySelector('button[onclick="toggleNotification()"] span');
+                const notifList = document.querySelector('#notification-popup ul');
+
                 if(docSnap.exists() && docSnap.data().unreadStudent > 0) {
+                    // 1. Show Help Center Sidebar Dot
                     document.getElementById('helpCenterDot').classList.remove('hidden');
-                    // Add standard notification to bell
-                    if(window.showToast) showToast("Admin replied to your message!", "info");
+                    
+                    // 2. Show Main Navigation Bell Dot
+                    if(bellDot) bellDot.classList.remove('hidden');
+                    
+                    // 3. Remove old dynamic ticket to prevent duplicates
+                    const oldTicket = document.getElementById('dynamic-support-ticket');
+                    if(oldTicket) oldTicket.remove();
+
+                    // 4. Inject specific Chat Notification into the Bell Dropdown
+                    if(notifList) {
+                        if(notifList.innerHTML.includes('No new notifications')) notifList.innerHTML = '';
+                        
+                        const li = document.createElement('li');
+                        li.id = 'dynamic-support-ticket';
+                        li.className = 'p-3 rounded-lg mb-2 border bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 cursor-pointer hover:shadow-md transition-all relative';
+                        li.onclick = () => {
+                            window.openStudentSupport();
+                            document.getElementById('notification-popup').classList.add('hidden');
+                        };
+                        li.innerHTML = `
+                            <span class="absolute top-3 right-3 w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                            <span class="font-bold block text-orange-600 text-[10px] uppercase tracking-wider mb-1"><i data-lucide="life-buoy" class="w-3 h-3 inline"></i> Support Reply</span>
+                            <p class="text-sm text-slate-700 dark:text-slate-300 font-medium">Admin replied to your message. Click to view.</p>
+                        `;
+                        notifList.prepend(li);
+                        if(window.lucide) lucide.createIcons();
+                    }
                 } else {
+                    // Hide Help Center Dot
                     document.getElementById('helpCenterDot').classList.add('hidden');
+                    
+                    // Remove dynamic ticket from bell
+                    const oldTicket = document.getElementById('dynamic-support-ticket');
+                    if(oldTicket) oldTicket.remove();
+                    
+                    // Re-hide main bell dot ONLY if there are no other Admin Notifications pending
+                    if(window.unreadNotifIds && window.unreadNotifIds.length === 0 && bellDot) {
+                        bellDot.classList.add('hidden');
+                    }
+                    
+                    // Reset empty message if nothing is left
+                    if(notifList && notifList.children.length === 0) {
+                        notifList.innerHTML = `<li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.</li>`;
+                    }
                 }
             });
         }
