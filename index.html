@@ -197,31 +197,6 @@
             opacity: 1;
         }
 
-        /* Notification Popup */
-        #notification-popup {
-            position: absolute;
-            top: 70px;
-            right: 20px;
-            width: 300px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            padding: 1rem;
-            border: 1px solid #e2e8f0;
-            display: none;
-        }
-
-        .dark #notification-popup {
-            background: #1e293b;
-            border-color: #334155;
-            color: white;
-        }
-
-        #notification-popup.active {
-            display: block;
-            animation: fadeIn 0.2s ease-out;
-        }
 
         /* --- MOBILE MENU OVERLAY (Slide & Blur) --- */
         #mainMenu {
@@ -459,7 +434,7 @@
                             <button onclick="toggleNotification()"
                                 class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
                                 <i data-lucide="bell" class="w-6 h-6"></i>
-                                <span
+                                <span id="navBellDot"
                                     class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 hidden"></span>
                             </button>
                             <!-- Notification Popup -->
@@ -1188,7 +1163,7 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16" data-aos="zoom-in">
                 <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">Our Faculty</span>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Meet The Teachers</h2>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Meet The Staff</h2>
                 <p class="text-slate-600 dark:text-slate-400 text-lg">
                     Expert educators committed to guiding you from the basics to professional mastery.
                 </p>
@@ -1196,248 +1171,227 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="0">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Ms. Sarah Chen"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
-                        </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="0">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 dark:bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-blue-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&clothing=blazerAndShirt&backgroundColor=e2e8f0" alt="Male Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Mr. Prasanta Sarma</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Branch Director</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">BA, PGDCA, DFA</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">15+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543210" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">88767 09966</a>
-                            </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Mr. Prasanta Sarma</h3>
+                        <p class="text-xs font-bold text-blue-600 dark:text-blue-400 mt-1.5 uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30 inline-block px-3 py-1 rounded-full">Branch Director</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-blue-200 dark:group-hover:border-blue-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">BA, PGDCA, DFA</span>
                         </div>
-
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">15+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <a href="tel:8876709966" class="text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors">88767 09966</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="100">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Mr. David Ross"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
-                        </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-400/10 dark:bg-purple-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-purple-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka&clothing=blazerAndShirt&backgroundColor=f1f5f9" alt="Female Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ms. Himashree Devi</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Senior Executive</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">BA, PGDCA</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">4+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543211" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">N/A</a>
-                            </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Ms. Himashree Devi</h3>
+                        <p class="text-xs font-bold text-purple-600 dark:text-purple-400 mt-1.5 uppercase tracking-widest bg-purple-50 dark:bg-purple-900/30 inline-block px-3 py-1 rounded-full">Senior Executive</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-purple-200 dark:group-hover:border-purple-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">BA, PGDCA</span>
                         </div>
-
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">4+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500">N/A</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="200">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Mrs. Priya Kapoor"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
-                        </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 dark:bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-emerald-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica&clothing=blazerAndShirt&backgroundColor=f8fafc" alt="Female Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ms. Babita Baishya</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Faculty</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">BA, PGDCA</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">10+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543212" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">N/A</a>
-                            </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Ms. Babita Baishya</h3>
+                        <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1.5 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/30 inline-block px-3 py-1 rounded-full">Faculty</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-emerald-200 dark:group-hover:border-emerald-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">BA, PGDCA</span>
                         </div>
-
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">10+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500">N/A</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="300">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Mr. James Carter"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
-                        </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-400/10 dark:bg-orange-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-orange-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Leah&clothing=blazerAndShirt&backgroundColor=f1f5f9" alt="Female Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ms. Namita Devi</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Faculty</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">BA, PGDCA</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">1+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543213" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">N/A</a>
-                            </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Ms. Namita Devi</h3>
+                        <p class="text-xs font-bold text-orange-600 dark:text-orange-400 mt-1.5 uppercase tracking-widest bg-orange-50 dark:bg-orange-900/30 inline-block px-3 py-1 rounded-full">Faculty</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-orange-200 dark:group-hover:border-orange-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">BA, PGDCA</span>
                         </div>
-
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">1+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500">N/A</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="400">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Mr. Rajesh Kumar"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
-                        </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="0">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-400/10 dark:bg-pink-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-pink-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jocelyn&clothing=blazerAndShirt&backgroundColor=f8fafc" alt="Female Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ms. Trishna Das</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Faculty</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">BA, PGDCA</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">1+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543214" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">N/A</a>
-                            </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Ms. Trishna Das</h3>
+                        <p class="text-xs font-bold text-pink-600 dark:text-pink-400 mt-1.5 uppercase tracking-widest bg-pink-50 dark:bg-pink-900/30 inline-block px-3 py-1 rounded-full">Faculty</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-pink-200 dark:group-hover:border-pink-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">BA, PGDCA</span>
                         </div>
-
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">1+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-bold text-slate-400 dark:text-slate-500">N/A</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="500">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Ms. Anita Sharma"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
-                        </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 dark:bg-cyan-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-cyan-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Caleb&clothing=blazerAndShirt&backgroundColor=e2e8f0" alt="Male Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Mr. Pankaj Das</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Office Assistant</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">N/A</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">4+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543215" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">93948 21827</a>
-                            </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Mr. Pankaj Das</h3>
+                        <p class="text-xs font-bold text-cyan-600 dark:text-cyan-400 mt-1.5 uppercase tracking-widest bg-cyan-50 dark:bg-cyan-900/30 inline-block px-3 py-1 rounded-full">Office Assistant</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-cyan-200 dark:group-hover:border-cyan-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-400 dark:text-slate-500 truncate">N/A</span>
                         </div>
-
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">1+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <a href="tel:9394821827" class="text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors">93948 21827</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    data-aos="flip-left" data-aos-delay="600">
-                    <div class="relative h-64 w-full mb-6 rounded-2xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Mr. Vikram Singh"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                            <div class="flex gap-2">
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-                                <a href="#" class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-blue-600 transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
-                            </div>
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-teal-400/10 dark:bg-teal-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-teal-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jack&clothing=blazerAndShirt&backgroundColor=f8fafc" alt="Male Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Mr. Kalpajyoti Kalita</h3>
+                        <p class="text-xs font-bold text-teal-600 dark:text-teal-400 mt-1.5 uppercase tracking-widest bg-teal-50 dark:bg-teal-900/30 inline-block px-3 py-1 rounded-full">Office Assistant</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-teal-200 dark:group-hover:border-teal-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-400 dark:text-slate-500 truncate">N/A</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">4+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <a href="tel:6001660896" class="text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors">60016 60896</a>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Mr. Kalpajyoti Kalita</h3>
-                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-wide">Office Assistant</p>
-                        
-                        <div class="text-left bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md shrink-0"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs truncate">N/A</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md shrink-0"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i></div>
-                                <p class="text-slate-700 dark:text-slate-300 font-medium text-xs">4+ Years Experience</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <div class="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-md shrink-0"><i data-lucide="phone" class="w-3.5 h-3.5"></i></div>
-                                <a href="tel:9876543216" class="text-slate-700 dark:text-slate-300 font-bold text-xs hover:text-blue-600 dark:hover:text-blue-400 transition-colors">60016 60896</a>
-                            </div>
-                        </div>
+                </div>
 
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-400/10 dark:bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-indigo-400/20"></div>
+                    
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aidan&clothing=hoodie&backgroundColor=e2e8f0" alt="Boy Avatar" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 relative z-10 shadow-md group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    
+                    <div class="text-center mb-6 relative z-10">
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Kushilab Deva Sarma</h3>
+                        <p class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1.5 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-900/30 inline-block px-3 py-1 rounded-full">Developer</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 space-y-3 relative z-10 group-hover:border-indigo-200 dark:group-hover:border-indigo-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-blue-500 shrink-0"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">Pursuing CSE</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-emerald-500 shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">1+ Years Exp.</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm text-orange-500 shrink-0"><i data-lucide="phone" class="w-4 h-4"></i></div>
+                            <a href="tel:#" class="text-sm font-bold text-slate-400 dark:text-slate-500 hover:text-blue-600 transition-colors">98649 01037 (WhatsApp Only)</a>
+                        </div>
                     </div>
                 </div>
 
@@ -1626,24 +1580,6 @@
                         <i data-lucide="send" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
                         Send Message
                     </h4>
-                    <!-- <form class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" placeholder="Full Name"
-                                class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all">
-                            <input type="email" placeholder="Email Address"
-                                class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all">
-                        </div>
-                        <input type="text" placeholder="Subject"
-                            class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all">
-                        <textarea rows="4" placeholder="How can we help you?"
-                            class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all resize-none"></textarea>
-
-                        <button type="button"
-                            class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
-                            data-aos="zoom-in">
-                            Send Message <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                        </button>
-                    </form> -->
                     <form id="footerSupportForm" class="space-y-4">
                         <textarea id="footerSupportMsg" rows="4" placeholder="How can we help you? (Log in first to connect to live support)"
                             class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-900 dark:text-white transition-all resize-none" required></textarea>
@@ -4170,27 +4106,24 @@
             });
         }
 
-        // --- BACKGROUND LISTENER FOR UNREAD DOT ---
         // --- BACKGROUND LISTENER FOR UNREAD DOT & MAIN BELL ---
         window.startHelpCenterDotListener = function(email) {
             const chatDoc = doc(db, "support_chats", email.toLowerCase().trim());
             
             onSnapshot(chatDoc, (docSnap) => {
-                const bellDot = document.querySelector('button[onclick="toggleNotification()"] span');
                 const notifList = document.querySelector('#notification-popup ul');
+                // FIX: Select ALL Help Center dots (Mobile Menu + Profile Sidebar)
+                const helpDots = document.querySelectorAll('#helpCenterDot');
 
                 if(docSnap.exists() && docSnap.data().unreadStudent > 0) {
-                    // 1. Show Help Center Sidebar Dot
-                    document.getElementById('helpCenterDot').classList.remove('hidden');
+                    // 1. Show ALL Help Center Dots
+                    helpDots.forEach(dot => dot.classList.remove('hidden'));
                     
-                    // 2. Show Main Navigation Bell Dot
-                    if(bellDot) bellDot.classList.remove('hidden');
-                    
-                    // 3. Remove old dynamic ticket to prevent duplicates
+                    // 2. Remove old dynamic ticket to prevent duplicates
                     const oldTicket = document.getElementById('dynamic-support-ticket');
                     if(oldTicket) oldTicket.remove();
 
-                    // 4. Inject specific Chat Notification into the Bell Dropdown
+                    // 3. Inject specific Chat Notification into the Bell Dropdown
                     if(notifList) {
                         if(notifList.innerHTML.includes('No new notifications')) notifList.innerHTML = '';
                         
@@ -4199,7 +4132,7 @@
                         li.className = 'p-3 rounded-lg mb-2 border bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 cursor-pointer hover:shadow-md transition-all relative';
                         li.onclick = () => {
                             window.openStudentSupport();
-                            document.getElementById('notification-popup').classList.add('hidden');
+                            document.getElementById('student-notification-wrapper').classList.add('hidden'); // Close overlay
                         };
                         li.innerHTML = `
                             <span class="absolute top-3 right-3 w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
@@ -4209,23 +4142,27 @@
                         notifList.prepend(li);
                         if(window.lucide) lucide.createIcons();
                     }
+
+                    // Update Master Manager
+                    window.pendingSupportNotifs = 1;
+                    if(typeof window.updateStudentBell === 'function') window.updateStudentBell();
+
                 } else {
-                    // Hide Help Center Dot
-                    document.getElementById('helpCenterDot').classList.add('hidden');
+                    // Hide ALL Help Center Dots
+                    helpDots.forEach(dot => dot.classList.add('hidden'));
                     
                     // Remove dynamic ticket from bell
                     const oldTicket = document.getElementById('dynamic-support-ticket');
                     if(oldTicket) oldTicket.remove();
                     
-                    // Re-hide main bell dot ONLY if there are no other Admin Notifications pending
-                    if(window.unreadNotifIds && window.unreadNotifIds.length === 0 && bellDot) {
-                        bellDot.classList.add('hidden');
-                    }
-                    
                     // Reset empty message if nothing is left
                     if(notifList && notifList.children.length === 0) {
                         notifList.innerHTML = `<li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.</li>`;
                     }
+
+                    // Update Master Manager
+                    window.pendingSupportNotifs = 0;
+                    if(typeof window.updateStudentBell === 'function') window.updateStudentBell();
                 }
             });
         }
