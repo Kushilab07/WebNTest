@@ -437,6 +437,17 @@
                                 <span id="navBellDot"
                                     class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 hidden"></span>
                             </button>
+                            <!-- Notification Popup -->
+                            <!-- <div id="notification-popup">
+                                <h4
+                                    class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2 text-slate-800 dark:text-white">
+                                    Notifications
+                                </h4>
+                                <ul class="space-y-2 text-sm max-h-64 overflow-y-auto">
+                                    <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.
+                                    </li>
+                                </ul>
+                            </div> -->
                         </div>
 
                         <!-- Profile Button -->
@@ -573,7 +584,7 @@
         <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-6 relative z-10">
             <div class="grid lg:grid-cols-2 gap-12 lg:gap-12 items-start">
                 <div class="max-w-2xl pt-4">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6 border border-blue-100 dark:border-blue-800 transition-transform hover:scale-105 cursor-default"
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-100 dark:border-blue-800 transition-transform hover:scale-105 cursor-default"
                         data-aos="fade-right">
                         <span class="relative flex h-2.5 w-2.5">
                             <span
@@ -582,6 +593,16 @@
                         </span>
                         Admissions Open for 2026
                     </div>
+                    
+                    <div class="mb-6 flex flex-col items-start gap-1" data-aos="fade-right" data-aos-delay="100">
+                        <span class="px-3 py-1 bg-gradient-to-r from-orange-500 to-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-md shadow-lg shadow-orange-500/30 animate-bounce-slow">
+                            Limited Offer
+                        </span>
+                        <p class="text-lg sm:text-xl font-extrabold text-slate-800 dark:text-slate-200">
+                            From <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500 text-2xl md:text-3xl">40% up to 75% OFF</span> on All Courses!
+                        </p>
+                    </div>
+
                     <h1 class="text-4xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6"
                         data-aos="fade-right">
                         Build Your Future with <span
@@ -629,7 +650,7 @@
                                     src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                                     alt="Coding" class="w-full h-full object-cover"></div>
                             <div class="min-w-full h-full relative"><img
-                                    src="Images/Pics/Bodhidrum.jpeg"
+                                    src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                                     alt="Class" class="w-full h-full object-cover"></div>
                             <div class="min-w-full h-full relative"><img
                                     src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
@@ -1219,7 +1240,7 @@
                     <p class="text-sm text-slate-400 mt-2">Space reserved for future offerings.</p>
                 </div>
 
-                <!-- <div class="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 border-dashed flex flex-col items-center justify-center text-center h-full min-h-[300px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer group"
+                <div class="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 border-dashed flex flex-col items-center justify-center text-center h-full min-h-[300px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer group"
                     data-aos="fade-up" data-aos-delay="300">
                     <div
                         class="w-16 h-16 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -1227,7 +1248,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-600 dark:text-slate-300">More Services Coming Soon</h3>
                     <p class="text-sm text-slate-400 mt-2">Space reserved for future offerings.</p>
-                </div> -->
+                </div>
 
             </div>
         </div>
@@ -2630,22 +2651,16 @@
     <div id="search-overlay">
         <div class="absolute inset-0 cursor-pointer" onclick="toggleSearch()"></div>
 
-        <div class="search-box-wrapper h-16 px-6 relative z-10 overscroll-none">
-            <i data-lucide="search" class="w-6 h-6 text-slate-400 min-w-[24px]"></i>
+        <div class="search-box-wrapper h-16 pl-6 pr-2 relative z-10 overscroll-none flex items-center justify-between">
             <input type="text" id="globalSearchInput"
-                class="w-full h-full bg-transparent border-none outline-none px-4 text-lg text-slate-800 dark:text-white placeholder-slate-400 font-medium"
-                placeholder="Type to find courses, teachers..."
+                class="w-full h-full bg-transparent border-none outline-none pr-4 text-lg text-slate-800 dark:text-white placeholder-slate-400 font-medium"
+                placeholder="Search courses, teachers, etc..."
                 onkeydown="if(event.key === 'Enter') handleSearch(this.value)">
 
-            <div class="flex items-center gap-2">
-                <button onclick="handleSearch(document.getElementById('globalSearchInput').value)"
-                    class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors">
-                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                </button>
-                <button onclick="toggleSearch()" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
+            <button onclick="handleSearch(document.getElementById('globalSearchInput').value)"
+                class="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors shadow-md group shrink-0">
+                <i data-lucide="search" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+            </button>
         </div>
     </div>
 
@@ -2706,62 +2721,83 @@
         };
 
 
-        // The Smart Search Engine
+        // The Advanced Smart Search Engine
         function handleSearch(query) {
             if (!query || query.trim() === "") return;
             query = query.toLowerCase().trim();
 
-            // define elements to search within
-            const searchableElements = document.querySelectorAll('h1, h2, h3, h4, .course-title, p');
             let found = false;
 
-            for (let el of searchableElements) {
-                // Skip hidden elements
-                if (el.offsetParent === null) continue;
-
-                if (el.textContent.toLowerCase().includes(query)) {
-                    // MATCH FOUND
-                    found = true;
-
-                    // 1. Close Overlay
-                    toggleSearch();
-
-                    // 2. Scroll to element
+            // --- 1. SEARCH COURSES ARRAY DIRECTLY ---
+            // This ensures we find courses even if they are hidden behind filters/tabs!
+            if (typeof courses !== 'undefined') {
+                const matchedCourse = courses.find(c => c.name.toLowerCase().includes(query) || c.desc.toLowerCase().includes(query));
+                if (matchedCourse) {
+                    filterCourses('all'); // Reset filter to make sure it's in the DOM
                     setTimeout(() => {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300); // Wait for overlay to close
-
-                    // 3. Highlight Effect
-                    const originalColor = el.style.color;
-                    const originalTransition = el.style.transition;
-
-                    setTimeout(() => {
-                        el.style.transition = "all 0.5s ease";
-                        el.style.color = "#2563eb"; // Flash Blue
-                        el.style.transform = "scale(1.05)";
-                    }, 800); // Wait for scroll to finish
-
-                    // Reset
-                    setTimeout(() => {
-                        el.style.color = originalColor;
-                        el.style.transform = "scale(1)";
-                        setTimeout(() => { el.style.transition = originalTransition; }, 500);
-                    }, 2500);
-
-                    break; // Stop at first match
+                        const allCourseTitles = document.querySelectorAll('#courses h3');
+                        for (let el of allCourseTitles) {
+                            if (el.textContent.toLowerCase().includes(matchedCourse.name.toLowerCase())) {
+                                executeScrollAndHighlight(el);
+                                return; // Stop execution
+                            }
+                        }
+                    }, 100); // Tiny delay to let DOM update
+                    return;
                 }
             }
 
+            // --- 2. SEARCH DOM ELEMENTS (For Teachers, Services, About text) ---
+            const searchableElements = document.querySelectorAll('#faculty h3, #services h3, #about h2, #about p');
+
+            for (let el of searchableElements) {
+                if (el.textContent.toLowerCase().includes(query)) {
+                    executeScrollAndHighlight(el);
+                    found = true;
+                    break;
+                }
+            }
+
+            // --- 3. HANDLE NO MATCH ---
             if (!found) {
-                // Shake animation on input if not found
                 const box = document.querySelector('.search-box-wrapper');
                 if (box) {
-                    box.style.transform = "translateX(10px)";
-                    setTimeout(() => box.style.transform = "translateX(-10px)", 100);
-                    setTimeout(() => box.style.transform = "translateX(0)", 200);
+                    // Quick error shake
+                    box.style.transform = "scale(1) translateY(0) translateX(10px)";
+                    setTimeout(() => box.style.transform = "scale(1) translateY(0) translateX(-10px)", 100);
+                    setTimeout(() => box.style.transform = "scale(1) translateY(0) translateX(0)", 200);
                 }
-                // Optional: alert("No matches found");
+                if (typeof showToast === 'function') {
+                    showToast("No matches found. Try checking the spelling.", "info");
+                }
             }
+        }
+
+        function executeScrollAndHighlight(el) {
+            toggleSearch(); // Close the search overlay immediately
+            
+            setTimeout(() => {
+                // Better scroll calculation to account for sticky navbar (150px offset)
+                const y = el.getBoundingClientRect().top + window.scrollY - 150;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }, 300);
+
+            const originalColor = el.style.color;
+            const originalTransition = el.style.transition;
+
+            // Apply attention-grabbing highlight
+            setTimeout(() => {
+                el.style.transition = "all 0.5s ease";
+                el.style.color = "#2563eb"; // Highlight blue
+                el.style.transform = "scale(1.05)";
+            }, 800);
+
+            // Revert back to normal
+            setTimeout(() => {
+                el.style.color = originalColor;
+                el.style.transform = "scale(1)";
+                setTimeout(() => { el.style.transition = originalTransition; }, 500);
+            }, 2500);
         }
 
         // --- COUNTER ANIMATION ---
@@ -3490,7 +3526,7 @@
 
         // 1. Select all navigation buttons (We will add the 'nav-link' class in HTML next)
         const navLinks = document.querySelectorAll('.nav-link');
-        const sections = ['home', 'about', 'courses', 'faculty', 'testimonials', 'contact', 'map'];
+        const sections = ['home', 'about', 'courses', 'services', 'faculty', 'testimonials', 'contact', 'map'];
 
         // 2. Define the Highlight Function
         function highlightNav() {
@@ -3627,7 +3663,7 @@
                     await batch.commit();
                     window.unreadNotifIds = [];
                 } catch (e) {
-                    //console.error("Failed to mark notifications as read:", e);
+                    console.error("Failed to mark notifications as read:", e);
                 }
             };
 
@@ -3642,7 +3678,7 @@
                 window.globalBranchPrices = { "Arikuchi": {}, "Bagals Road": {} };
 
                 if (user) {
-                    //console.log("User Logged In:", user.email);
+                    console.log("User Logged In:", user.email);
 
                     // Close modals if open
                     closeModal('loginModal');
@@ -3742,7 +3778,7 @@
                     });
 
                 } else {
-                    //console.log("User Signed Out");
+                    console.log("User Signed Out");
 
                     // Reset if logged out
                     window.userEnrolledData = [];
@@ -3758,7 +3794,7 @@
             });
 
         } catch (error) {
-            //console.error("Firebase Config Error:", error);
+            console.error("Firebase Config Error:", error);
         }
 
         // =========================================================
@@ -3827,7 +3863,7 @@
                 }
 
             } catch (error) {
-                //console.error("Failed to fetch courses", error);
+                console.error("Failed to fetch courses", error);
             }
         }
 
@@ -4142,7 +4178,7 @@
                 if (window.lucide) lucide.createIcons();
 
             } catch (error) {
-                //console.error("Error opening Document Modal:", error);
+                console.error("Error opening Document Modal:", error);
                 showToast("Something went wrong opening the modal.", "error");
             }
         };
@@ -4362,7 +4398,7 @@
                     }
                 }
             } catch (err) {
-                //console.error("Failed to load global prices:", err);
+                console.error("Failed to load global prices:", err);
             }
 
             // Now render the cards with the correct prices
@@ -4494,7 +4530,7 @@
                     showToast("Verification request sent to Admin!", "success");
                     closeModal('feeRequestModal');
                 } catch (err) {
-                    //console.error(err);
+                    console.error(err);
                     showToast("Failed to send request. Please try again.", "error");
                 } finally {
                     btnText.classList.remove('hidden');
