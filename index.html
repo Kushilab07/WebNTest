@@ -410,6 +410,11 @@
 
                 <!-- RIGHT SIDE: Search + Auth/Profile -->
                 <div class="flex items-center gap-2 sm:gap-4">
+                    <button onclick="toggleTheme()"
+                        class="hidden md:flex p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    </button>
                     <button onclick="toggleSearch()"
                         class="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <i data-lucide="search" class="w-5 h-5"></i>
@@ -437,17 +442,6 @@
                                 <span id="navBellDot"
                                     class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 hidden"></span>
                             </button>
-                            <!-- Notification Popup -->
-                            <!-- <div id="notification-popup">
-                                <h4
-                                    class="font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-2 text-slate-800 dark:text-white">
-                                    Notifications
-                                </h4>
-                                <ul class="space-y-2 text-sm max-h-64 overflow-y-auto">
-                                    <li class="p-4 text-center text-slate-500 text-sm font-medium">No new notifications.
-                                    </li>
-                                </ul>
-                            </div> -->
                         </div>
 
                         <!-- Profile Button -->
@@ -596,7 +590,7 @@
                     
                     <div class="mb-6 flex flex-col items-start gap-1" data-aos="fade-right" data-aos-delay="100">
                         <span class="px-3 py-1 bg-gradient-to-r from-orange-500 to-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-md shadow-lg shadow-orange-500/30 animate-bounce-slow">
-                            Limited Offer
+                            Limited-time Offer
                         </span>
                         <p class="text-lg sm:text-xl font-extrabold text-slate-800 dark:text-slate-200">
                             From <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500 text-2xl md:text-3xl">40% up to 75% OFF</span> on All Courses!
@@ -637,7 +631,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="relative lg:ml-6 flex flex-col gap-8" data-aos="fade-left">
+                <div class="relative lg:ml-6 lg:mt-16 flex flex-col gap-8" data-aos="fade-left">
                     <!-- Carousel Container with onClick -->
                     <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 aspect-[4/3] group bg-slate-200 dark:bg-slate-800"
                         onclick="showDots()">
@@ -650,8 +644,8 @@
                                     src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                                     alt="Coding" class="w-full h-full object-cover"></div>
                             <div class="min-w-full h-full relative"><img
-                                    src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
-                                    alt="Class" class="w-full h-full object-cover"></div>
+                                    src="Images/Pics/Bodhidrum.jpeg"
+                                    alt="Class" class="w-full h-full object-contain object-center"></div>
                             <div class="min-w-full h-full relative"><img
                                     src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                                     alt="Account" class="w-full h-full object-cover"></div>
@@ -1240,7 +1234,7 @@
                     <p class="text-sm text-slate-400 mt-2">Space reserved for future offerings.</p>
                 </div>
 
-                <div class="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 border-dashed flex flex-col items-center justify-center text-center h-full min-h-[300px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer group"
+                <!-- <div class="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 border-dashed flex flex-col items-center justify-center text-center h-full min-h-[300px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer group"
                     data-aos="fade-up" data-aos-delay="300">
                     <div
                         class="w-16 h-16 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -1248,7 +1242,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-600 dark:text-slate-300">More Services Coming Soon</h3>
                     <p class="text-sm text-slate-400 mt-2">Space reserved for future offerings.</p>
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -1576,7 +1570,7 @@
                         <div
                             class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 group-hover:border-indigo-200 dark:group-hover:border-indigo-800/50 transition-colors">
                             <i data-lucide="phone" class="w-4 h-4 text-indigo-500 shrink-0"></i>
-                            <a href="tel:#"
+                            <a href="https://wa.me/919864901037" target="_blank"
                                 class="text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors">98649
                                 01037 (WhatsApp Only)</a>
                         </div>
@@ -2036,6 +2030,30 @@
                         <i data-lucide="log-out" class="w-5 h-5"></i> Logout
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Name Model -->
+    <div id="setupNameModal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in overscroll-none">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-blue-600 to-indigo-600">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-6 h-6"></i> Welcome to NIAT!
+                </h3>
+            </div>
+            <div class="p-8">
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Please confirm your full name for your official student profile and certificates.</p>
+                <form id="setupNameForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                        <input type="text" id="setupFullName" class="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Enter your full name" required>
+                    </div>
+                    <button type="submit" id="setupSubmitBtn" class="relative w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all mt-2 flex justify-center items-center overflow-hidden">
+                        <span id="setupBtnText" class="transition-opacity duration-300">Confirm & Continue</span>
+                        <div id="setupSpinner" class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -2721,25 +2739,38 @@
         };
 
 
-        // The Advanced Smart Search Engine
+        // The Advanced Smart Search Engine (Keyword / Fuzzy Matching)
         function handleSearch(query) {
             if (!query || query.trim() === "") return;
-            query = query.toLowerCase().trim();
-
+            
+            // Split user query into individual keywords (e.g. "basic computer" -> ["basic", "computer"])
+            const searchTerms = query.toLowerCase().trim().split(/\s+/);
             let found = false;
 
+            // Helper: Returns true if EVERY keyword typed is found somewhere in the text
+            const isMatch = (text) => {
+                if(!text) return false;
+                const lowerText = text.toLowerCase();
+                return searchTerms.every(term => lowerText.includes(term));
+            };
+
             // --- 1. SEARCH COURSES ARRAY DIRECTLY ---
-            // This ensures we find courses even if they are hidden behind filters/tabs!
+            // This ensures we find courses even if they are hidden behind filters!
             if (typeof courses !== 'undefined') {
-                const matchedCourse = courses.find(c => c.name.toLowerCase().includes(query) || c.desc.toLowerCase().includes(query));
+                const matchedCourse = courses.find(c => 
+                    isMatch(c.name) || 
+                    isMatch(c.desc) || 
+                    (c.modules && c.modules.some(m => isMatch(m)))
+                );
+
                 if (matchedCourse) {
-                    filterCourses('all'); // Reset filter to make sure it's in the DOM
+                    filterCourses('all'); // Reset filter to ensure course is rendered in the DOM
                     setTimeout(() => {
                         const allCourseTitles = document.querySelectorAll('#courses h3');
                         for (let el of allCourseTitles) {
                             if (el.textContent.toLowerCase().includes(matchedCourse.name.toLowerCase())) {
                                 executeScrollAndHighlight(el);
-                                return; // Stop execution
+                                return; // Stop execution once found
                             }
                         }
                     }, 100); // Tiny delay to let DOM update
@@ -2748,13 +2779,13 @@
             }
 
             // --- 2. SEARCH DOM ELEMENTS (For Teachers, Services, About text) ---
-            const searchableElements = document.querySelectorAll('#faculty h3, #services h3, #about h2, #about p');
+            const searchableElements = document.querySelectorAll('#faculty h3, #faculty p, #services h3, #services p, #about h2, #about p');
 
             for (let el of searchableElements) {
-                if (el.textContent.toLowerCase().includes(query)) {
+                if (isMatch(el.textContent)) {
                     executeScrollAndHighlight(el);
                     found = true;
-                    break;
+                    break; // Stop at first match
                 }
             }
 
@@ -2767,17 +2798,18 @@
                     setTimeout(() => box.style.transform = "scale(1) translateY(0) translateX(-10px)", 100);
                     setTimeout(() => box.style.transform = "scale(1) translateY(0) translateX(0)", 200);
                 }
-                if (typeof showToast === 'function') {
-                    showToast("No matches found. Try checking the spelling.", "info");
+                if (typeof window.showToast === 'function') {
+                    window.showToast("No exact matches found. Try using simpler keywords.", "info");
                 }
             }
         }
 
+        // Shared Animation Engine for Search Results
         function executeScrollAndHighlight(el) {
             toggleSearch(); // Close the search overlay immediately
             
             setTimeout(() => {
-                // Better scroll calculation to account for sticky navbar (150px offset)
+                // Better scroll calculation to account for the sticky navbar
                 const y = el.getBoundingClientRect().top + window.scrollY - 150;
                 window.scrollTo({ top: y, behavior: 'smooth' });
             }, 300);
@@ -3663,7 +3695,7 @@
                     await batch.commit();
                     window.unreadNotifIds = [];
                 } catch (e) {
-                    console.error("Failed to mark notifications as read:", e);
+                    //console.error("Failed to mark notifications as read:", e);
                 }
             };
 
@@ -3678,11 +3710,23 @@
                 window.globalBranchPrices = { "Arikuchi": {}, "Bagals Road": {} };
 
                 if (user) {
-                    console.log("User Logged In:", user.email);
-
                     // Close modals if open
                     closeModal('loginModal');
                     closeModal('signupModal');
+
+                    // --- NEW: FIRST TIME LOGIN NAME CONFIRMATION ---
+                    // Check if it's their first login (within 5 seconds of account creation) OR if name is missing
+                    const isNameConfirmed = localStorage.getItem(`name_confirmed_${user.email}`);
+                    const creationTime = new Date(user.metadata.creationTime).getTime();
+                    const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
+                    const isFirstLogin = (lastSignInTime - creationTime) < 5000; 
+
+                    if (!user.displayName || (isFirstLogin && !isNameConfirmed)) {
+                        // Pre-fill with Google name if available, otherwise blank
+                        const setupInput = document.getElementById('setupFullName');
+                        if (setupInput) setupInput.value = user.displayName || '';
+                        setTimeout(() => openModal('setupNameModal'), 800); // Pop up smoothly after login
+                    }
 
                     // FETCH COURSES IN BACKGROUND AS SOON AS THEY LOG IN
                     fetchUserCourses(user.email);
@@ -3778,7 +3822,7 @@
                     });
 
                 } else {
-                    console.log("User Signed Out");
+                    //console.log("User Signed Out");
 
                     // Reset if logged out
                     window.userEnrolledData = [];
@@ -3794,7 +3838,7 @@
             });
 
         } catch (error) {
-            console.error("Firebase Config Error:", error);
+            //console.error("Firebase Config Error:", error);
         }
 
         // =========================================================
@@ -3863,7 +3907,7 @@
                 }
 
             } catch (error) {
-                console.error("Failed to fetch courses", error);
+                //console.error("Failed to fetch courses", error);
             }
         }
 
@@ -4178,7 +4222,7 @@
                 if (window.lucide) lucide.createIcons();
 
             } catch (error) {
-                console.error("Error opening Document Modal:", error);
+                //console.error("Error opening Document Modal:", error);
                 showToast("Something went wrong opening the modal.", "error");
             }
         };
@@ -4398,7 +4442,7 @@
                     }
                 }
             } catch (err) {
-                console.error("Failed to load global prices:", err);
+                //console.error("Failed to load global prices:", err);
             }
 
             // Now render the cards with the correct prices
@@ -4530,7 +4574,7 @@
                     showToast("Verification request sent to Admin!", "success");
                     closeModal('feeRequestModal');
                 } catch (err) {
-                    console.error(err);
+                    //console.error(err);
                     showToast("Failed to send request. Please try again.", "error");
                 } finally {
                     btnText.classList.remove('hidden');
@@ -4868,6 +4912,50 @@
                 }
             });
         }
+
+        // --- NEW: FIRST TIME SETUP PROFILE LOGIC ---
+        const setupNameForm = document.getElementById('setupNameForm');
+        if (setupNameForm) {
+            setupNameForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('setupFullName').value.trim();
+                const btnText = document.getElementById('setupBtnText');
+                const spinner = document.getElementById('setupSpinner');
+                const submitBtn = document.getElementById('setupSubmitBtn');
+
+                if (!auth || !auth.currentUser) return;
+
+                btnText.classList.add('opacity-0');
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = true;
+
+                try {
+                    // Generate avatar with initials based on what they type
+                    const newAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(newName)}&background=2563eb&color=fff`;
+
+                    // Save to Firebase
+                    await updateProfile(auth.currentUser, {
+                        displayName: newName,
+                        photoURL: newAvatarUrl
+                    });
+
+                    // Save flag in localStorage so it never forces them again on this browser
+                    localStorage.setItem(`name_confirmed_${auth.currentUser.email}`, 'true');
+
+                    window.updateAuthState(auth.currentUser); // Refresh Profile UI with new name instantly
+                    showToast("Profile created successfully!", "success");
+                    closeModal('setupNameModal');
+
+                } catch (error) {
+                    showToast("Failed to save name.", "error");
+                } finally {
+                    btnText.classList.remove('opacity-0');
+                    spinner.classList.add('hidden');
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
     </script>
 
     <!-- <script type="module" src="script.js"></script> -->
