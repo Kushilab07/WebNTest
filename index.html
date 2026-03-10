@@ -3009,11 +3009,27 @@
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth' });
 
+                // Update URL without triggering a jump
+                if (history.pushState) {
+                    history.pushState(null, null, '#' + id);
+                }
+
                 // Close the menu properly
                 document.getElementById('mainMenu').classList.remove('active');
                 document.body.style.overflow = ''; // Restore scrolling
             }
         }
+
+        // NEW: Force scroll position reset on page load to fix Back Button glitch
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                // If loaded from back-forward cache, snap back to top
+                window.scrollTo(0, 0);
+            }
+        });
 
         // --- 4. Scroll Top ---
         const scrollTopBtn = document.getElementById('scrollTopBtn');
@@ -3022,11 +3038,16 @@
             else scrollTopBtn.classList.remove('show');
         });
 
-        // --- 5. Carousel ---
+        // --- 5. Carousel (Infinite Loop Fix) ---
         const track = document.getElementById('carouselTrack');
         const dotsContainer = document.getElementById('carouselDots');
+        
+        // Clone the first slide and append it to the end to create the illusion of an infinite loop
+        const firstSlideClone = track.children[0].cloneNode(true);
+        track.appendChild(firstSlideClone);
+        
         const slides = track.children;
-        const totalSlides = slides.length;
+        const totalSlides = slides.length - 1; // Actual slides (ignoring the clone)
         let currentSlide = 0, slideInterval, dotTimer;
 
         for (let i = 0; i < totalSlides; i++) {
@@ -3035,28 +3056,68 @@
             dot.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(i); resetTimer(); });
             dotsContainer.appendChild(dot);
         }
+
         function updateDots() {
             const dots = dotsContainer.children;
+            // Handle the case where currentSlide equals totalSlides (which is the cloned first slide)
+            let dotIndex = currentSlide === totalSlides ? 0 : currentSlide;
             for (let i = 0; i < dots.length; i++) {
-                if (i === currentSlide) { dots[i].classList.add('active', 'bg-white'); dots[i].classList.remove('bg-white/50'); }
-                else { dots[i].classList.remove('active', 'bg-white'); dots[i].classList.add('bg-white/50'); }
+                if (i === dotIndex) { 
+                    dots[i].classList.add('active', 'bg-white'); 
+                    dots[i].classList.remove('bg-white/50'); 
+                } else { 
+                    dots[i].classList.remove('active', 'bg-white'); 
+                    dots[i].classList.add('bg-white/50'); 
+                }
             }
         }
+
         function goToSlide(index) {
             currentSlide = index;
-            if (currentSlide < 0) currentSlide = totalSlides - 1;
-            if (currentSlide >= totalSlides) currentSlide = 0;
+            track.style.transition = 'transform 0.5s ease-out';
             track.style.transform = `translateX(${currentSlide * -100}%)`;
             updateDots();
+
+            // If we just slid to the cloned first image at the very end...
+            if (currentSlide === totalSlides) {
+                // Wait for the slide animation to finish (500ms), then instantly snap back to the REAL first image
+                setTimeout(() => {
+                    track.style.transition = 'none'; // Turn off animation
+                    currentSlide = 0; // Reset counter
+                    track.style.transform = `translateX(0%)`; // Snap to start
+                }, 500);
+            }
         }
-        function nextSlide() { goToSlide(currentSlide + 1); }
-        function prevSlide() { goToSlide(currentSlide - 1); }
+
+        function nextSlide() {
+            if (currentSlide >= totalSlides) return; // Prevent double clicking during snap
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide <= 0) {
+                // Instantly snap to the clone at the end
+                track.style.transition = 'none';
+                currentSlide = totalSlides;
+                track.style.transform = `translateX(${currentSlide * -100}%)`;
+                // Then smoothly slide back one
+                setTimeout(() => {
+                    track.style.transition = 'transform 0.5s ease-out';
+                    goToSlide(currentSlide - 1);
+                }, 50);
+            } else {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
         function resetTimer() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 5000); }
+        
         function showDots() {
             dotsContainer.classList.add('visible');
             clearTimeout(dotTimer);
             dotTimer = setTimeout(() => dotsContainer.classList.remove('visible'), 3000);
         }
+        
         updateDots(); resetTimer();
 
         // Touch
