@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebas
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
+//my config currently
 const firebaseConfig = {
     apiKey: "AIzaSyCWpp7vH0FAubDAW1Gvw5LMmtEqfMIq4u0",
     authDomain: "niat-admission-form.firebaseapp.com",
@@ -20,6 +21,8 @@ const db = getFirestore(app);
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
 const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyY58Kg6zA_xxIjcY68QwCGGtYchuz73pULz4bYS7SShDDloRY5IBmpai2WJ3klmlYg/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbzhTotJlNdqdd87Mzk5ugVJmDR6TfXWWUnojkGDvWFRckScQYD8aRXS2mgq2O4pPM_Z8w/exec";
+//my url currently
+const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbzm2qrBOHNyhOW7NQ3q2mvkIjlECqyOrtLettA7z2Et6GKMm0DzjwVLlRFeJ6uwQ23NNw/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
@@ -159,7 +162,8 @@ window.switchBranch = function (branch) {
     }
 
     window.setFilterStatus('all'); // Reset filter on branch switch
-    if (window.filters.status === 'fee') window.loadFeeDashboard(); // NEW: Reload fee data if on fee tab
+    if (window.filters.status === 'fee') window.loadFeeDashboard(); 
+    if (window.filters.status === 'exam') window.loadExamDashboard(); // NEW: Reload exam data
     window.loadTableData(branch);
 };
 
@@ -235,9 +239,10 @@ window.setFilterStatus = function (status) {
     const studentsWorkspace = document.getElementById('students-workspace');
     const feesWorkspace = document.getElementById('fees-workspace');
     const supportWorkspace = document.getElementById('support-workspace');
+    const examWorkspace = document.getElementById('exam-workspace'); // NEW
 
     // WORKSPACE TOGGLE LOGIC
-    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace];
+    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace, examWorkspace];
 
     // Hide all workspaces first to ensure a clean transition
     workspaces.forEach(ws => {
@@ -256,7 +261,11 @@ window.setFilterStatus = function (status) {
         } else if (status === 'support' && supportWorkspace) {
             supportWorkspace.classList.remove('hidden');
             setTimeout(() => supportWorkspace.classList.remove('opacity-0'), 50);
-        } else if (status !== 'fee' && status !== 'support' && studentsWorkspace) {
+        } else if (status === 'exam' && examWorkspace) { // NEW EXAM LOGIC
+            examWorkspace.classList.remove('hidden');
+            setTimeout(() => examWorkspace.classList.remove('opacity-0'), 50);
+            window.loadExamDashboard();
+        } else if (status !== 'fee' && status !== 'support' && status !== 'exam' && studentsWorkspace) {
             // This covers 'all', 'active', 'completed', and 'dropout' statuses
             studentsWorkspace.classList.remove('hidden');
             setTimeout(() => studentsWorkspace.classList.remove('opacity-0'), 50);
@@ -1289,3 +1298,122 @@ window.resolveSupportTicket = async function() {
         window.showToast("Failed to resolve ticket", "error");
     }
 };
+
+// ============================================================================
+// --- EXAM DASHBOARD ENGINE ---
+// ============================================================================
+
+window.loadExamDashboard = async function () {
+    const loader = document.getElementById('examLoader');
+    const grid = document.getElementById('examApplicationsGrid');
+    const branchLabel = document.getElementById('examBranchLabel');
+
+    if (branchLabel) branchLabel.innerText = `Branch: ${window.currentBranch}`;
+    if (loader) loader.classList.remove('hidden');
+
+    try {
+        // Fetch from the EXAM_API_URL
+        const response = await fetch(`${EXAM_API_URL}?action=getExams`);
+        
+        // Handle responses safely
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            throw new Error("Invalid API Response format");
+        }
+
+        if (result.status === 'success' && result.data) {
+            // Filter by the currently active branch in the admin panel
+            const branchData = result.data.filter(req => 
+                String(req.branch || "").trim().toLowerCase() === String(window.currentBranch).trim().toLowerCase()
+            );
+            
+            // Sort by timestamp (newest first)
+            branchData.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+            renderExamGrid(branchData);
+        } else {
+            window.showToast("Failed to fetch exam records.", "error");
+            grid.innerHTML = `<p class="text-slate-500 font-medium col-span-full text-center py-10">No valid exam records returned.</p>`;
+        }
+    } catch (error) {
+        console.error("Exam Fetch Error:", error);
+        window.showToast("Network Error fetching exams.", "error");
+        grid.innerHTML = `<p class="text-red-500 font-medium col-span-full text-center py-10">System encountered an error connecting to the database.</p>`;
+    } finally {
+        if (loader) loader.classList.add('hidden');
+    }
+};
+
+function renderExamGrid(data) {
+    const grid = document.getElementById('examApplicationsGrid');
+    grid.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full flex flex-col items-center justify-center py-16 opacity-60">
+                <i data-lucide="clipboard-x" class="w-16 h-16 text-slate-400 mb-4"></i>
+                <p class="text-slate-500 text-lg font-medium">No exam applications found for ${window.currentBranch}.</p>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    data.forEach(app => {
+        // Formatting Date safely
+        let dateStr = "N/A";
+        if (app.timestamp) {
+            const d = new Date(app.timestamp);
+            if (!isNaN(d.getTime())) {
+                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+        }
+
+        grid.innerHTML += `
+            <div class="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                
+                <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-400/10 dark:bg-cyan-500/10 rounded-full blur-2xl -mr-8 -mt-8 transition-all group-hover:bg-cyan-400/20 pointer-events-none"></div>
+
+                <div class="flex justify-between items-start mb-4 relative z-10">
+                    <div class="pr-2">
+                        <h4 class="font-bold text-slate-900 dark:text-white text-lg leading-tight mb-1 truncate" title="${app.name || 'Unknown Student'}">${app.name || 'Unknown Student'}</h4>
+                        <p class="text-xs text-slate-500 font-mono bg-slate-200 dark:bg-slate-700/50 inline-block px-2 py-0.5 rounded">${app.regNo || 'No Reg No'}</p>
+                    </div>
+                    <span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200 dark:border-cyan-800 shrink-0 shadow-sm">Form Submitted</span>
+                </div>
+                
+                <div class="space-y-3 mt-4 text-sm relative z-10">
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                        <i data-lucide="book-open" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
+                        <span class="font-medium text-slate-700 dark:text-slate-300 truncate" title="${app.course || 'N/A'}">${app.course || 'N/A'}</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                        <i data-lucide="mail" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
+                        <a href="mailto:${app.email}" class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate" title="${app.email || 'N/A'}">${app.email || 'N/A'}</a>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                        <i data-lucide="phone" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
+                        <a href="tel:${app.phone}" class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">${app.phone || 'N/A'}</a>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                        <i data-lucide="user" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">Father: ${app.fatherName || 'N/A'}</span>
+                    </div>
+                </div>
+                
+                <div class="mt-5 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-[10px] uppercase font-bold text-slate-400 relative z-10">
+                    <span class="flex items-center gap-1 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded"><i data-lucide="calendar" class="w-3 h-3"></i> DOB: ${app.dob || 'N/A'}</span>
+                    <span class="flex items-center gap-1 text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i> ${dateStr}</span>
+                </div>
+            </div>
+        `;
+    });
+
+    if (window.lucide) lucide.createIcons();
+}
