@@ -1386,13 +1386,21 @@ function renderExamGrid(data) {
                 </div>
                 
                 <div class="space-y-3 mt-4 text-sm relative z-10">
-                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                        <i data-lucide="book-open" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
-                        <span class="font-medium text-slate-700 dark:text-slate-300 truncate" title="${app.course || 'N/A'}">${app.course || 'N/A'}</span>
+                    
+                    <!-- UPDATED: Course, Duration, and Semester Block -->
+                    <div class="flex items-start gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                        <i data-lucide="book-open" class="w-4 h-4 text-cyan-500 shrink-0 mt-0.5"></i> 
+                        <div class="min-w-0 flex-1">
+                            <p class="font-medium text-slate-700 dark:text-slate-300 truncate text-sm" title="${app.course || 'N/A'}">${app.course || 'N/A'}</p>
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[9px] uppercase font-bold rounded tracking-wider border border-slate-200 dark:border-slate-600">${app.duration || 'N/A'}</span>
+                                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[9px] uppercase font-bold rounded tracking-wider border border-slate-200 dark:border-slate-600">${app.semester || 'N/A'}</span>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                        <i data-lucide="mail" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
+                        <i data-lucide="mail" class="w-4 h-4 text-cyan-500 shrink-0"></i>
                         <a href="mailto:${app.email}" class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate" title="${app.email || 'N/A'}">${app.email || 'N/A'}</a>
                     </div>
                     
