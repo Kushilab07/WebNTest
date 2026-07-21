@@ -22,7 +22,7 @@ const db = getFirestore(app);
 const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyY58Kg6zA_xxIjcY68QwCGGtYchuz73pULz4bYS7SShDDloRY5IBmpai2WJ3klmlYg/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbzhTotJlNdqdd87Mzk5ugVJmDR6TfXWWUnojkGDvWFRckScQYD8aRXS2mgq2O4pPM_Z8w/exec";
 //my url currently
-const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbzm2qrBOHNyhOW7NQ3q2mvkIjlECqyOrtLettA7z2Et6GKMm0DzjwVLlRFeJ6uwQ23NNw/exec";
+const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbx6q4xHZQE7lpZ2-c0h7K4aj18sHvmh5o3sywrTDqGYOWOJ8ims1kQGopWxIlWxJRipJQ/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
