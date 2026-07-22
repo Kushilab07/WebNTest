@@ -19,8 +19,8 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyY58Kg6zA_xxIjcY68QwCGGtYchuz73pULz4bYS7SShDDloRY5IBmpai2WJ3klmlYg/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbzhTotJlNdqdd87Mzk5ugVJmDR6TfXWWUnojkGDvWFRckScQYD8aRXS2mgq2O4pPM_Z8w/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbzudPjVFsGqwLRrBw_oECx6sOuYwAqyTeMdfHyNTphQO421MyroSMuTg4BgV0qvpgw3/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbznqUcCogM-KonSO1fw7ozkUZUVN9qD-XNHoH8Qu51D4cG2TzZ_BpMfH22v-QIJtvTL9A/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbx6q4xHZQE7lpZ2-c0h7K4aj18sHvmh5o3sywrTDqGYOWOJ8ims1kQGopWxIlWxJRipJQ/exec";
 
@@ -42,6 +42,30 @@ window.filters = {
     status: 'all',
     marksheet: 'all',
     certificate: 'all'
+};
+
+// ============================================================================
+// --- ADVANCED NETWORK UTILITIES (EXPONENTIAL BACKOFF) ---
+// ============================================================================
+window.fetchWithRetry = async function(url, options = {}, maxRetries = 3) {
+    let retries = 0;
+    while (retries < maxRetries) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) return response;
+            if (response.status === 429) throw new Error("Rate Limited");
+            return response; 
+        } catch (error) {
+            retries++;
+            if (retries >= maxRetries) {
+                console.error("Max network retries reached.");
+                throw error;
+            }
+            const waitTime = (Math.pow(2, retries) * 1000) + (Math.random() * 500);
+            console.warn(`Network busy. Retrying in ${Math.round(waitTime)}ms... (Attempt ${retries})`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+    }
 };
 
 // --- THEME TOGGLE ---
@@ -174,7 +198,8 @@ window.loadTableData = async function (branch) {
     const targetUrl = branch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
 
     try {
-        const response = await fetch(`${targetUrl}?action=getAdminData`);
+        // UPGRADED TO EXPONENTIAL BACKOFF
+        const response = await window.fetchWithRetry(`${targetUrl}?action=getAdminData`, { method: 'GET' });
         const result = await response.json();
 
         if (result.status === 'success') {
@@ -573,31 +598,129 @@ window.closeManageModal = function () {
     window.currentEditingRegNo = null;
 };
 
-window.simulateAddMarks = function () {
-    window.currentMarksAdded = true;
-    if (!window.currentModalState.markLink) window.currentModalState.markLink = "MARKS_ADDED";
+// --- REAL-TIME MARKS ENTRY LOGIC ---
 
-    const btn = document.getElementById('btnAddMarks');
-    btn.innerHTML = `Marks Added <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
-    btn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
-    lucide.createIcons();
-    window.evaluateModalState();
-}
+window.openMarksModal = function (regNo = null) {
+    // If no regNo is passed (clicked from Sidebar), use the currently editing student
+    const targetRegNo = regNo || window.currentEditingRegNo;
+    
+    if (!targetRegNo) {
+        return window.showToast("Cannot identify student registration number.", "error");
+    }
+
+    // Set the hidden input so we know who we are saving marks for
+    document.getElementById('inputMarksRegNo').value = targetRegNo;
+    document.getElementById('inputExamName').value = '';
+    document.getElementById('inputTheory').value = '';
+    document.getElementById('inputPractical').value = '';
+    
+    document.getElementById('marksEntryModal').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
+window.closeMarksModal = function () {
+    document.getElementById('marksEntryModal').classList.add('hidden');
+};
+
+window.saveExamMarks = async function () {
+    const regNo = document.getElementById('inputMarksRegNo').value;
+    const examName = document.getElementById('inputExamName').value.trim();
+    const theory = document.getElementById('inputTheory').value;
+    const practical = document.getElementById('inputPractical').value;
+
+    if (!examName || theory === '' || practical === '') {
+        return window.showToast("Please fill all fields.", "error");
+    }
+
+    // Find the student in the local array
+    const student = window.adminData.find(s => s[1] === regNo);
+    if (!student) return window.showToast("Student not found in active database.", "error");
+
+    const btn = document.getElementById('btnSaveMarksModal');
+    const ogText = btn.innerHTML;
+    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...`;
+    btn.disabled = true;
+
+    try {
+        // 1. SMART JSON ARCHITECTURE: Parse existing data or create the foundational structure
+        let marksData = { results: [], marksheetPdf: "" };
+        const existingMarkLink = student[23]; // Column X
+        
+        if (existingMarkLink) {
+            if (existingMarkLink.startsWith('{')) {
+                try { marksData = JSON.parse(existingMarkLink); } catch (e) { }
+            } else if (existingMarkLink.startsWith('http') || existingMarkLink === 'MOCK_URL') {
+                // Backward compatibility: Keep the old PDF link safe!
+                marksData.marksheetPdf = existingMarkLink;
+            }
+        }
+
+        // 2. Append the new exam result
+        marksData.results.push({
+            exam: examName,
+            theory: parseInt(theory),
+            practical: parseInt(practical),
+            total: parseInt(theory) + parseInt(practical),
+            date: new Date().toLocaleDateString('en-IN')
+        });
+
+        const newMarkLinkString = JSON.stringify(marksData);
+
+        // 3. INSTANT DATABASE PUSH using existing backend logic
+        const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
+        await window.fetchWithRetry(targetUrl, {
+            method: 'POST',
+            body: new URLSearchParams({
+                action: 'adminUpdateCell',
+                regNo: regNo,
+                colIndex: 23, // Index 23 represents Column X (markLink)
+                value: newMarkLinkString
+            })
+        });
+
+        // 4. Update Local Memory so changes persist without refreshing the page
+        student[23] = newMarkLinkString;
+
+        // 5. If the Manage Sidebar is currently open for THIS student, update its UI live
+        if (window.currentEditingRegNo === regNo) {
+            window.currentModalState.markLink = newMarkLinkString;
+            window.currentMarksAdded = true;
+            
+            const sidebarBtn = document.getElementById('btnAddMarks');
+            if (sidebarBtn) {
+                sidebarBtn.innerHTML = `Marks Added (${parseInt(theory) + parseInt(practical)}) <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
+                sidebarBtn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
+                lucide.createIcons();
+            }
+            window.evaluateModalState(); 
+        }
+
+        window.showToast("Marks successfully saved to database!", "success");
+        window.closeMarksModal();
+
+    } catch (err) {
+        console.error(err);
+        window.showToast("Failed to save marks.", "error");
+    } finally {
+        btn.innerHTML = ogText;
+        btn.disabled = false;
+    }
+};
 
 window.generateDocument = function (docType) {
-    window.showToast(`Generating ${docType}... please wait.`, "info");
+    window.showToast(`Queuing ${docType} for generation...`, "info");
     setTimeout(() => {
         if (docType === 'marksheet') {
             window.currentModalState.msGenerated = true;
-            window.currentModalState.markLink = "MOCK_URL";
-            window.showToast("Marksheet Generated Successfully!", "success");
+            window.currentModalState.triggerMS = true; // Use a trigger flag, don't overwrite markLink!
+            window.showToast("Marksheet queued! Click Save Changes to generate.", "success");
         } else {
             window.currentModalState.certGenerated = true;
-            window.currentModalState.certLink = "MOCK_URL";
-            window.showToast("Certificate Generated Successfully!", "success");
+            window.currentModalState.triggerCert = true; // Use a trigger flag, don't overwrite certLink!
+            window.showToast("Certificate queued! Click Save Changes to generate.", "success");
         }
         window.evaluateModalState();
-    }, 1500);
+    }, 500);
 }
 
 window.toggleDocumentStatus = function (docType) {
@@ -763,7 +886,8 @@ window.saveStudentEdits = async function () {
     const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
 
     try {
-        await fetch(targetUrl, {
+        // UPGRADED TO EXPONENTIAL BACKOFF
+        await window.fetchWithRetry(targetUrl, {
             method: 'POST',
             body: new URLSearchParams({
                 action: 'adminSaveStudent',
@@ -771,9 +895,11 @@ window.saveStudentEdits = async function () {
                 courseStatus: student[21],
                 markStatus: student[22],
                 certStatus: student[24],
-                markLink: student[23],
+                markLink: student[23], // This safely holds the JSON marks!
                 certLink: student[25],
-                feeStatus: student[28] // NEW: Send exact fee status to Google Sheet
+                feeStatus: student[28],
+                generateMS: window.currentModalState.triggerMS ? "true" : "false",
+                generateCert: window.currentModalState.triggerCert ? "true" : "false"
             })
         });
 
@@ -1312,8 +1438,8 @@ window.loadExamDashboard = async function () {
     if (loader) loader.classList.remove('hidden');
 
     try {
-        // Fetch from the EXAM_API_URL
-        const response = await fetch(`${EXAM_API_URL}?action=getExams`);
+        // UPGRADED TO EXPONENTIAL BACKOFF
+        const response = await window.fetchWithRetry(`${EXAM_API_URL}?action=getExams`, { method: 'GET' });
         
         // Handle responses safely
         const text = await response.text();
@@ -1419,6 +1545,11 @@ function renderExamGrid(data) {
                     <span class="flex items-center gap-1 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded"><i data-lucide="calendar" class="w-3 h-3"></i> DOB: ${app.dob || 'N/A'}</span>
                     <span class="flex items-center gap-1 text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i> ${dateStr}</span>
                 </div>
+                
+                <!-- NEW: Grade Exam Button directly on the card -->
+                <button onclick="window.openMarksModal('${app.regNo}')" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 relative z-10">
+                    <i data-lucide="pen-tool" class="w-4 h-4"></i> Grade Exam
+                </button>
             </div>
         `;
     });
