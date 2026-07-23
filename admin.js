@@ -19,10 +19,10 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbz9_Zo7t56ffEZhLT4j7R78XSuhhE4ZnHmVVwUPB5EStnKDcUPf722wI3F6I4bvKVFG/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycby10uoPcsrr1_hakb1bT8MlovPjMRAWopHWFAOryZNLXTRGSi7-aQOWwDIivARTifgKgQ/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw250AUR58Vk0oOVtFhkhRP4cSJ-FCJW0P489mPLYBi5WEhvFDiYuL_lpOqTgH4DptX/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycby6OxZGFFKnYYD6VsWGulfkPIF64YNO_6b8dRT__cKtu3rWnaTY2nxRPFYxcbUnUQEbVg/exec";
 //my url currently
-const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbx6q4xHZQE7lpZ2-c0h7K4aj18sHvmh5o3sywrTDqGYOWOJ8ims1kQGopWxIlWxJRipJQ/exec";
+const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbznYiifaS39YyroGkZHtLw6TsP0fm_1J3PKIaqpwBoRaW1abFYDUKQ6WJFrvIFo2UWLZw/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
@@ -598,22 +598,50 @@ window.closeManageModal = function () {
     window.currentEditingRegNo = null;
 };
 
-// --- DYNAMIC SUBJECT-WISE MARKS ENTRY LOGIC ---
+// --- SMART GRADING ENGINE (COURSE MASTER INTEGRATED) ---
 
-window.openMarksModal = function (regNo = null) {
+window.currentExamTicketId = null;
+
+window.openMarksModal = function (regNo = null, examId = null, courseName = null, defaultExamName = "") {
     const targetRegNo = regNo || window.currentEditingRegNo;
     if (!targetRegNo) return window.showToast("Cannot identify student registration number.", "error");
 
+    window.currentExamTicketId = examId; // Save ticket ID to close it later
     document.getElementById('inputMarksRegNo').value = targetRegNo;
-    document.getElementById('inputExamName').value = '';
+    document.getElementById('inputExamName').value = defaultExamName || '';
     
+    // Inject Practice Toggle if it doesn't exist
+    if (!document.getElementById('isPracticeExam')) {
+        const nameInput = document.getElementById('inputExamName').parentNode;
+        nameInput.insertAdjacentHTML('afterend', `
+            <div class="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl border border-amber-200 dark:border-amber-800 mb-4 flex items-center gap-2 cursor-pointer mt-3" onclick="document.getElementById('isPracticeExam').click()">
+                <input type="checkbox" id="isPracticeExam" class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500">
+                <label class="text-xs font-bold text-amber-800 dark:text-amber-400 cursor-pointer">Practice / Mock Exam (Will not print on Final Marksheet)</label>
+            </div>
+        `);
+    } else {
+        document.getElementById('isPracticeExam').checked = false; // Reset
+    }
+
     const container = document.getElementById('subjectRowsContainer');
-    container.innerHTML = ''; // Clear previous rows
+    container.innerHTML = ''; 
     
-    // Add 3 default rows to start
-    window.addSubjectRow();
-    window.addSubjectRow();
-    window.addSubjectRow();
+    // AUTO-POPULATE SUBJECTS FROM FIREBASE COURSE MASTER
+    let subjectsLoaded = false;
+    if (courseName && window.courseMaster[courseName]) {
+        const courseSubjects = window.courseMaster[courseName];
+        if (courseSubjects.length > 0) {
+            courseSubjects.forEach(sub => window.addSubjectRow(sub));
+            subjectsLoaded = true;
+        }
+    }
+
+    // Fallback if course not in Master
+    if (!subjectsLoaded) {
+        window.addSubjectRow();
+        window.addSubjectRow();
+        window.addSubjectRow();
+    }
     
     document.getElementById('marksEntryModal').classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
@@ -623,14 +651,14 @@ window.closeMarksModal = function () {
     document.getElementById('marksEntryModal').classList.add('hidden');
 };
 
-window.addSubjectRow = function () {
+window.addSubjectRow = function (prefilledName = "") {
     const container = document.getElementById('subjectRowsContainer');
     const rowId = `sub-row-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     
     const rowHtml = `
         <div id="${rowId}" class="subject-entry-row grid grid-cols-12 gap-2 items-center bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-indigo-300">
             <div class="col-span-5">
-                <input type="text" class="sub-name w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-medium" placeholder="e.g. Tally & GST">
+                <input type="text" class="sub-name w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-medium" placeholder="e.g. Tally & GST" value="${prefilledName}">
             </div>
             <div class="col-span-2">
                 <input type="number" class="sub-max w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" value="100">
@@ -642,13 +670,12 @@ window.addSubjectRow = function () {
                 <input type="number" class="sub-pr w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Pr">
             </div>
             <div class="col-span-1 flex justify-center">
-                <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors" title="Remove Subject">
+                <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
     `;
-    
     container.insertAdjacentHTML('beforeend', rowHtml);
     if (window.lucide) lucide.createIcons();
 };
@@ -656,19 +683,17 @@ window.addSubjectRow = function () {
 window.saveExamMarks = async function () {
     const regNo = document.getElementById('inputMarksRegNo').value;
     const examName = document.getElementById('inputExamName').value.trim();
+    const isPractice = document.getElementById('isPracticeExam').checked;
     
     if (!examName) return window.showToast("Please enter an Exam Name.", "error");
 
-    // Gather all rows
     const rowElements = document.querySelectorAll('.subject-entry-row');
     if (rowElements.length === 0) return window.showToast("Please add at least one subject.", "error");
 
     let subjectsArray = [];
-    let grandMax = 0;
-    let grandTotal = 0;
-    let totalTh = 0;
-    let totalPr = 0;
+    let grandMax = 0, grandTotal = 0, totalTh = 0, totalPr = 0;
     let hasError = false;
+    let isPartiallyGraded = false; // The tracker!
 
     rowElements.forEach(row => {
         const name = row.querySelector('.sub-name').value.trim();
@@ -676,38 +701,33 @@ window.saveExamMarks = async function () {
         const thVal = row.querySelector('.sub-th').value;
         const prVal = row.querySelector('.sub-pr').value;
 
-        // Skip completely empty rows
-        if (!name && thVal === '' && prVal === '') return;
-        
+        if (!name && thVal === '' && prVal === '') return; // Skip empty rows
         if (!name) hasError = true;
+
+        // Check if any specific mark box is left blank
+        if (thVal === '' || prVal === '') isPartiallyGraded = true;
 
         const th = parseInt(thVal) || 0;
         const pr = parseInt(prVal) || 0;
         const subTotal = th + pr;
 
-        subjectsArray.push({
-            name: name,
-            max: max,
-            th: th,
-            pr: pr,
-            tot: subTotal
-        });
-
+        subjectsArray.push({ name: name, max: max, th: thVal, pr: prVal, tot: subTotal });
         grandMax += max;
         grandTotal += subTotal;
         totalTh += th;
         totalPr += pr;
     });
 
-    if (hasError) return window.showToast("Please fill in Subject Names for all entered rows.", "error");
-    if (subjectsArray.length === 0) return window.showToast("No valid marks entered.", "error");
+    if (hasError) return window.showToast("Subject names cannot be blank.", "error");
+    if (subjectsArray.length === 0) return window.showToast("No marks entered.", "error");
 
-    // Calculate Final Stats
     const percentage = ((grandTotal / grandMax) * 100).toFixed(2);
     let grade = "F";
     if (percentage >= 80) grade = "A++";
     else if (percentage >= 60) grade = "A+";
     else if (percentage >= 45) grade = "B";
+
+    const ticketStatus = isPartiallyGraded ? "Partial" : "Completed";
 
     const student = window.adminData.find(s => s[1] === regNo);
     if (!student) return window.showToast("Student not found.", "error");
@@ -719,7 +739,7 @@ window.saveExamMarks = async function () {
 
     try {
         let marksData = { results: [], marksheetPdf: "" };
-        const existingMarkLink = student[23]; // Column X
+        const existingMarkLink = student[23]; 
         
         if (existingMarkLink) {
             if (existingMarkLink.startsWith('{')) {
@@ -729,9 +749,11 @@ window.saveExamMarks = async function () {
             }
         }
 
-        // Push the detailed object
+        // Push new JSON object
         marksData.results.push({
             exam: examName,
+            type: isPractice ? "practice" : "official",
+            status: ticketStatus, // Track if student can see final %
             date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
             subjects: subjectsArray,
             grandMax: grandMax,
@@ -743,34 +765,31 @@ window.saveExamMarks = async function () {
         });
 
         const newMarkLinkString = JSON.stringify(marksData);
-
         const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
+        
+        // 1. Push Marks to Student DB
         await window.fetchWithRetry(targetUrl, {
             method: 'POST',
             body: new URLSearchParams({
-                action: 'adminUpdateCell',
-                regNo: regNo,
-                colIndex: 23, 
-                value: newMarkLinkString
+                action: 'adminUpdateCell', regNo: regNo, colIndex: 23, value: newMarkLinkString
             })
         });
 
-        student[23] = newMarkLinkString;
-
-        if (window.currentEditingRegNo === regNo) {
-            window.currentModalState.markLink = newMarkLinkString;
-            window.currentMarksAdded = true;
-            
-            const sidebarBtn = document.getElementById('btnAddMarks');
-            if (sidebarBtn) {
-                sidebarBtn.innerHTML = `Marks Added (${grandTotal}/${grandMax}) <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
-                sidebarBtn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
-                lucide.createIcons();
-            }
-            window.evaluateModalState(); 
+        // 2. Resolve the Ticket in the Exam DB (Hides the Card!)
+        if (window.currentExamTicketId) {
+            await fetch(EXAM_API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'updateStatus',
+                    examId: window.currentExamTicketId,
+                    status: ticketStatus
+                })
+            });
         }
 
-        window.showToast("Detailed Marks saved successfully!", "success");
+        student[23] = newMarkLinkString;
+        window.loadExamDashboard(); // Refresh grid to hide vanished cards
+        window.showToast(isPartiallyGraded ? "Marks saved partially. Ticket remains open." : "Exam Fully Graded! Ticket Closed.", "success");
         window.closeMarksModal();
 
     } catch (err) {
@@ -1500,8 +1519,34 @@ window.resolveSupportTicket = async function() {
 };
 
 // ============================================================================
-// --- EXAM DASHBOARD ENGINE ---
+// --- EXAM DASHBOARD & COURSE MASTER ENGINE ---
 // ============================================================================
+
+window.currentExamTab = 'active';
+window.courseMaster = {};
+
+// 1. Fetch the subjects assigned to each course from Firebase
+window.fetchCourseMaster = async function() {
+    try {
+        const docRef = doc(db, "admin_settings", "course_master");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            window.courseMaster = docSnap.data();
+        } else {
+            // Auto-create default structure if it doesn't exist yet
+            window.courseMaster = {
+                "DCA": ["Fundamentals of Computer", "MS-Office", "Desk Top Publishing(DTP)", "Web Designing"],
+                "PGDCA": ["Fundamentals of Computer", "MS-Office", "TALLY & GST", "C & C++ Programming", "Database Management"]
+            };
+            await setDoc(docRef, window.courseMaster); 
+        }
+    } catch (e) { console.error("Failed to load Course Master", e); }
+};
+
+window.switchExamTab = function(tabName) {
+    window.currentExamTab = tabName;
+    window.loadExamDashboard(); 
+};
 
 window.loadExamDashboard = async function () {
     const loader = document.getElementById('examLoader');
@@ -1511,37 +1556,46 @@ window.loadExamDashboard = async function () {
     if (branchLabel) branchLabel.innerText = `Branch: ${window.currentBranch}`;
     if (loader) loader.classList.remove('hidden');
 
+    // Ensure we have the Course Master loaded
+    if (Object.keys(window.courseMaster).length === 0) {
+        await window.fetchCourseMaster();
+    }
+
+    // Ensure Sub-Tabs Exist in the UI
+    const headerDiv = grid.previousElementSibling;
+    if (headerDiv && !document.getElementById('exam-tab-active')) {
+        headerDiv.insertAdjacentHTML('afterend', `
+            <div class="flex gap-2 mb-4 p-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg w-max">
+                <button id="exam-tab-active" onclick="window.switchExamTab('active')" class="px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'}">Active Exams</button>
+                <button id="exam-tab-history" onclick="window.switchExamTab('history')" class="px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'}">Exam History</button>
+            </div>
+        `);
+    } else if (document.getElementById('exam-tab-active')) {
+        // Update Tab Styles
+        document.getElementById('exam-tab-active').className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
+        document.getElementById('exam-tab-history').className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
+    }
+
     try {
-        // UPGRADED TO EXPONENTIAL BACKOFF
         const response = await window.fetchWithRetry(`${EXAM_API_URL}?action=getExams`, { method: 'GET' });
-        
-        // Handle responses safely
         const text = await response.text();
-        let result;
-        try {
-            result = JSON.parse(text);
-        } catch (e) {
-            throw new Error("Invalid API Response format");
-        }
+        const result = JSON.parse(text);
 
         if (result.status === 'success' && result.data) {
-            // Filter by the currently active branch in the admin panel
-            const branchData = result.data.filter(req => 
-                String(req.branch || "").trim().toLowerCase() === String(window.currentBranch).trim().toLowerCase()
-            );
+            let branchData = result.data.filter(req => String(req.branch || "").trim().toLowerCase() === String(window.currentBranch).trim().toLowerCase());
             
-            // Sort by timestamp (newest first)
-            branchData.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+            // SMART FILTERING: Active vs History
+            if (window.currentExamTab === 'active') {
+                branchData = branchData.filter(req => req.status === 'Pending' || req.status === 'Partial');
+            } else {
+                branchData = branchData.filter(req => req.status === 'Completed');
+            }
 
+            branchData.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
             renderExamGrid(branchData);
-        } else {
-            window.showToast("Failed to fetch exam records.", "error");
-            grid.innerHTML = `<p class="text-slate-500 font-medium col-span-full text-center py-10">No valid exam records returned.</p>`;
         }
     } catch (error) {
-        console.error("Exam Fetch Error:", error);
-        window.showToast("Network Error fetching exams.", "error");
-        grid.innerHTML = `<p class="text-red-500 font-medium col-span-full text-center py-10">System encountered an error connecting to the database.</p>`;
+        grid.innerHTML = `<p class="text-red-500 font-medium col-span-full text-center py-10">System encountered an error.</p>`;
     } finally {
         if (loader) loader.classList.add('hidden');
     }
@@ -1552,81 +1606,49 @@ function renderExamGrid(data) {
     grid.innerHTML = '';
 
     if (!data || data.length === 0) {
-        grid.innerHTML = `
-            <div class="col-span-full flex flex-col items-center justify-center py-16 opacity-60">
-                <i data-lucide="clipboard-x" class="w-16 h-16 text-slate-400 mb-4"></i>
-                <p class="text-slate-500 text-lg font-medium">No exam applications found for ${window.currentBranch}.</p>
-            </div>
-        `;
-        if (window.lucide) lucide.createIcons();
+        grid.innerHTML = `<div class="col-span-full text-center py-16 opacity-60"><p class="text-slate-500 font-medium">No ${window.currentExamTab} exam applications found.</p></div>`;
         return;
     }
 
     data.forEach(app => {
-        // Formatting Date safely
-        let dateStr = "N/A";
-        if (app.timestamp) {
-            const d = new Date(app.timestamp);
-            if (!isNaN(d.getTime())) {
-                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-            }
+        let dateStr = app.timestamp ? new Date(app.timestamp).toLocaleDateString('en-IN') : "N/A";
+        
+        // Dynamic Status Badge
+        let statusBadge = '';
+        let buttonText = 'Grade Exam';
+        let buttonClass = 'bg-indigo-600 hover:bg-indigo-700';
+
+        if (app.status === 'Partial') {
+            statusBadge = `<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Partially Graded</span>`;
+            buttonText = 'Resume Grading';
+            buttonClass = 'bg-amber-500 hover:bg-amber-600';
+        } else if (app.status === 'Completed') {
+            statusBadge = `<span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Completed</span>`;
+            buttonText = 'View / Edit Marks';
+            buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
+        } else {
+            statusBadge = `<span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200">Pending</span>`;
         }
 
+        // We safely pass the examID and Course to the modal
         grid.innerHTML += `
-            <div class="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-                
-                <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-400/10 dark:bg-cyan-500/10 rounded-full blur-2xl -mr-8 -mt-8 transition-all group-hover:bg-cyan-400/20 pointer-events-none"></div>
-
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <div class="pr-2">
-                        <h4 class="font-bold text-slate-900 dark:text-white text-lg leading-tight mb-1 truncate" title="${app.name || 'Unknown Student'}">${app.name || 'Unknown Student'}</h4>
-                        <p class="text-xs text-slate-500 font-mono bg-slate-200 dark:bg-slate-700/50 inline-block px-2 py-0.5 rounded">${app.regNo || 'No Reg No'}</p>
+            <div class="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm relative group">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">${app.name}</h4>
+                        <p class="text-xs font-mono text-slate-500 mt-1">${app.regNo}</p>
                     </div>
-                    <span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200 dark:border-cyan-800 shrink-0 shadow-sm">Form Submitted</span>
+                    ${statusBadge}
                 </div>
-                
-                <div class="space-y-3 mt-4 text-sm relative z-10">
-                    
-                    <!-- UPDATED: Course, Duration, and Semester Block -->
-                    <div class="flex items-start gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                        <i data-lucide="book-open" class="w-4 h-4 text-cyan-500 shrink-0 mt-0.5"></i> 
-                        <div class="min-w-0 flex-1">
-                            <p class="font-medium text-slate-700 dark:text-slate-300 truncate text-sm" title="${app.course || 'N/A'}">${app.course || 'N/A'}</p>
-                            <div class="flex items-center gap-2 mt-1.5">
-                                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[9px] uppercase font-bold rounded tracking-wider border border-slate-200 dark:border-slate-600">${app.duration || 'N/A'}</span>
-                                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[9px] uppercase font-bold rounded tracking-wider border border-slate-200 dark:border-slate-600">${app.semester || 'N/A'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                        <i data-lucide="mail" class="w-4 h-4 text-cyan-500 shrink-0"></i>
-                        <a href="mailto:${app.email}" class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate" title="${app.email || 'N/A'}">${app.email || 'N/A'}</a>
-                    </div>
-                    
-                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                        <i data-lucide="phone" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
-                        <a href="tel:${app.phone}" class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">${app.phone || 'N/A'}</a>
-                    </div>
-                    
-                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                        <i data-lucide="user" class="w-4 h-4 text-cyan-500 shrink-0"></i> 
-                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">Father: ${app.fatherName || 'N/A'}</span>
-                    </div>
+                <div class="space-y-2 mb-4">
+                    <p class="text-sm font-medium text-slate-700 dark:text-slate-300"><i data-lucide="book" class="w-4 h-4 inline mr-1"></i> ${app.course}</p>
+                    <p class="text-xs text-slate-500">Term: ${app.semester} | Date: ${dateStr}</p>
                 </div>
-                
-                <div class="mt-5 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-[10px] uppercase font-bold text-slate-400 relative z-10">
-                    <span class="flex items-center gap-1 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded"><i data-lucide="calendar" class="w-3 h-3"></i> DOB: ${app.dob || 'N/A'}</span>
-                    <span class="flex items-center gap-1 text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i> ${dateStr}</span>
-                </div>
-                
-                <!-- NEW: Grade Exam Button directly on the card -->
-                <button onclick="window.openMarksModal('${app.regNo}')" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 relative z-10">
-                    <i data-lucide="pen-tool" class="w-4 h-4"></i> Grade Exam
+                <button onclick="window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')" class="w-full py-2.5 ${buttonClass} text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <i data-lucide="pen-tool" class="w-4 h-4"></i> ${buttonText}
                 </button>
             </div>
         `;
     });
-
     if (window.lucide) lucide.createIcons();
 }
