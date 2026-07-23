@@ -19,8 +19,8 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbzudPjVFsGqwLRrBw_oECx6sOuYwAqyTeMdfHyNTphQO421MyroSMuTg4BgV0qvpgw3/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycbznqUcCogM-KonSO1fw7ozkUZUVN9qD-XNHoH8Qu51D4cG2TzZ_BpMfH22v-QIJtvTL9A/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbz9_Zo7t56ffEZhLT4j7R78XSuhhE4ZnHmVVwUPB5EStnKDcUPf722wI3F6I4bvKVFG/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycby10uoPcsrr1_hakb1bT8MlovPjMRAWopHWFAOryZNLXTRGSi7-aQOWwDIivARTifgKgQ/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbx6q4xHZQE7lpZ2-c0h7K4aj18sHvmh5o3sywrTDqGYOWOJ8ims1kQGopWxIlWxJRipJQ/exec";
 
@@ -598,21 +598,22 @@ window.closeManageModal = function () {
     window.currentEditingRegNo = null;
 };
 
-// --- REAL-TIME MARKS ENTRY LOGIC ---
+// --- DYNAMIC SUBJECT-WISE MARKS ENTRY LOGIC ---
 
 window.openMarksModal = function (regNo = null) {
-    // If no regNo is passed (clicked from Sidebar), use the currently editing student
     const targetRegNo = regNo || window.currentEditingRegNo;
-    
-    if (!targetRegNo) {
-        return window.showToast("Cannot identify student registration number.", "error");
-    }
+    if (!targetRegNo) return window.showToast("Cannot identify student registration number.", "error");
 
-    // Set the hidden input so we know who we are saving marks for
     document.getElementById('inputMarksRegNo').value = targetRegNo;
     document.getElementById('inputExamName').value = '';
-    document.getElementById('inputTheory').value = '';
-    document.getElementById('inputPractical').value = '';
+    
+    const container = document.getElementById('subjectRowsContainer');
+    container.innerHTML = ''; // Clear previous rows
+    
+    // Add 3 default rows to start
+    window.addSubjectRow();
+    window.addSubjectRow();
+    window.addSubjectRow();
     
     document.getElementById('marksEntryModal').classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
@@ -622,19 +623,94 @@ window.closeMarksModal = function () {
     document.getElementById('marksEntryModal').classList.add('hidden');
 };
 
+window.addSubjectRow = function () {
+    const container = document.getElementById('subjectRowsContainer');
+    const rowId = `sub-row-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
+    const rowHtml = `
+        <div id="${rowId}" class="subject-entry-row grid grid-cols-12 gap-2 items-center bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-indigo-300">
+            <div class="col-span-5">
+                <input type="text" class="sub-name w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-medium" placeholder="e.g. Tally & GST">
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="sub-max w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" value="100">
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="sub-th w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Th">
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="sub-pr w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Pr">
+            </div>
+            <div class="col-span-1 flex justify-center">
+                <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors" title="Remove Subject">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', rowHtml);
+    if (window.lucide) lucide.createIcons();
+};
+
 window.saveExamMarks = async function () {
     const regNo = document.getElementById('inputMarksRegNo').value;
     const examName = document.getElementById('inputExamName').value.trim();
-    const theory = document.getElementById('inputTheory').value;
-    const practical = document.getElementById('inputPractical').value;
+    
+    if (!examName) return window.showToast("Please enter an Exam Name.", "error");
 
-    if (!examName || theory === '' || practical === '') {
-        return window.showToast("Please fill all fields.", "error");
-    }
+    // Gather all rows
+    const rowElements = document.querySelectorAll('.subject-entry-row');
+    if (rowElements.length === 0) return window.showToast("Please add at least one subject.", "error");
 
-    // Find the student in the local array
+    let subjectsArray = [];
+    let grandMax = 0;
+    let grandTotal = 0;
+    let totalTh = 0;
+    let totalPr = 0;
+    let hasError = false;
+
+    rowElements.forEach(row => {
+        const name = row.querySelector('.sub-name').value.trim();
+        const max = parseInt(row.querySelector('.sub-max').value) || 100;
+        const thVal = row.querySelector('.sub-th').value;
+        const prVal = row.querySelector('.sub-pr').value;
+
+        // Skip completely empty rows
+        if (!name && thVal === '' && prVal === '') return;
+        
+        if (!name) hasError = true;
+
+        const th = parseInt(thVal) || 0;
+        const pr = parseInt(prVal) || 0;
+        const subTotal = th + pr;
+
+        subjectsArray.push({
+            name: name,
+            max: max,
+            th: th,
+            pr: pr,
+            tot: subTotal
+        });
+
+        grandMax += max;
+        grandTotal += subTotal;
+        totalTh += th;
+        totalPr += pr;
+    });
+
+    if (hasError) return window.showToast("Please fill in Subject Names for all entered rows.", "error");
+    if (subjectsArray.length === 0) return window.showToast("No valid marks entered.", "error");
+
+    // Calculate Final Stats
+    const percentage = ((grandTotal / grandMax) * 100).toFixed(2);
+    let grade = "F";
+    if (percentage >= 80) grade = "A++";
+    else if (percentage >= 60) grade = "A+";
+    else if (percentage >= 45) grade = "B";
+
     const student = window.adminData.find(s => s[1] === regNo);
-    if (!student) return window.showToast("Student not found in active database.", "error");
+    if (!student) return window.showToast("Student not found.", "error");
 
     const btn = document.getElementById('btnSaveMarksModal');
     const ogText = btn.innerHTML;
@@ -642,7 +718,6 @@ window.saveExamMarks = async function () {
     btn.disabled = true;
 
     try {
-        // 1. SMART JSON ARCHITECTURE: Parse existing data or create the foundational structure
         let marksData = { results: [], marksheetPdf: "" };
         const existingMarkLink = student[23]; // Column X
         
@@ -650,56 +725,55 @@ window.saveExamMarks = async function () {
             if (existingMarkLink.startsWith('{')) {
                 try { marksData = JSON.parse(existingMarkLink); } catch (e) { }
             } else if (existingMarkLink.startsWith('http') || existingMarkLink === 'MOCK_URL') {
-                // Backward compatibility: Keep the old PDF link safe!
                 marksData.marksheetPdf = existingMarkLink;
             }
         }
 
-        // 2. Append the new exam result
+        // Push the detailed object
         marksData.results.push({
             exam: examName,
-            theory: parseInt(theory),
-            practical: parseInt(practical),
-            total: parseInt(theory) + parseInt(practical),
-            date: new Date().toLocaleDateString('en-IN')
+            date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+            subjects: subjectsArray,
+            grandMax: grandMax,
+            grandTotal: grandTotal,
+            totalTh: totalTh,
+            totalPr: totalPr,
+            percentage: percentage,
+            grade: grade
         });
 
         const newMarkLinkString = JSON.stringify(marksData);
 
-        // 3. INSTANT DATABASE PUSH using existing backend logic
         const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
         await window.fetchWithRetry(targetUrl, {
             method: 'POST',
             body: new URLSearchParams({
                 action: 'adminUpdateCell',
                 regNo: regNo,
-                colIndex: 23, // Index 23 represents Column X (markLink)
+                colIndex: 23, 
                 value: newMarkLinkString
             })
         });
 
-        // 4. Update Local Memory so changes persist without refreshing the page
         student[23] = newMarkLinkString;
 
-        // 5. If the Manage Sidebar is currently open for THIS student, update its UI live
         if (window.currentEditingRegNo === regNo) {
             window.currentModalState.markLink = newMarkLinkString;
             window.currentMarksAdded = true;
             
             const sidebarBtn = document.getElementById('btnAddMarks');
             if (sidebarBtn) {
-                sidebarBtn.innerHTML = `Marks Added (${parseInt(theory) + parseInt(practical)}) <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
+                sidebarBtn.innerHTML = `Marks Added (${grandTotal}/${grandMax}) <i data-lucide="check-circle" class="w-3 h-3 inline"></i>`;
                 sidebarBtn.className = "px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-300 transition-colors";
                 lucide.createIcons();
             }
             window.evaluateModalState(); 
         }
 
-        window.showToast("Marks successfully saved to database!", "success");
+        window.showToast("Detailed Marks saved successfully!", "success");
         window.closeMarksModal();
 
     } catch (err) {
-        console.error(err);
         window.showToast("Failed to save marks.", "error");
     } finally {
         btn.innerHTML = ogText;
