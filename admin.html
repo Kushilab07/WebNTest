@@ -496,6 +496,12 @@
                     </button>
                 </div>
 
+                <!-- NEW EXAM TABS -->
+                <div class="flex gap-2 mb-4 p-1.5 bg-slate-200 dark:bg-slate-800/50 rounded-xl w-max">
+                    <button id="exam-tab-active" onclick="window.switchExamTab('active')" class="px-5 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all">Active Exams</button>
+                    <button id="exam-tab-history" onclick="window.switchExamTab('history')" class="px-5 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all">Exam History</button>
+                </div>
+
                 <div class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
                     <div id="examLoader" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
                         <div class="w-8 h-8 border-4 border-cyan-200 border-t-cyan-600 rounded-full animate-spin mb-3"></div>
