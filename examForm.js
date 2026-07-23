@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
     // --- PASTE YOUR URLS HERE ---
-    const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbydm_hSb96riUsRpmrZnj7tj1l7EobN-gaDyjsJAXjWVo5Lwwok5f8N_1zHdgVp4_vv/exec";
-    const URL_BAGALS = "https://script.google.com/macros/s/AKfycbz5sDaroUh90_yXFRLZ-zdUy6ih5bXBrGrBQGXDOTq3V6o6gpcyYDbrggnXdBAX2EyrNQ/exec";
-    const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbzm2qrBOHNyhOW7NQ3q2mvkIjlECqyOrtLettA7z2Et6GKMm0DzjwVLlRFeJ6uwQ23NNw/exec";
+    const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw250AUR58Vk0oOVtFhkhRP4cSJ-FCJW0P489mPLYBi5WEhvFDiYuL_lpOqTgH4DptX/exec";
+    const URL_BAGALS = "https://script.google.com/macros/s/AKfycby6OxZGFFKnYYD6VsWGulfkPIF64YNO_6b8dRT__cKtu3rWnaTY2nxRPFYxcbUnUQEbVg/exec";
+    const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbznYiifaS39YyroGkZHtLw6TsP0fm_1J3PKIaqpwBoRaW1abFYDUKQ6WJFrvIFo2UWLZw/exec";
 
     // 1. UI Elements
     const stateLoading = document.getElementById('state-loading');
