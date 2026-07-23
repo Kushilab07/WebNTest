@@ -1561,19 +1561,12 @@ window.loadExamDashboard = async function () {
         await window.fetchCourseMaster();
     }
 
-    // Ensure Sub-Tabs Exist in the UI
-    const headerDiv = grid.previousElementSibling;
-    if (headerDiv && !document.getElementById('exam-tab-active')) {
-        headerDiv.insertAdjacentHTML('afterend', `
-            <div class="flex gap-2 mb-4 p-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg w-max">
-                <button id="exam-tab-active" onclick="window.switchExamTab('active')" class="px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'}">Active Exams</button>
-                <button id="exam-tab-history" onclick="window.switchExamTab('history')" class="px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'}">Exam History</button>
-            </div>
-        `);
-    } else if (document.getElementById('exam-tab-active')) {
-        // Update Tab Styles
-        document.getElementById('exam-tab-active').className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
-        document.getElementById('exam-tab-history').className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
+    // Update Tab Styles Safely
+    const tabActive = document.getElementById('exam-tab-active');
+    const tabHistory = document.getElementById('exam-tab-history');
+    if (tabActive && tabHistory) {
+        tabActive.className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
+        tabHistory.className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
     }
 
     try {
