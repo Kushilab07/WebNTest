@@ -22,7 +22,7 @@ const db = getFirestore(app);
 const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw250AUR58Vk0oOVtFhkhRP4cSJ-FCJW0P489mPLYBi5WEhvFDiYuL_lpOqTgH4DptX/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycby6OxZGFFKnYYD6VsWGulfkPIF64YNO_6b8dRT__cKtu3rWnaTY2nxRPFYxcbUnUQEbVg/exec";
 //my url currently
-const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbznYiifaS39YyroGkZHtLw6TsP0fm_1J3PKIaqpwBoRaW1abFYDUKQ6WJFrvIFo2UWLZw/exec";
+const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
 
 // --- GLOBAL STATE ---
 window.adminData = [];
@@ -749,11 +749,12 @@ window.saveExamMarks = async function () {
             }
         }
 
-        // Push new JSON object
-        marksData.results.push({
+        // === FIX: OVERWRITE DUPLICATES INSTEAD OF PUSHING ===
+        const newResultData = {
+            examId: window.currentExamTicketId || "N/A", // Save ID to link it!
             exam: examName,
             type: isPractice ? "practice" : "official",
-            status: ticketStatus, // Track if student can see final %
+            status: ticketStatus, 
             date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
             subjects: subjectsArray,
             grandMax: grandMax,
@@ -762,7 +763,23 @@ window.saveExamMarks = async function () {
             totalPr: totalPr,
             percentage: percentage,
             grade: grade
-        });
+        };
+
+        // Look for an existing partial exam we are resuming
+        let existingIndex = -1;
+        if (window.currentExamTicketId && window.currentExamTicketId !== "undefined" && window.currentExamTicketId !== "null") {
+            existingIndex = marksData.results.findIndex(r => r.examId === window.currentExamTicketId);
+        }
+        if (existingIndex === -1) {
+            // Fallback check by name
+            existingIndex = marksData.results.findIndex(r => r.exam === examName && r.status === 'Partial');
+        }
+
+        if (existingIndex > -1) {
+            marksData.results[existingIndex] = newResultData; // UPDATE EXISTING
+        } else {
+            marksData.results.push(newResultData); // ADD NEW
+        }
 
         const newMarkLinkString = JSON.stringify(marksData);
         const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
@@ -775,20 +792,25 @@ window.saveExamMarks = async function () {
             })
         });
 
-        // 2. Resolve the Ticket in the Exam DB (Hides the Card!)
-        if (window.currentExamTicketId) {
-            await fetch(EXAM_API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'updateStatus',
-                    examId: window.currentExamTicketId,
-                    status: ticketStatus
-                })
-            });
+        // 2. Resolve the Ticket in the Exam DB (URL-encoded to guarantee delivery)
+        if (window.currentExamTicketId && window.currentExamTicketId !== "undefined" && window.currentExamTicketId !== "null") {
+            try {
+                await window.fetchWithRetry(EXAM_API_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'updateStatus',
+                        examId: window.currentExamTicketId,
+                        status: ticketStatus
+                    })
+                });
+                
+                // Small delay so Google Sheets flush completes before the UI refreshes
+                await new Promise(r => setTimeout(r, 1000)); 
+            } catch(e) { console.error("Ticket update failed:", e); }
         }
 
         student[23] = newMarkLinkString;
-        window.loadExamDashboard(); // Refresh grid to hide vanished cards
+        window.loadExamDashboard(); // Refresh grid to trigger UI shift
         window.showToast(isPartiallyGraded ? "Marks saved partially. Ticket remains open." : "Exam Fully Graded! Ticket Closed.", "success");
         window.closeMarksModal();
 
