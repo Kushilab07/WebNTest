@@ -625,22 +625,40 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
 
     const container = document.getElementById('subjectRowsContainer');
     container.innerHTML = ''; 
-    
-    // AUTO-POPULATE SUBJECTS FROM FIREBASE COURSE MASTER
-    let subjectsLoaded = false;
-    if (courseName && window.courseMaster[courseName]) {
-        const courseSubjects = window.courseMaster[courseName];
-        if (courseSubjects.length > 0) {
-            courseSubjects.forEach(sub => window.addSubjectRow(sub));
-            subjectsLoaded = true;
-        }
+
+    // === NEW: RESTORE PARTIAL EXAM MARKS AUTOMATICALLY ===
+    let existingPartial = null;
+    const student = window.adminData.find(s => s[1] === targetRegNo);
+    if (student && student[23] && student[23].startsWith('{')) {
+        try {
+            const parsed = JSON.parse(student[23]);
+            // Find existing partial exam using ID or name match
+            existingPartial = parsed.results.find(r => r.status === 'Partial' && (r.examId === examId || r.exam === defaultExamName));
+        } catch(e) {}
     }
 
-    // Fallback if course not in Master
-    if (!subjectsLoaded) {
-        window.addSubjectRow();
-        window.addSubjectRow();
-        window.addSubjectRow();
+    if (existingPartial && existingPartial.subjects) {
+        // We found a saved partial exam! Repopulate all boxes with their previous marks!
+        document.getElementById('inputExamName').value = existingPartial.exam;
+        if (existingPartial.type === 'practice' && document.getElementById('isPracticeExam')) {
+            document.getElementById('isPracticeExam').checked = true;
+        }
+        existingPartial.subjects.forEach(sub => window.addSubjectRow(sub.name, sub.max, sub.th, sub.pr));
+    } else {
+        // New Exam: Auto-populate from Course Master
+        let subjectsLoaded = false;
+        if (courseName && window.courseMaster[courseName]) {
+            const courseSubjects = window.courseMaster[courseName];
+            if (courseSubjects.length > 0) {
+                courseSubjects.forEach(sub => window.addSubjectRow(sub));
+                subjectsLoaded = true;
+            }
+        }
+        if (!subjectsLoaded) {
+            window.addSubjectRow();
+            window.addSubjectRow();
+            window.addSubjectRow();
+        }
     }
     
     document.getElementById('marksEntryModal').classList.remove('hidden');
@@ -651,9 +669,13 @@ window.closeMarksModal = function () {
     document.getElementById('marksEntryModal').classList.add('hidden');
 };
 
-window.addSubjectRow = function (prefilledName = "") {
+window.addSubjectRow = function (prefilledName = "", maxVal = 100, thVal = "", prVal = "") {
     const container = document.getElementById('subjectRowsContainer');
     const rowId = `sub-row-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
+    // Safely parse empty/undefined values so we don't accidentally print "undefined" in the UI
+    const safeTh = (thVal === undefined || thVal === null) ? "" : thVal;
+    const safePr = (prVal === undefined || prVal === null) ? "" : prVal;
     
     const rowHtml = `
         <div id="${rowId}" class="subject-entry-row grid grid-cols-12 gap-2 items-center bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-indigo-300">
@@ -661,13 +683,13 @@ window.addSubjectRow = function (prefilledName = "") {
                 <input type="text" class="sub-name w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-medium" placeholder="e.g. Tally & GST" value="${prefilledName}">
             </div>
             <div class="col-span-2">
-                <input type="number" class="sub-max w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" value="100">
+                <input type="number" class="sub-max w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" value="${maxVal}">
             </div>
             <div class="col-span-2">
-                <input type="number" class="sub-th w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Th">
+                <input type="number" class="sub-th w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Th" value="${safeTh}">
             </div>
             <div class="col-span-2">
-                <input type="number" class="sub-pr w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Pr">
+                <input type="number" class="sub-pr w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Pr" value="${safePr}">
             </div>
             <div class="col-span-1 flex justify-center">
                 <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors">
