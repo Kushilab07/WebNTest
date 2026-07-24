@@ -602,6 +602,95 @@ window.closeManageModal = function () {
 
 window.currentExamTicketId = null;
 
+// === BEAUTIFUL VIEW RESULTS MODAL ENGINE ===
+window.openViewMarksModal = function(regNo, examId, courseName, defaultExamName) {
+    const student = window.adminData.find(s => s[1] === regNo);
+    if (!student || !student[23] || !student[23].startsWith('{')) return window.showToast("No marks data found.", "error");
+
+    let res = null;
+    try {
+        const parsed = JSON.parse(student[23]);
+        res = parsed.results.find(r => r.examId === examId || r.exam === defaultExamName);
+    } catch(e) {}
+
+    if (!res) return window.showToast("Could not locate this specific exam.", "error");
+
+    const isPractice = res.type === 'practice';
+    let headerBadges = isPractice ? `<span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[9px] font-extrabold uppercase rounded border border-purple-200 shadow-sm ml-2 relative -top-0.5">Practice</span>` : '';
+    
+    let colorClass = parseFloat(res.percentage) >= 40 ? "text-emerald-500" : "text-red-500";
+    let scoreDisplay = `
+        <div class="text-right">
+            <p class="text-3xl font-extrabold ${colorClass} leading-none">${res.percentage}%</p>
+            <p class="text-[10px] text-slate-500 font-bold uppercase mt-1.5 tracking-wider">Grade: <span class="text-slate-800 dark:text-white text-xs">${res.grade}</span></p>
+        </div>`;
+
+    let subjectsHtml = '';
+    if (res.subjects && res.subjects.length > 0) {
+        subjectsHtml = `
+            <div class="mt-5 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-900">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">
+                        <tr>
+                            <th class="p-3 pl-4 tracking-wider">Subject</th>
+                            <th class="p-3 text-center tracking-wider">Theory</th>
+                            <th class="p-3 text-center tracking-wider">Practical</th>
+                            <th class="p-3 text-center tracking-wider">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50">
+        `;
+        res.subjects.forEach(sub => {
+            const thDisp = sub.th === '' ? `<span class="text-slate-400">-</span>` : sub.th;
+            const prDisp = sub.pr === '' ? `<span class="text-slate-400">-</span>` : sub.pr;
+            subjectsHtml += `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="p-3 pl-4 font-medium text-slate-700 dark:text-slate-300 max-w-[200px] truncate" title="${sub.name}">${sub.name}</td>
+                    <td class="p-3 text-center text-slate-600 dark:text-slate-400 font-mono">${thDisp}</td>
+                    <td class="p-3 text-center text-slate-600 dark:text-slate-400 font-mono">${prDisp}</td>
+                    <td class="p-3 text-center font-bold text-slate-900 dark:text-white">${sub.tot} <span class="text-[10px] text-slate-400 font-mono font-normal">/${sub.max}</span></td>
+                </tr>
+            `;
+        });
+        subjectsHtml += `
+                <tr class="bg-indigo-50 dark:bg-indigo-900/20 font-bold border-t-2 border-indigo-100 dark:border-indigo-800">
+                    <td class="p-3 pl-4 text-indigo-800 dark:text-indigo-300 uppercase text-[10px] tracking-wider">Grand Total</td>
+                    <td class="p-3 text-center text-indigo-800 dark:text-indigo-300 font-mono">${res.totalTh}</td>
+                    <td class="p-3 text-center text-indigo-800 dark:text-indigo-300 font-mono">${res.totalPr}</td>
+                    <td class="p-3 text-center text-indigo-700 dark:text-indigo-400 text-base font-extrabold font-mono">${res.grandTotal} <span class="text-[10px] font-normal text-indigo-500">/${res.grandMax}</span></td>
+                </tr>
+            </tbody></table></div>`;
+    }
+
+    const finalHtml = `
+        <div class="flex justify-between items-start mb-2 pl-1 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+                <h4 class="font-bold text-slate-800 dark:text-white text-xl leading-tight mb-1 flex items-center">${res.exam} ${headerBadges}</h4>
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">${res.date}</p>
+            </div>
+            ${scoreDisplay}
+        </div>
+        ${subjectsHtml}
+    `;
+
+    document.getElementById('viewMarksContent').innerHTML = finalHtml;
+    
+    // Wire up the "Edit Marks" button to jump right into the editor!
+    const editBtn = document.getElementById('btnTriggerEditMarks');
+    editBtn.onclick = function() {
+        window.closeViewMarksModal();
+        // Slight delay allows the View modal to fade out smoothly before the Edit modal fades in
+        setTimeout(() => window.openMarksModal(regNo, examId, courseName, defaultExamName), 300);
+    };
+
+    document.getElementById('viewMarksModal').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
+window.closeViewMarksModal = function() {
+    document.getElementById('viewMarksModal').classList.add('hidden');
+};
+
 window.openMarksModal = function (regNo = null, examId = null, courseName = null, defaultExamName = "") {
     const targetRegNo = regNo || window.currentEditingRegNo;
     if (!targetRegNo) return window.showToast("Cannot identify student registration number.", "error");
@@ -1655,19 +1744,24 @@ function renderExamGrid(data) {
         let buttonText = 'Grade Exam';
         let buttonClass = 'bg-indigo-600 hover:bg-indigo-700';
 
+        let actionFunction = "";
+        
         if (app.status === 'Partial') {
             statusBadge = `<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Partially Graded</span>`;
             buttonText = 'Resume Grading';
             buttonClass = 'bg-amber-500 hover:bg-amber-600';
+            actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
         } else if (app.status === 'Completed') {
             statusBadge = `<span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Completed</span>`;
             buttonText = 'View / Edit Marks';
             buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
+            // NEW: Completed exams open the Beautiful View Modal instead!
+            actionFunction = `window.openViewMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`; 
         } else {
             statusBadge = `<span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200">Pending</span>`;
+            actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
         }
 
-        // We safely pass the examID and Course to the modal
         grid.innerHTML += `
             <div class="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm relative group">
                 <div class="flex justify-between items-start mb-4">
@@ -1681,7 +1775,7 @@ function renderExamGrid(data) {
                     <p class="text-sm font-medium text-slate-700 dark:text-slate-300"><i data-lucide="book" class="w-4 h-4 inline mr-1"></i> ${app.course}</p>
                     <p class="text-xs text-slate-500">Term: ${app.semester} | Date: ${dateStr}</p>
                 </div>
-                <button onclick="window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')" class="w-full py-2.5 ${buttonClass} text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors">
+                <button onclick="${actionFunction}" class="w-full py-2.5 ${buttonClass} text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors">
                     <i data-lucide="pen-tool" class="w-4 h-4"></i> ${buttonText}
                 </button>
             </div>
