@@ -626,24 +626,24 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
     const container = document.getElementById('subjectRowsContainer');
     container.innerHTML = ''; 
 
-    // === NEW: RESTORE PARTIAL EXAM MARKS AUTOMATICALLY ===
-    let existingPartial = null;
+    // === NEW: RESTORE EXISTING EXAM MARKS AUTOMATICALLY ===
+    let existingExam = null;
     const student = window.adminData.find(s => s[1] === targetRegNo);
     if (student && student[23] && student[23].startsWith('{')) {
         try {
             const parsed = JSON.parse(student[23]);
-            // Find existing partial exam using ID or name match
-            existingPartial = parsed.results.find(r => r.status === 'Partial' && (r.examId === examId || r.exam === defaultExamName));
+            // Find existing exam using ID or name match (Works for Partial AND Completed!)
+            existingExam = parsed.results.find(r => r.examId === examId || r.exam === defaultExamName);
         } catch(e) {}
     }
 
-    if (existingPartial && existingPartial.subjects) {
-        // We found a saved partial exam! Repopulate all boxes with their previous marks!
-        document.getElementById('inputExamName').value = existingPartial.exam;
-        if (existingPartial.type === 'practice' && document.getElementById('isPracticeExam')) {
+    if (existingExam && existingExam.subjects) {
+        // We found a saved exam! Repopulate all boxes with their previous marks!
+        document.getElementById('inputExamName').value = existingExam.exam;
+        if (existingExam.type === 'practice' && document.getElementById('isPracticeExam')) {
             document.getElementById('isPracticeExam').checked = true;
         }
-        existingPartial.subjects.forEach(sub => window.addSubjectRow(sub.name, sub.max, sub.th, sub.pr));
+        existingExam.subjects.forEach(sub => window.addSubjectRow(sub.name, sub.max, sub.th, sub.pr));
     } else {
         // New Exam: Auto-populate from Course Master
         let subjectsLoaded = false;
@@ -787,14 +787,14 @@ window.saveExamMarks = async function () {
             grade: grade
         };
 
-        // Look for an existing partial exam we are resuming
+        // Look for an existing exam we are resuming or editing
         let existingIndex = -1;
         if (window.currentExamTicketId && window.currentExamTicketId !== "undefined" && window.currentExamTicketId !== "null") {
             existingIndex = marksData.results.findIndex(r => r.examId === window.currentExamTicketId);
         }
         if (existingIndex === -1) {
-            // Fallback check by name
-            existingIndex = marksData.results.findIndex(r => r.exam === examName && r.status === 'Partial');
+            // Fallback check by name (Overwrites whether Partial or Completed)
+            existingIndex = marksData.results.findIndex(r => r.exam === examName);
         }
 
         if (existingIndex > -1) {
