@@ -653,6 +653,31 @@
         </div>
     </div>
 
+    <!-- Beautiful View Results Modal -->
+    <div id="viewMarksModal" class="fixed inset-0 z-[650] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-slate-50 dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-950 shrink-0">
+                <h3 class="text-lg font-bold flex items-center gap-2 dark:text-white">
+                    <i data-lucide="award" class="w-5 h-5 text-blue-500"></i> Official Exam Result
+                </h3>
+                <button onclick="window.closeViewMarksModal()" class="text-slate-400 hover:text-red-500 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto grow custom-scrollbar bg-slate-50/50 dark:bg-slate-950/50" id="viewMarksContent">
+                <!-- Result HTML injected via JS -->
+            </div>
+
+            <div class="p-5 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 flex gap-3">
+                <button onclick="window.closeViewMarksModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">Close</button>
+                <button id="btnTriggerEditMarks" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i> Edit Marks
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Dynamic Marks Entry Modal -->
     <div id="marksEntryModal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
         <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
