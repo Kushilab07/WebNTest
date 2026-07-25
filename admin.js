@@ -695,11 +695,10 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
     const targetRegNo = regNo || window.currentEditingRegNo;
     if (!targetRegNo) return window.showToast("Cannot identify student registration number.", "error");
 
-    window.currentExamTicketId = examId; // Save ticket ID to close it later
+    window.currentExamTicketId = examId; 
     document.getElementById('inputMarksRegNo').value = targetRegNo;
     document.getElementById('inputExamName').value = defaultExamName || '';
     
-    // Inject Practice Toggle if it doesn't exist
     if (!document.getElementById('isPracticeExam')) {
         const nameInput = document.getElementById('inputExamName').parentNode;
         nameInput.insertAdjacentHTML('afterend', `
@@ -709,37 +708,35 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
             </div>
         `);
     } else {
-        document.getElementById('isPracticeExam').checked = false; // Reset
+        document.getElementById('isPracticeExam').checked = false; 
     }
 
     const container = document.getElementById('subjectRowsContainer');
     container.innerHTML = ''; 
 
-    // === NEW: RESTORE EXISTING EXAM MARKS AUTOMATICALLY ===
+    // RESTORE EXISTING EXAM MARKS AUTOMATICALLY
     let existingExam = null;
     const student = window.adminData.find(s => s[1] === targetRegNo);
     if (student && student[23] && student[23].startsWith('{')) {
         try {
             const parsed = JSON.parse(student[23]);
-            // Find existing exam using ID or name match (Works for Partial AND Completed!)
             existingExam = parsed.results.find(r => r.examId === examId || r.exam === defaultExamName);
         } catch(e) {}
     }
 
     if (existingExam && existingExam.subjects) {
-        // We found a saved exam! Repopulate all boxes with their previous marks!
         document.getElementById('inputExamName').value = existingExam.exam;
         if (existingExam.type === 'practice' && document.getElementById('isPracticeExam')) {
             document.getElementById('isPracticeExam').checked = true;
         }
-        existingExam.subjects.forEach(sub => window.addSubjectRow(sub.name, sub.max, sub.th, sub.pr));
+        existingExam.subjects.forEach(sub => window.addSubjectRow(sub.name, sub.max, sub.th, sub.pr, sub.type || "both", sub.thMax || "", sub.prMax || ""));
     } else {
-        // New Exam: Auto-populate from Course Master
+        // New Exam: Auto-populate from Course Master based on specific Semester!
         let subjectsLoaded = false;
-        if (courseName && window.courseMaster[courseName]) {
-            const courseSubjects = window.courseMaster[courseName];
-            if (courseSubjects.length > 0) {
-                courseSubjects.forEach(sub => window.addSubjectRow(sub));
+        if (courseName && defaultExamName && window.courseMaster[courseName]) {
+            const courseSubjects = window.courseMaster[courseName][defaultExamName]; // defaultExamName holds the semester string
+            if (courseSubjects && courseSubjects.length > 0) {
+                courseSubjects.forEach(sub => window.addSubjectRow(sub.name, sub.max, "", "", sub.type, sub.thMax, sub.prMax));
                 subjectsLoaded = true;
             }
         }
@@ -758,27 +755,39 @@ window.closeMarksModal = function () {
     document.getElementById('marksEntryModal').classList.add('hidden');
 };
 
-window.addSubjectRow = function (prefilledName = "", maxVal = 100, thVal = "", prVal = "") {
+window.addSubjectRow = function (prefilledName = "", maxVal = 100, thVal = "", prVal = "", type = "both", thMax = "", prMax = "") {
     const container = document.getElementById('subjectRowsContainer');
     const rowId = `sub-row-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     
-    // Safely parse empty/undefined values so we don't accidentally print "undefined" in the UI
     const safeTh = (thVal === undefined || thVal === null) ? "" : thVal;
     const safePr = (prVal === undefined || prVal === null) ? "" : prVal;
     
+    // Disabling logic based on Type constraints from Course Master
+    const thDisabled = (type === 'pr') ? 'disabled bg-slate-100 dark:bg-slate-800 opacity-50 cursor-not-allowed text-transparent placeholder-transparent' : 'bg-slate-50 dark:bg-slate-900';
+    const prDisabled = (type === 'th') ? 'disabled bg-slate-100 dark:bg-slate-800 opacity-50 cursor-not-allowed text-transparent placeholder-transparent' : 'bg-slate-50 dark:bg-slate-900';
+    
+    const thPlaceholder = thMax ? `Th (Max ${thMax})` : `Th`;
+    const prPlaceholder = prMax ? `Pr (Max ${prMax})` : `Pr`;
+
     const rowHtml = `
-        <div id="${rowId}" class="subject-entry-row grid grid-cols-12 gap-2 items-center bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-indigo-300">
+        <div id="${rowId}" class="subject-entry-row grid grid-cols-12 gap-2 items-center bg-white dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-indigo-300 relative">
+            <input type="hidden" class="sub-type" value="${type}">
+            <input type="hidden" class="sub-th-max" value="${thMax}">
+            <input type="hidden" class="sub-pr-max" value="${prMax}">
+            
             <div class="col-span-5">
-                <input type="text" class="sub-name w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-medium" placeholder="e.g. Tally & GST" value="${prefilledName}">
+                <input type="text" class="sub-name w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-medium" placeholder="Subject Name" value="${prefilledName}">
             </div>
             <div class="col-span-2">
-                <input type="number" class="sub-max w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" value="${maxVal}">
+                <input type="number" class="sub-max w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" title="Total Max Marks" value="${maxVal}">
             </div>
-            <div class="col-span-2">
-                <input type="number" class="sub-th w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Th" value="${safeTh}">
+            <div class="col-span-2 relative">
+                <input type="number" class="sub-th w-full p-2 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center ${thDisabled}" placeholder="${thPlaceholder}" value="${safeTh}">
+                ${type === 'pr' ? '<span class="absolute inset-0 flex items-center justify-center pointer-events-none text-[10px] text-slate-400 font-bold uppercase">N/A</span>' : ''}
             </div>
-            <div class="col-span-2">
-                <input type="number" class="sub-pr w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center" placeholder="Pr" value="${safePr}">
+            <div class="col-span-2 relative">
+                <input type="number" class="sub-pr w-full p-2 border border-slate-200 dark:border-slate-700 rounded outline-none focus:border-indigo-500 text-xs dark:text-white font-bold text-center ${prDisabled}" placeholder="${prPlaceholder}" value="${safePr}">
+                ${type === 'th' ? '<span class="absolute inset-0 flex items-center justify-center pointer-events-none text-[10px] text-slate-400 font-bold uppercase">N/A</span>' : ''}
             </div>
             <div class="col-span-1 flex justify-center">
                 <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors">
@@ -804,25 +813,31 @@ window.saveExamMarks = async function () {
     let subjectsArray = [];
     let grandMax = 0, grandTotal = 0, totalTh = 0, totalPr = 0;
     let hasError = false;
-    let isPartiallyGraded = false; // The tracker!
+    let isPartiallyGraded = false; // Smart tracker!
 
     rowElements.forEach(row => {
         const name = row.querySelector('.sub-name').value.trim();
         const max = parseInt(row.querySelector('.sub-max').value) || 100;
-        const thVal = row.querySelector('.sub-th').value;
-        const prVal = row.querySelector('.sub-pr').value;
+        const type = row.querySelector('.sub-type').value;
+        const thMax = row.querySelector('.sub-th-max').value;
+        const prMax = row.querySelector('.sub-pr-max').value;
+        
+        let thVal = row.querySelector('.sub-th').value;
+        let prVal = row.querySelector('.sub-pr').value;
 
-        if (!name && thVal === '' && prVal === '') return; // Skip empty rows
+        if (!name && thVal === '' && prVal === '') return; 
         if (!name) hasError = true;
 
-        // Check if any specific mark box is left blank
-        if (thVal === '' || prVal === '') isPartiallyGraded = true;
+        // Smart Partial Checking based on Type Constraints!
+        if (type === 'both' && (thVal === '' || prVal === '')) isPartiallyGraded = true;
+        if (type === 'th' && thVal === '') isPartiallyGraded = true;
+        if (type === 'pr' && prVal === '') isPartiallyGraded = true;
 
         const th = parseInt(thVal) || 0;
         const pr = parseInt(prVal) || 0;
         const subTotal = th + pr;
 
-        subjectsArray.push({ name: name, max: max, th: thVal, pr: prVal, tot: subTotal });
+        subjectsArray.push({ name, max, th: thVal, pr: prVal, tot: subTotal, type, thMax, prMax });
         grandMax += max;
         grandTotal += subTotal;
         totalTh += th;
@@ -839,7 +854,6 @@ window.saveExamMarks = async function () {
     else if (percentage >= 45) grade = "B";
 
     const ticketStatus = isPartiallyGraded ? "Partial" : "Completed";
-
     const student = window.adminData.find(s => s[1] === regNo);
     if (!student) return window.showToast("Student not found.", "error");
 
@@ -860,9 +874,8 @@ window.saveExamMarks = async function () {
             }
         }
 
-        // === FIX: OVERWRITE DUPLICATES INSTEAD OF PUSHING ===
         const newResultData = {
-            examId: window.currentExamTicketId || "N/A", // Save ID to link it!
+            examId: window.currentExamTicketId || "N/A", 
             exam: examName,
             type: isPractice ? "practice" : "official",
             status: ticketStatus, 
@@ -876,26 +889,23 @@ window.saveExamMarks = async function () {
             grade: grade
         };
 
-        // Look for an existing exam we are resuming or editing
         let existingIndex = -1;
         if (window.currentExamTicketId && window.currentExamTicketId !== "undefined" && window.currentExamTicketId !== "null") {
             existingIndex = marksData.results.findIndex(r => r.examId === window.currentExamTicketId);
         }
         if (existingIndex === -1) {
-            // Fallback check by name (Overwrites whether Partial or Completed)
             existingIndex = marksData.results.findIndex(r => r.exam === examName);
         }
 
         if (existingIndex > -1) {
-            marksData.results[existingIndex] = newResultData; // UPDATE EXISTING
+            marksData.results[existingIndex] = newResultData; 
         } else {
-            marksData.results.push(newResultData); // ADD NEW
+            marksData.results.push(newResultData); 
         }
 
         const newMarkLinkString = JSON.stringify(marksData);
         const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
         
-        // 1. Push Marks to Student DB
         await window.fetchWithRetry(targetUrl, {
             method: 'POST',
             body: new URLSearchParams({
@@ -903,7 +913,6 @@ window.saveExamMarks = async function () {
             })
         });
 
-        // 2. Resolve the Ticket in the Exam DB (URL-encoded to guarantee delivery)
         if (window.currentExamTicketId && window.currentExamTicketId !== "undefined" && window.currentExamTicketId !== "null") {
             try {
                 await window.fetchWithRetry(EXAM_API_URL, {
@@ -914,14 +923,12 @@ window.saveExamMarks = async function () {
                         status: ticketStatus
                     })
                 });
-                
-                // Small delay so Google Sheets flush completes before the UI refreshes
                 await new Promise(r => setTimeout(r, 1000)); 
-            } catch(e) { console.error("Ticket update failed:", e); }
+            } catch(e) {}
         }
 
         student[23] = newMarkLinkString;
-        window.loadExamDashboard(); // Refresh grid to trigger UI shift
+        window.loadExamDashboard(); 
         window.showToast(isPartiallyGraded ? "Marks saved partially. Ticket remains open." : "Exam Fully Graded! Ticket Closed.", "success");
         window.closeMarksModal();
 
@@ -1658,22 +1665,153 @@ window.resolveSupportTicket = async function() {
 window.currentExamTab = 'active';
 window.courseMaster = {};
 
-// 1. Fetch the subjects assigned to each course from Firebase
+// 1. Fetch & Auto-Migrate the subjects assigned to each course from Firebase
 window.fetchCourseMaster = async function() {
     try {
         const docRef = doc(db, "admin_settings", "course_master");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            window.courseMaster = docSnap.data();
+            let data = docSnap.data();
+            let needsMigration = false;
+
+            // Auto-Migrate old flat arrays to the new Semester-based Object structure
+            for (let course in data) {
+                if (Array.isArray(data[course])) {
+                    data[course] = {
+                        "1st Semester": data[course].map(name => ({
+                            name: name, type: "both", max: 100, thMax: 50, prMax: 50
+                        }))
+                    };
+                    needsMigration = true;
+                }
+            }
+            window.courseMaster = data;
+            if (needsMigration) await setDoc(docRef, window.courseMaster); // Save new format permanently
         } else {
-            // Auto-create default structure if it doesn't exist yet
-            window.courseMaster = {
-                "DCA": ["Fundamentals of Computer", "MS-Office", "Desk Top Publishing(DTP)", "Web Designing"],
-                "PGDCA": ["Fundamentals of Computer", "MS-Office", "TALLY & GST", "C & C++ Programming", "Database Management"]
-            };
-            await setDoc(docRef, window.courseMaster); 
+            window.courseMaster = {};
         }
     } catch (e) { console.error("Failed to load Course Master", e); }
+};
+
+// === COURSE MASTER UI LOGIC ===
+window.openCourseMasterModal = function() {
+    const uniqueCourses = [...new Set(window.adminData.map(s => s[11]).filter(c => c && c !== "None"))];
+    const select = document.getElementById('cmCourseSelect');
+    select.innerHTML = uniqueCourses.length > 0 
+        ? uniqueCourses.map(c => `<option value="${c}">${c}</option>`).join('')
+        : `<option value="">No Courses Found</option>`;
+    
+    if (uniqueCourses.length > 0) window.renderCourseMasterSubjects();
+
+    document.getElementById('courseMasterModal').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
+window.closeCourseMasterModal = function() {
+    document.getElementById('courseMasterModal').classList.add('hidden');
+};
+
+window.renderCourseMasterSubjects = function() {
+    const course = document.getElementById('cmCourseSelect').value;
+    const sem = document.getElementById('cmSemesterSelect').value;
+    const container = document.getElementById('cmSubjectsContainer');
+    container.innerHTML = '';
+
+    if (!course) return;
+
+    if (!window.courseMaster[course]) window.courseMaster[course] = {};
+    if (!window.courseMaster[course][sem]) window.courseMaster[course][sem] = [];
+
+    const subjects = window.courseMaster[course][sem];
+    
+    if (subjects.length === 0) {
+        window.addCourseMasterRow(); // Add one blank by default
+    } else {
+        subjects.forEach(sub => window.addCourseMasterRow(sub.name, sub.type, sub.max, sub.thMax, sub.prMax));
+    }
+};
+
+window.addCourseMasterRow = function(name = "", type = "both", max = 100, thMax = 50, prMax = 50) {
+    const container = document.getElementById('cmSubjectsContainer');
+    const rowId = `cm-row-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+    
+    const html = `
+        <div id="${rowId}" class="cm-subject-row grid grid-cols-12 gap-2 items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:border-indigo-300">
+            <div class="col-span-4">
+                <input type="text" class="cm-name w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs dark:text-white outline-none focus:border-indigo-500 font-bold" placeholder="Subject Name" value="${name}">
+            </div>
+            <div class="col-span-2">
+                <select class="cm-type w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold dark:text-white outline-none focus:border-indigo-500 cursor-pointer text-indigo-600 dark:text-indigo-400">
+                    <option value="both" ${type==='both'?'selected':''}>Th & Pr</option>
+                    <option value="th" ${type==='th'?'selected':''}>Only Th</option>
+                    <option value="pr" ${type==='pr'?'selected':''}>Only Pr</option>
+                </select>
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="cm-max w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500" placeholder="Total" value="${max}">
+            </div>
+            <div class="col-span-1">
+                <input type="number" class="cm-th w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500 text-blue-600 dark:text-blue-400" placeholder="Th" value="${thMax}">
+            </div>
+            <div class="col-span-1">
+                <input type="number" class="cm-pr w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500 text-purple-600 dark:text-purple-400" placeholder="Pr" value="${prMax}">
+            </div>
+            <div class="col-span-2 flex justify-center">
+                <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', html);
+    if (window.lucide) lucide.createIcons();
+};
+
+window.saveCourseMasterConfig = async function() {
+    const course = document.getElementById('cmCourseSelect').value;
+    const sem = document.getElementById('cmSemesterSelect').value;
+    if (!course || !sem) return;
+
+    const rows = document.querySelectorAll('.cm-subject-row');
+    let subjects = [];
+    let hasError = false;
+
+    rows.forEach(row => {
+        const name = row.querySelector('.cm-name').value.trim();
+        const type = row.querySelector('.cm-type').value;
+        const max = parseInt(row.querySelector('.cm-max').value) || 0;
+        const thMax = parseInt(row.querySelector('.cm-th').value) || 0;
+        const prMax = parseInt(row.querySelector('.cm-pr').value) || 0;
+
+        if (name) {
+            subjects.push({ name, type, max, thMax, prMax });
+        } else if (max > 0 || thMax > 0 || prMax > 0) {
+            hasError = true;
+        }
+    });
+
+    if (hasError) return window.showToast("Please provide a name for all subjects.", "error");
+
+    const btn = document.getElementById('btnSaveCourseMaster');
+    const ogHtml = btn.innerHTML;
+    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...`;
+    btn.disabled = true;
+
+    try {
+        if (!window.courseMaster[course]) window.courseMaster[course] = {};
+        window.courseMaster[course][sem] = subjects;
+
+        const docRef = doc(db, "admin_settings", "course_master");
+        await setDoc(docRef, window.courseMaster); 
+        
+        window.showToast("Course Configuration Saved!", "success");
+        window.closeCourseMasterModal();
+    } catch (e) {
+        window.showToast("Failed to save configuration.", "error");
+    } finally {
+        btn.innerHTML = ogHtml;
+        btn.disabled = false;
+    }
 };
 
 window.switchExamTab = function(tabName) {
