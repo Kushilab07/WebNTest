@@ -264,10 +264,11 @@ window.setFilterStatus = function (status) {
     const studentsWorkspace = document.getElementById('students-workspace');
     const feesWorkspace = document.getElementById('fees-workspace');
     const supportWorkspace = document.getElementById('support-workspace');
-    const examWorkspace = document.getElementById('exam-workspace'); // NEW
+    const examWorkspace = document.getElementById('exam-workspace'); 
+    const expenseWorkspace = document.getElementById('expense-workspace'); // NEW
 
     // WORKSPACE TOGGLE LOGIC
-    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace, examWorkspace];
+    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace, examWorkspace, expenseWorkspace];
 
     // Hide all workspaces first to ensure a clean transition
     workspaces.forEach(ws => {
@@ -286,12 +287,15 @@ window.setFilterStatus = function (status) {
         } else if (status === 'support' && supportWorkspace) {
             supportWorkspace.classList.remove('hidden');
             setTimeout(() => supportWorkspace.classList.remove('opacity-0'), 50);
-        } else if (status === 'exam' && examWorkspace) { // NEW EXAM LOGIC
+        } else if (status === 'exam' && examWorkspace) { 
             examWorkspace.classList.remove('hidden');
             setTimeout(() => examWorkspace.classList.remove('opacity-0'), 50);
             window.loadExamDashboard();
-        } else if (status !== 'fee' && status !== 'support' && status !== 'exam' && studentsWorkspace) {
-            // This covers 'all', 'active', 'completed', and 'dropout' statuses
+        } else if (status === 'expense' && expenseWorkspace) { // NEW EXPENSE LOGIC
+            expenseWorkspace.classList.remove('hidden');
+            setTimeout(() => expenseWorkspace.classList.remove('opacity-0'), 50);
+            window.loadExpenseDashboard();
+        } else if (status !== 'fee' && status !== 'support' && status !== 'exam' && status !== 'expense' && studentsWorkspace) {
             studentsWorkspace.classList.remove('hidden');
             setTimeout(() => studentsWorkspace.classList.remove('opacity-0'), 50);
             window.applyFilters();
@@ -1503,6 +1507,217 @@ window.openAdminFeeHistory = function () {
 
 window.closeAdminFeeHistory = function () {
     document.getElementById('adminFeeHistoryModal').classList.add('hidden');
+};
+
+// ============================================================================
+// --- GLOBAL EXPENSES & ANALYSIS ENGINE ---
+// ============================================================================
+
+window.expenseDataCache = [];
+
+window.loadExpenseDashboard = async function() {
+    const loader = document.getElementById('expenseLoader');
+    if (loader) loader.classList.remove('hidden');
+
+    try {
+        // ALWAYS fetch from Arikuchi URL, since it's the global ledger
+        const response = await window.fetchWithRetry(`${URL_ARIKUCHI}?action=getExpenses`, { method: 'GET' });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            window.expenseDataCache = result.data || [];
+            window.renderExpenseAnalysis();
+        } else {
+            window.showToast("Failed to fetch expenses.", "error");
+        }
+    } catch (e) {
+        window.showToast("Network Error loading expenses.", "error");
+    } finally {
+        if (loader) loader.classList.add('hidden');
+    }
+};
+
+const expenseForm = document.getElementById('expenseForm');
+if (expenseForm) {
+    expenseForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const particular = document.getElementById('expParticular').value;
+        const details = document.getElementById('expDetails').value.trim();
+        const amount = document.getElementById('expAmount').value;
+
+        const btnText = document.getElementById('expBtnText');
+        const spinner = document.getElementById('expSpinner');
+        const btn = document.getElementById('expSubmitBtn');
+
+        btnText.classList.add('opacity-0');
+        spinner.classList.remove('hidden');
+        btn.disabled = true;
+
+        try {
+            const payload = new URLSearchParams({
+                action: 'addExpense',
+                particular: particular,
+                details: details,
+                amount: amount,
+                adminEmail: window.currentEditingEmail || auth?.currentUser?.email || "Admin"
+            });
+
+            await window.fetchWithRetry(URL_ARIKUCHI, {
+                method: 'POST',
+                body: payload
+            });
+
+            window.showToast("Expense logged successfully!", "success");
+            expenseForm.reset();
+            window.loadExpenseDashboard(); // Refresh analysis
+        } catch (err) {
+            window.showToast("Failed to save expense.", "error");
+        } finally {
+            btnText.classList.remove('opacity-0');
+            spinner.classList.add('hidden');
+            btn.disabled = false;
+        }
+    });
+}
+
+// PREMIUM MONTHLY ANALYSIS RENDERER
+window.renderExpenseAnalysis = function() {
+    const grid = document.getElementById('expenseAnalysisGrid');
+    const totalEl = document.getElementById('expTotalGlobal');
+    grid.innerHTML = '';
+
+    if (window.expenseDataCache.length === 0) {
+        totalEl.innerText = "Total: ₹0";
+        grid.innerHTML = `<div class="flex flex-col items-center justify-center py-16 opacity-60 text-slate-500"><i data-lucide="pie-chart" class="w-16 h-16 mb-4 opacity-50"></i><p class="font-bold">No expenses logged yet.</p></div>`;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    // 1. Group Data by Month & Year
+    const monthlyGroups = {};
+    let allTimeTotal = 0;
+
+    window.expenseDataCache.forEach(row => {
+        // row: [Date, Particular, Details, Amount, Admin]
+        const dateObj = new Date(row[0]);
+        if (isNaN(dateObj)) return; // skip bad dates
+
+        const monthYear = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' }); // "August 2026"
+        const amount = parseFloat(row[3]) || 0;
+        allTimeTotal += amount;
+
+        if (!monthlyGroups[monthYear]) {
+            monthlyGroups[monthYear] = {
+                total: 0,
+                transactions: [],
+                categories: {}
+            };
+        }
+
+        monthlyGroups[monthYear].total += amount;
+        monthlyGroups[monthYear].transactions.push(row);
+        
+        const cat = row[1];
+        if (!monthlyGroups[monthYear].categories[cat]) monthlyGroups[monthYear].categories[cat] = 0;
+        monthlyGroups[monthYear].categories[cat] += amount;
+    });
+
+    totalEl.innerText = `Total All-Time: ₹${allTimeTotal.toLocaleString('en-IN')}`;
+
+    // 2. Sort months (newest first)
+    const sortedMonths = Object.keys(monthlyGroups).sort((a, b) => new Date(b) - new Date(a));
+
+    // Colors for specific categories to make the breakdown bar look premium
+    const catColors = {
+        "House Rent": "bg-blue-500", "Salary": "bg-emerald-500", "Electricity Bill": "bg-amber-400", 
+        "Internet": "bg-cyan-500", "Maintenance": "bg-orange-500", "Servicing": "bg-purple-500", 
+        "Certification": "bg-indigo-500", "Transportation": "bg-teal-500", "Printing": "bg-pink-500", "Others": "bg-slate-400"
+    };
+
+    // 3. Render the Cards
+    sortedMonths.forEach((month, index) => {
+        const group = monthlyGroups[month];
+        const safeId = `month-group-${index}`;
+
+        // Create the CSS Flex Breakdown Bar
+        let breakdownBarHtml = '';
+        let legendsHtml = '';
+        
+        for (const [cat, amt] of Object.entries(group.categories)) {
+            const percent = ((amt / group.total) * 100).toFixed(1);
+            const colorClass = catColors[cat] || "bg-slate-400";
+            
+            breakdownBarHtml += `<div class="${colorClass} h-full" style="width: ${percent}%" title="${cat}: ₹${amt} (${percent}%)"></div>`;
+            
+            legendsHtml += `
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <div class="w-2.5 h-2.5 rounded-full ${colorClass}"></div>
+                    <span class="text-[10px] text-slate-500 font-medium">${cat} <b class="text-slate-700 dark:text-slate-300 ml-1">₹${amt}</b></span>
+                </div>
+            `;
+        }
+
+        // Create the Transaction List HTML (Hidden by default)
+        // Sort transactions newest first inside the month
+        group.transactions.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+        let transactionsHtml = group.transactions.map(t => {
+            const tDate = new Date(t[0]).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+            const catClass = catColors[t[1]] || "bg-slate-400";
+            const detailsText = t[2] && t[2] !== "N/A" ? `<p class="text-[10px] text-slate-400 truncate mt-0.5" title="${t[2]}">${t[2]}</p>` : '';
+            
+            return `
+                <div class="flex items-center justify-between p-3 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-2 h-8 rounded-full ${catClass} shrink-0"></div>
+                        <div class="overflow-hidden">
+                            <p class="text-sm font-bold text-slate-800 dark:text-white truncate">${t[1]}</p>
+                            ${detailsText}
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <p class="font-extrabold text-slate-900 dark:text-white">₹${parseFloat(t[3]).toLocaleString('en-IN')}</p>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">${tDate}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        grid.innerHTML += `
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden transition-all duration-300">
+                
+                <!-- Card Header (Always Visible) -->
+                <div class="p-5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" onclick="document.getElementById('${safeId}').classList.toggle('hidden');">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5 text-rose-500"></i> ${month}
+                        </h4>
+                        <p class="text-xl font-extrabold text-rose-600 dark:text-rose-400">₹${group.total.toLocaleString('en-IN')}</p>
+                    </div>
+                    
+                    <!-- Premium Visual Breakdown Bar -->
+                    <div class="w-full h-2.5 rounded-full overflow-hidden flex gap-0.5 mb-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                        ${breakdownBarHtml}
+                    </div>
+                    
+                    <!-- Dynamic Legend -->
+                    <div class="flex flex-wrap gap-x-4 gap-y-2 mt-2">
+                        ${legendsHtml}
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-center text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors">
+                        Click to view ${group.transactions.length} transactions <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Expanded Transaction List (Hidden by default) -->
+                <div id="${safeId}" class="hidden bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 max-h-[300px] overflow-y-auto custom-scrollbar">
+                    ${transactionsHtml}
+                </div>
+            </div>
+        `;
+    });
+
+    if (window.lucide) lucide.createIcons();
 };
 
 // ============================================================================
