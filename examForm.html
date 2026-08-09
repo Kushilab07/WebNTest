@@ -111,7 +111,7 @@
                     </div>
                 </div>
 
-                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Verifying Enrollment...</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Verifying...</h2>
                 <p class="text-sm text-slate-500 dark:text-slate-400">Checking your records securely.</p>
             </div>
 
@@ -128,6 +128,23 @@
                 <button onclick="window.location.href='index.html#courses'"
                     class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2">
                     Explore Courses <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- NEW: IMMEDIATE BLOCKED STATE -->
+            <div id="state-blocked"
+                class="hidden flex flex-col items-center justify-center text-center py-10 animate-in fade-in zoom-in duration-300">
+                <div
+                    class="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="ban" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-2">Application Blocked</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6 max-w-sm leading-relaxed">
+                    You are currently not eligible to apply for exams. Please ensure your pending fee dues are cleared. For more details, contact the Administration.
+                </p>
+                <button onclick="window.location.href='index.html'"
+                    class="px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 border border-slate-200 dark:border-slate-700">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Return
                 </button>
             </div>
 
