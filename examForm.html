@@ -46,7 +46,7 @@
             border-radius: 50%;
             border-top-color: white;
             /* FIXED: Changed to linear for smooth, non-stop rotation */
-            animation: smooth-spin 0.8s linear infinite; 
+            animation: smooth-spin 0.8s linear infinite;
             width: 24px;
             height: 24px;
             box-sizing: border-box;
@@ -54,8 +54,13 @@
 
         /* FIXED: Renamed to avoid Tailwind conflict and added 0% state */
         @keyframes smooth-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -70,23 +75,23 @@
         class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden relative z-10 transition-all duration-300">
 
         <div class="relative p-6 border-b border-slate-200 dark:border-slate-800 text-center">
-            
-            <button type="button" onclick="history.back()" title="Go Back" 
+
+            <button type="button" onclick="history.back()" title="Go Back"
                 class="absolute top-6 left-6 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm border border-slate-200 dark:border-slate-700 z-10">
                 <i data-lucide="arrow-left" class="w-5 h-5"></i>
             </button>
 
             <div class="flex items-center justify-center gap-4 mb-4 mt-2 sm:mt-0">
-                
-                <img src="logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified" 
+
+                <img src="Images/Logos/logoISO.jpeg" alt="ISO Certified" title="ISO 9001:2015 Certified"
                     class="h-10 sm:h-12 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
-                
-                <img src="logoInstitute.jpeg" alt="NIAT Logo" 
+
+                <img src="Images/Logos/logoInstitute.jpeg" alt="NIAT Logo"
                     class="h-14 sm:h-16 w-auto object-contain rounded-lg shadow-sm bg-white">
-                
-                <img src="logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME" 
+
+                <img src="Images/Logos/logoMSME.jpeg" alt="MSME Registered" title="Registered under MSME"
                     class="h-10 sm:h-12 w-auto object-contain rounded bg-white p-0.5 border border-slate-200 dark:border-slate-700">
-                
+
             </div>
 
             <div>
@@ -101,9 +106,11 @@
             <div id="state-loading" class="flex flex-col items-center justify-center text-center py-12">
                 <div class="relative w-14 h-14 mb-6">
                     <div class="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-slate-800"></div>
-                    <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-600 animate-spin"></div>
+                    <div
+                        class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-600 animate-spin">
+                    </div>
                 </div>
-                
+
                 <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Verifying Enrollment...</h2>
                 <p class="text-sm text-slate-500 dark:text-slate-400">Checking your records securely.</p>
             </div>
@@ -152,6 +159,19 @@
             <div id="state-form" class="hidden animate-in slide-in-from-right-8 duration-500">
                 <form id="exam-form" class="space-y-5">
 
+                    <!-- NEW: Blocking Warning -->
+                    <div id="exam-blocked-warning"
+                        class="hidden mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
+                        <i data-lucide="shield-alert"
+                            class="w-6 h-6 text-red-600 dark:text-red-400 shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="font-bold text-red-900 dark:text-white mb-1">Application Blocked</h4>
+                            <p class="text-xs text-red-700 dark:text-red-300 leading-relaxed">You are not currently
+                                eligible to apply for this exam. Please pay your pending dues. For more details, contact
+                                the Administration.</p>
+                        </div>
+                    </div>
+
                     <div class="hidden">
                         <input type="text" id="ex-branch">
                         <input type="text" id="ex-name">
@@ -179,22 +199,32 @@
                         </select>
                     </div>
 
-                    <button type="submit" id="apply-btn" 
+                    <button type="submit" id="apply-btn"
                         class="relative w-full mt-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg transform hover:-translate-y-1 transition-all flex justify-center items-center gap-2 overflow-hidden">
-                        <span id="apply-btn-text" class="flex items-center gap-2 transition-opacity duration-300"><i data-lucide="send" class="w-5 h-5"></i> Apply</span>
-                        <div id="apply-spinner" class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span id="apply-btn-text" class="flex items-center gap-2 transition-opacity duration-300"><i
+                                data-lucide="send" class="w-5 h-5"></i> Apply</span>
+                        <div id="apply-spinner"
+                            class="hidden absolute w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin">
+                        </div>
                     </button>
-                    
+
                 </form>
             </div>
 
-            <div id="state-success" class="hidden flex flex-col items-center justify-center text-center py-10 px-6 animate-in slide-in-from-right-8 duration-500">
-                <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div id="state-success"
+                class="hidden flex flex-col items-center justify-center text-center py-10 px-6 animate-in slide-in-from-right-8 duration-500">
+                <div
+                    class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Application Submitted!</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-8 max-w-sm">Thank you for applying. Your exam application has been successfully sent to the administration.</p>
-                <button onclick="window.location.href='index.html'" class="px-8 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl transition-all shadow-sm">
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-8 max-w-sm">Thank you for applying. Your exam
+                    application has been successfully sent to the administration.</p>
+                <button onclick="window.location.href='index.html'"
+                    class="px-8 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl transition-all shadow-sm">
                     Go Back to Home
                 </button>
             </div>
