@@ -541,6 +541,12 @@ window.openManageModal = function (regNo) {
     const msGen = markLinkVal === "MOCK_URL" || markLinkVal.startsWith("http");
     const certGen = certLinkVal === "MOCK_URL" || certLinkVal.startsWith("http");
 
+    let fStatus = student[28] ? String(student[28]).trim() : 'Pending';
+    fStatus = fStatus.charAt(0).toUpperCase() + fStatus.slice(1).toLowerCase(); 
+    if (!['Pending', 'Partial', 'Cleared'].includes(fStatus)) fStatus = 'Pending';
+    
+    let examElig = student[29] ? String(student[29]).trim() : 'Allowed';
+
     window.initialModalState = {
         course: cStatus,
         marksheet: String(student[22] || 'pending').toLowerCase(),
@@ -548,7 +554,9 @@ window.openManageModal = function (regNo) {
         msGenerated: msGen,
         certGenerated: certGen,
         markLink: markLinkVal,
-        certLink: certLinkVal
+        certLink: certLinkVal,
+        feeStatus: fStatus,
+        examEligibility: examElig
     };
 
     window.currentModalState = { ...window.initialModalState };
@@ -557,12 +565,8 @@ window.openManageModal = function (regNo) {
     document.getElementById('modalStudentName').innerText = student[2];
     document.getElementById('modalRegNo').innerText = regNo;
     document.getElementById('modalCourseStatus').value = currentModalState.course;
-    let fStatus = student[28] ? String(student[28]).trim() : 'Pending';
-    fStatus = fStatus.charAt(0).toUpperCase() + fStatus.slice(1).toLowerCase(); // Capitalize first letter
-    if (!['Pending', 'Partial', 'Cleared'].includes(fStatus)) fStatus = 'Pending';
-    document.getElementById('modalFeeStatus').value = fStatus;
-    let examElig = student[29] ? String(student[29]).trim() : 'Allowed';
-    document.getElementById('modalExamEligibility').value = examElig;
+    document.getElementById('modalFeeStatus').value = currentModalState.feeStatus;
+    document.getElementById('modalExamEligibility').value = currentModalState.examEligibility;
     document.getElementById('marksheetCurrentStatus').innerText = currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = currentModalState.cert.toUpperCase();
 
@@ -971,7 +975,12 @@ window.toggleDocumentStatus = function (docType) {
 
 window.evaluateModalState = function () {
     const courseStatus = document.getElementById('modalCourseStatus').value;
+    const feeStatus = document.getElementById('modalFeeStatus').value;
+    const examElig = document.getElementById('modalExamEligibility').value;
+    
     window.currentModalState.course = courseStatus;
+    window.currentModalState.feeStatus = feeStatus;
+    window.currentModalState.examEligibility = examElig;
 
     const cardMS = document.getElementById('marksheetCard');
     const btnGenMS = document.getElementById('btnGenerateMarksheet');
@@ -1031,12 +1040,17 @@ window.evaluateModalState = function () {
     document.getElementById('marksheetCurrentStatus').innerText = window.currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = window.currentModalState.cert.toUpperCase();
 
+    // ALL STATE CHANGES TRACKED HERE
     const hasChanged =
         window.initialModalState.course !== window.currentModalState.course ||
         window.initialModalState.marksheet !== window.currentModalState.marksheet ||
         window.initialModalState.cert !== window.currentModalState.cert ||
         window.initialModalState.markLink !== window.currentModalState.markLink ||
-        window.initialModalState.certLink !== window.currentModalState.certLink;
+        window.initialModalState.certLink !== window.currentModalState.certLink ||
+        window.initialModalState.feeStatus !== window.currentModalState.feeStatus ||
+        window.initialModalState.examEligibility !== window.currentModalState.examEligibility ||
+        window.currentModalState.triggerMS === true ||  // Triggers if Generate Marksheet is clicked
+        window.currentModalState.triggerCert === true;  // Triggers if Generate Cert is clicked
 
     if (hasChanged) {
         btnSave.disabled = false;
