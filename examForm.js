@@ -93,6 +93,19 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('error-email-display').textContent = userEmail;
             stateUnregistered.classList.remove('hidden');
         } else {
+            
+            // --- NEW: INSTANT ELIGIBILITY INTERCEPTOR ---
+            // Check if the student has at least ONE course they are allowed to apply for
+            const hasAllowedCourses = studentData.enrolledCourses.some(c => c.examEligibility !== "Blocked");
+            
+            if (!hasAllowedCourses) {
+                // If they are completely blocked, show the Blocked screen immediately and stop!
+                document.getElementById('state-blocked').classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+                return; 
+            }
+
+            // Otherwise, show the declaration and proceed normally
             stateDeclaration.classList.remove('hidden');
 
             document.getElementById('ex-name').value = studentData.studentName;
