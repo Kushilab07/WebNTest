@@ -229,6 +229,14 @@
                     </div>
                 </div>
 
+                <div onclick="window.setFilterStatus('expense')" id="card-expense"
+                    class="metric-card w-full min-w-[65px] p-2 rounded-xl border-2 border-transparent bg-white dark:bg-slate-800 hover:border-rose-400 cursor-pointer shadow-sm transition-all flex flex-col items-center text-center">
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Expenses</p>
+                    <div class="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full p-1.5 mt-1">
+                        <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                    </div>
+                </div>
+
                 <div onclick="window.setFilterStatus('support')" id="card-support"
                     class="metric-card w-full min-w-[65px] p-2 rounded-xl border-2 border-transparent bg-white dark:bg-slate-800 hover:border-blue-400 cursor-pointer shadow-sm transition-all flex flex-col items-center text-center">
                     <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Support</p>
@@ -515,6 +523,82 @@
                     <div class="flex-1 overflow-auto w-full p-6">
                         <div id="examApplicationsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: EXPENSES WORKSPACE -->
+            <div id="expense-workspace" class="hidden flex-1 flex flex-col p-3 sm:p-6 overflow-hidden relative opacity-0 transition-opacity duration-300">
+                <div class="flex items-center justify-between mb-4 shrink-0">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-6 h-6 text-rose-500"></i> Global Expenses
+                        </h3>
+                        <p class="text-sm text-slate-500 mt-1">Track and analyze institute-wide costs.</p>
+                    </div>
+                    <button onclick="window.loadExpenseDashboard()" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:border-rose-500 dark:hover:text-rose-400 transition-all shadow-sm flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden">
+                    <!-- Left Column: Add Expense Form -->
+                    <div class="w-full lg:w-1/3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col shrink-0 h-max">
+                        <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                            <h4 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5 text-rose-500"></i> Log New Expense
+                            </h4>
+                        </div>
+                        <form id="expenseForm" class="p-5 space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Particular *</label>
+                                <select id="expParticular" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-rose-500 text-sm font-bold dark:text-white cursor-pointer transition-colors">
+                                    <option value="" disabled selected>-- Select Category --</option>
+                                    <option value="House Rent">House Rent</option>
+                                    <option value="Salary">Salary</option>
+                                    <option value="Electricity Bill">Electricity Bill</option>
+                                    <option value="Internet">Internet</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Servicing">Servicing</option>
+                                    <option value="Certification">Certification</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Printing">Printing</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Details / Notes (Optional)</label>
+                                <input type="text" id="expDetails" placeholder="e.g., specific repair, bonus..." class="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-rose-500 text-sm dark:text-white transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Amount (₹) *</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-500">₹</span>
+                                    <input type="number" id="expAmount" required min="1" placeholder="0" class="w-full pl-8 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none text-slate-900 dark:text-white font-bold text-lg transition-colors">
+                                </div>
+                            </div>
+                            <button type="submit" id="expSubmitBtn" class="w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 mt-4 relative overflow-hidden">
+                                <span id="expBtnText">Save Expense</span>
+                                <div id="expSpinner" class="hidden absolute w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Analysis Dashboard -->
+                    <div class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
+                        <div id="expenseLoader" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center hidden">
+                            <div class="w-8 h-8 border-4 border-rose-200 border-t-rose-600 rounded-full animate-spin mb-3"></div>
+                            <p class="text-sm font-bold text-slate-500 animate-pulse">Analyzing Financial Data...</p>
+                        </div>
+                        <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-between items-center shrink-0">
+                            <h4 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                <i data-lucide="bar-chart-2" class="w-5 h-5 text-rose-500"></i> Monthly Analysis
+                            </h4>
+                            <p class="text-xs font-bold text-slate-500 bg-slate-200 dark:bg-slate-800 px-3 py-1 rounded-full" id="expTotalGlobal">Total: ₹0</p>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar" id="expenseAnalysisGrid">
+                            <!-- Monthly cards injected here -->
+                        </div>
                     </div>
                 </div>
             </div>
