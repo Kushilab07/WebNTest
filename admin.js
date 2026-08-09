@@ -19,7 +19,7 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyt7SYkR_XL5vex_9NBedmRkDtw33EDtk5GdTv-j2ccuuTbFYzZQ5zX65dhgPvbmQM/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw2ueh7sX3tA_MgfyTRAawgRMzDp8UUublryDwuVG7sPA7KHu6bZ5gFXvA9Pp1V97yj/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbx8KGr7PZzLL_CPaS5fJOhv6sbO956vx53hBv62K8tlqbKdkwm2qnZHZqWDsXBI7CbKPg/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
@@ -1818,24 +1818,36 @@ if (expenseForm) {
         btn.disabled = true;
 
         try {
+            // Ensure safe email fetching for all browsers
+            let activeAdmin = "Admin";
+            if (window.currentEditingEmail) activeAdmin = window.currentEditingEmail;
+            else if (auth && auth.currentUser && auth.currentUser.email) activeAdmin = auth.currentUser.email;
+
             const payload = new URLSearchParams({
                 action: 'addExpense',
                 particular: particular,
                 details: details,
                 amount: amount,
-                adminEmail: window.currentEditingEmail || auth?.currentUser?.email || "Admin"
+                adminEmail: activeAdmin
             });
 
-            await window.fetchWithRetry(URL_ARIKUCHI, {
+            const response = await window.fetchWithRetry(URL_ARIKUCHI, {
                 method: 'POST',
                 body: payload
             });
+
+            // STOP FAKE SUCCESS: Actually check if Google accepted the data!
+            const result = await response.json();
+            if (result.status !== 'success') {
+                throw new Error(result.message || "Google Sheets rejected the request.");
+            }
 
             window.showToast("Expense logged successfully!", "success");
             expenseForm.reset();
             window.loadExpenseDashboard(); // Refresh analysis
         } catch (err) {
-            window.showToast("Failed to save expense.", "error");
+            console.error("Expense Save Error:", err);
+            window.showToast("Failed to save. Did you deploy GAS as a New Version?", "error");
         } finally {
             btnText.classList.remove('opacity-0');
             spinner.classList.add('hidden');
