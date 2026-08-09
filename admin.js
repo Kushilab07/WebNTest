@@ -19,7 +19,7 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyQxCl4VrIsY-9j--8q180Z-gGVM6jjmRQ8okZUsa9-LB8s1uys0cSFx4AA6xlO3l9E/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyt7SYkR_XL5vex_9NBedmRkDtw33EDtk5GdTv-j2ccuuTbFYzZQ5zX65dhgPvbmQM/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbx8KGr7PZzLL_CPaS5fJOhv6sbO956vx53hBv62K8tlqbKdkwm2qnZHZqWDsXBI7CbKPg/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
@@ -1199,6 +1199,270 @@ window.updateAdminBell = function() {
 };
 
 // ============================================================================
+// --- EXAM DASHBOARD & COURSE MASTER ENGINE ---
+// ============================================================================
+
+window.currentExamTab = 'active';
+window.courseMaster = {};
+
+// 1. Fetch & Auto-Migrate the subjects assigned to each course from Firebase
+window.fetchCourseMaster = async function() {
+    try {
+        const docRef = doc(db, "admin_settings", "course_master");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            let data = docSnap.data();
+            let needsMigration = false;
+
+            // Auto-Migrate old flat arrays to the new Semester-based Object structure
+            for (let course in data) {
+                if (Array.isArray(data[course])) {
+                    data[course] = {
+                        "1st Semester": data[course].map(name => ({
+                            name: name, type: "both", max: 100, thMax: 50, prMax: 50
+                        }))
+                    };
+                    needsMigration = true;
+                }
+            }
+            window.courseMaster = data;
+            if (needsMigration) await setDoc(docRef, window.courseMaster); // Save new format permanently
+        } else {
+            window.courseMaster = {};
+        }
+    } catch (e) { console.error("Failed to load Course Master", e); }
+};
+
+// === COURSE MASTER UI LOGIC ===
+window.openCourseMasterModal = function() {
+    const uniqueCourses = [...new Set(window.adminData.map(s => s[11]).filter(c => c && c !== "None"))];
+    const select = document.getElementById('cmCourseSelect');
+    select.innerHTML = uniqueCourses.length > 0 
+        ? uniqueCourses.map(c => `<option value="${c}">${c}</option>`).join('')
+        : `<option value="">No Courses Found</option>`;
+    
+    if (uniqueCourses.length > 0) window.renderCourseMasterSubjects();
+
+    document.getElementById('courseMasterModal').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
+window.closeCourseMasterModal = function() {
+    document.getElementById('courseMasterModal').classList.add('hidden');
+};
+
+window.renderCourseMasterSubjects = function() {
+    const course = document.getElementById('cmCourseSelect').value;
+    const sem = document.getElementById('cmSemesterSelect').value;
+    const container = document.getElementById('cmSubjectsContainer');
+    container.innerHTML = '';
+
+    if (!course) return;
+
+    if (!window.courseMaster[course]) window.courseMaster[course] = {};
+    if (!window.courseMaster[course][sem]) window.courseMaster[course][sem] = [];
+
+    const subjects = window.courseMaster[course][sem];
+    
+    if (subjects.length === 0) {
+        window.addCourseMasterRow(); // Add one blank by default
+    } else {
+        subjects.forEach(sub => window.addCourseMasterRow(sub.name, sub.type, sub.max, sub.thMax, sub.prMax));
+    }
+};
+
+window.addCourseMasterRow = function(name = "", type = "both", max = 100, thMax = 50, prMax = 50) {
+    const container = document.getElementById('cmSubjectsContainer');
+    const rowId = `cm-row-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+    
+    const html = `
+        <div id="${rowId}" class="cm-subject-row grid grid-cols-12 gap-2 items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:border-indigo-300">
+            <div class="col-span-4">
+                <input type="text" class="cm-name w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs dark:text-white outline-none focus:border-indigo-500 font-bold" placeholder="Subject Name" value="${name}">
+            </div>
+            <div class="col-span-2">
+                <select class="cm-type w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold dark:text-white outline-none focus:border-indigo-500 cursor-pointer text-indigo-600 dark:text-indigo-400">
+                    <option value="both" ${type==='both'?'selected':''}>Th & Pr</option>
+                    <option value="th" ${type==='th'?'selected':''}>Only Th</option>
+                    <option value="pr" ${type==='pr'?'selected':''}>Only Pr</option>
+                </select>
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="cm-max w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500" placeholder="Total" value="${max}">
+            </div>
+            <div class="col-span-1">
+                <input type="number" class="cm-th w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500 text-blue-600 dark:text-blue-400" placeholder="Th" value="${thMax}">
+            </div>
+            <div class="col-span-1">
+                <input type="number" class="cm-pr w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500 text-purple-600 dark:text-purple-400" placeholder="Pr" value="${prMax}">
+            </div>
+            <div class="col-span-2 flex justify-center">
+                <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', html);
+    if (window.lucide) lucide.createIcons();
+};
+
+window.saveCourseMasterConfig = async function() {
+    const course = document.getElementById('cmCourseSelect').value;
+    const sem = document.getElementById('cmSemesterSelect').value;
+    if (!course || !sem) return;
+
+    const rows = document.querySelectorAll('.cm-subject-row');
+    let subjects = [];
+    let hasError = false;
+
+    rows.forEach(row => {
+        const name = row.querySelector('.cm-name').value.trim();
+        const type = row.querySelector('.cm-type').value;
+        const max = parseInt(row.querySelector('.cm-max').value) || 0;
+        const thMax = parseInt(row.querySelector('.cm-th').value) || 0;
+        const prMax = parseInt(row.querySelector('.cm-pr').value) || 0;
+
+        if (name) {
+            subjects.push({ name, type, max, thMax, prMax });
+        } else if (max > 0 || thMax > 0 || prMax > 0) {
+            hasError = true;
+        }
+    });
+
+    if (hasError) return window.showToast("Please provide a name for all subjects.", "error");
+
+    const btn = document.getElementById('btnSaveCourseMaster');
+    const ogHtml = btn.innerHTML;
+    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...`;
+    btn.disabled = true;
+
+    try {
+        if (!window.courseMaster[course]) window.courseMaster[course] = {};
+        window.courseMaster[course][sem] = subjects;
+
+        const docRef = doc(db, "admin_settings", "course_master");
+        await setDoc(docRef, window.courseMaster); 
+        
+        window.showToast("Course Configuration Saved!", "success");
+        window.closeCourseMasterModal();
+    } catch (e) {
+        window.showToast("Failed to save configuration.", "error");
+    } finally {
+        btn.innerHTML = ogHtml;
+        btn.disabled = false;
+    }
+};
+
+window.switchExamTab = function(tabName) {
+    window.currentExamTab = tabName;
+    window.loadExamDashboard(); 
+};
+
+window.loadExamDashboard = async function () {
+    const loader = document.getElementById('examLoader');
+    const grid = document.getElementById('examApplicationsGrid');
+    const branchLabel = document.getElementById('examBranchLabel');
+
+    if (branchLabel) branchLabel.innerText = `Branch: ${window.currentBranch}`;
+    if (loader) loader.classList.remove('hidden');
+
+    // Ensure we have the Course Master loaded
+    if (Object.keys(window.courseMaster).length === 0) {
+        await window.fetchCourseMaster();
+    }
+
+    // Update Tab Styles Safely
+    const tabActive = document.getElementById('exam-tab-active');
+    const tabHistory = document.getElementById('exam-tab-history');
+    if (tabActive && tabHistory) {
+        tabActive.className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
+        tabHistory.className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
+    }
+
+    try {
+        const response = await window.fetchWithRetry(`${EXAM_API_URL}?action=getExams`, { method: 'GET' });
+        const text = await response.text();
+        const result = JSON.parse(text);
+
+        if (result.status === 'success' && result.data) {
+            let branchData = result.data.filter(req => String(req.branch || "").trim().toLowerCase() === String(window.currentBranch).trim().toLowerCase());
+            
+            // SMART FILTERING: Active vs History
+            if (window.currentExamTab === 'active') {
+                branchData = branchData.filter(req => req.status === 'Pending' || req.status === 'Partial');
+            } else {
+                branchData = branchData.filter(req => req.status === 'Completed');
+            }
+
+            branchData.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+            renderExamGrid(branchData);
+        }
+    } catch (error) {
+        grid.innerHTML = `<p class="text-red-500 font-medium col-span-full text-center py-10">System encountered an error.</p>`;
+    } finally {
+        if (loader) loader.classList.add('hidden');
+    }
+};
+
+function renderExamGrid(data) {
+    const grid = document.getElementById('examApplicationsGrid');
+    grid.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-16 opacity-60"><p class="text-slate-500 font-medium">No ${window.currentExamTab} exam applications found.</p></div>`;
+        return;
+    }
+
+    data.forEach(app => {
+        let dateStr = app.timestamp ? new Date(app.timestamp).toLocaleDateString('en-IN') : "N/A";
+        
+        // Dynamic Status Badge
+        let statusBadge = '';
+        let buttonText = 'Grade Exam';
+        let buttonClass = 'bg-indigo-600 hover:bg-indigo-700';
+
+        let actionFunction = "";
+        
+        if (app.status === 'Partial') {
+            statusBadge = `<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Partially Graded</span>`;
+            buttonText = 'Resume Grading';
+            buttonClass = 'bg-amber-500 hover:bg-amber-600';
+            actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
+        } else if (app.status === 'Completed') {
+            statusBadge = `<span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Completed</span>`;
+            buttonText = 'View / Edit Marks';
+            buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
+            // NEW: Completed exams open the Beautiful View Modal instead!
+            actionFunction = `window.openViewMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`; 
+        } else {
+            statusBadge = `<span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200">Pending</span>`;
+            actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
+        }
+
+        grid.innerHTML += `
+            <div class="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm relative group">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">${app.name}</h4>
+                        <p class="text-xs font-mono text-slate-500 mt-1">${app.regNo}</p>
+                    </div>
+                    ${statusBadge}
+                </div>
+                <div class="space-y-2 mb-4">
+                    <p class="text-sm font-medium text-slate-700 dark:text-slate-300"><i data-lucide="book" class="w-4 h-4 inline mr-1"></i> ${app.course}</p>
+                    <p class="text-xs text-slate-500">Term: ${app.semester} | Date: ${dateStr}</p>
+                </div>
+                <button onclick="${actionFunction}" class="w-full py-2.5 ${buttonClass} text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <i data-lucide="pen-tool" class="w-4 h-4"></i> ${buttonText}
+                </button>
+            </div>
+        `;
+    });
+    if (window.lucide) lucide.createIcons();
+}
+
+// ============================================================================
 // --- FEE DASHBOARD ENGINE ---
 // ============================================================================
 
@@ -1892,266 +2156,3 @@ window.resolveSupportTicket = async function() {
     }
 };
 
-// ============================================================================
-// --- EXAM DASHBOARD & COURSE MASTER ENGINE ---
-// ============================================================================
-
-window.currentExamTab = 'active';
-window.courseMaster = {};
-
-// 1. Fetch & Auto-Migrate the subjects assigned to each course from Firebase
-window.fetchCourseMaster = async function() {
-    try {
-        const docRef = doc(db, "admin_settings", "course_master");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            let data = docSnap.data();
-            let needsMigration = false;
-
-            // Auto-Migrate old flat arrays to the new Semester-based Object structure
-            for (let course in data) {
-                if (Array.isArray(data[course])) {
-                    data[course] = {
-                        "1st Semester": data[course].map(name => ({
-                            name: name, type: "both", max: 100, thMax: 50, prMax: 50
-                        }))
-                    };
-                    needsMigration = true;
-                }
-            }
-            window.courseMaster = data;
-            if (needsMigration) await setDoc(docRef, window.courseMaster); // Save new format permanently
-        } else {
-            window.courseMaster = {};
-        }
-    } catch (e) { console.error("Failed to load Course Master", e); }
-};
-
-// === COURSE MASTER UI LOGIC ===
-window.openCourseMasterModal = function() {
-    const uniqueCourses = [...new Set(window.adminData.map(s => s[11]).filter(c => c && c !== "None"))];
-    const select = document.getElementById('cmCourseSelect');
-    select.innerHTML = uniqueCourses.length > 0 
-        ? uniqueCourses.map(c => `<option value="${c}">${c}</option>`).join('')
-        : `<option value="">No Courses Found</option>`;
-    
-    if (uniqueCourses.length > 0) window.renderCourseMasterSubjects();
-
-    document.getElementById('courseMasterModal').classList.remove('hidden');
-    if (window.lucide) lucide.createIcons();
-};
-
-window.closeCourseMasterModal = function() {
-    document.getElementById('courseMasterModal').classList.add('hidden');
-};
-
-window.renderCourseMasterSubjects = function() {
-    const course = document.getElementById('cmCourseSelect').value;
-    const sem = document.getElementById('cmSemesterSelect').value;
-    const container = document.getElementById('cmSubjectsContainer');
-    container.innerHTML = '';
-
-    if (!course) return;
-
-    if (!window.courseMaster[course]) window.courseMaster[course] = {};
-    if (!window.courseMaster[course][sem]) window.courseMaster[course][sem] = [];
-
-    const subjects = window.courseMaster[course][sem];
-    
-    if (subjects.length === 0) {
-        window.addCourseMasterRow(); // Add one blank by default
-    } else {
-        subjects.forEach(sub => window.addCourseMasterRow(sub.name, sub.type, sub.max, sub.thMax, sub.prMax));
-    }
-};
-
-window.addCourseMasterRow = function(name = "", type = "both", max = 100, thMax = 50, prMax = 50) {
-    const container = document.getElementById('cmSubjectsContainer');
-    const rowId = `cm-row-${Date.now()}-${Math.floor(Math.random()*1000)}`;
-    
-    const html = `
-        <div id="${rowId}" class="cm-subject-row grid grid-cols-12 gap-2 items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:border-indigo-300">
-            <div class="col-span-4">
-                <input type="text" class="cm-name w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs dark:text-white outline-none focus:border-indigo-500 font-bold" placeholder="Subject Name" value="${name}">
-            </div>
-            <div class="col-span-2">
-                <select class="cm-type w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold dark:text-white outline-none focus:border-indigo-500 cursor-pointer text-indigo-600 dark:text-indigo-400">
-                    <option value="both" ${type==='both'?'selected':''}>Th & Pr</option>
-                    <option value="th" ${type==='th'?'selected':''}>Only Th</option>
-                    <option value="pr" ${type==='pr'?'selected':''}>Only Pr</option>
-                </select>
-            </div>
-            <div class="col-span-2">
-                <input type="number" class="cm-max w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500" placeholder="Total" value="${max}">
-            </div>
-            <div class="col-span-1">
-                <input type="number" class="cm-th w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500 text-blue-600 dark:text-blue-400" placeholder="Th" value="${thMax}">
-            </div>
-            <div class="col-span-1">
-                <input type="number" class="cm-pr w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-bold text-center dark:text-white outline-none focus:border-indigo-500 text-purple-600 dark:text-purple-400" placeholder="Pr" value="${prMax}">
-            </div>
-            <div class="col-span-2 flex justify-center">
-                <button onclick="document.getElementById('${rowId}').remove()" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-            </div>
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', html);
-    if (window.lucide) lucide.createIcons();
-};
-
-window.saveCourseMasterConfig = async function() {
-    const course = document.getElementById('cmCourseSelect').value;
-    const sem = document.getElementById('cmSemesterSelect').value;
-    if (!course || !sem) return;
-
-    const rows = document.querySelectorAll('.cm-subject-row');
-    let subjects = [];
-    let hasError = false;
-
-    rows.forEach(row => {
-        const name = row.querySelector('.cm-name').value.trim();
-        const type = row.querySelector('.cm-type').value;
-        const max = parseInt(row.querySelector('.cm-max').value) || 0;
-        const thMax = parseInt(row.querySelector('.cm-th').value) || 0;
-        const prMax = parseInt(row.querySelector('.cm-pr').value) || 0;
-
-        if (name) {
-            subjects.push({ name, type, max, thMax, prMax });
-        } else if (max > 0 || thMax > 0 || prMax > 0) {
-            hasError = true;
-        }
-    });
-
-    if (hasError) return window.showToast("Please provide a name for all subjects.", "error");
-
-    const btn = document.getElementById('btnSaveCourseMaster');
-    const ogHtml = btn.innerHTML;
-    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...`;
-    btn.disabled = true;
-
-    try {
-        if (!window.courseMaster[course]) window.courseMaster[course] = {};
-        window.courseMaster[course][sem] = subjects;
-
-        const docRef = doc(db, "admin_settings", "course_master");
-        await setDoc(docRef, window.courseMaster); 
-        
-        window.showToast("Course Configuration Saved!", "success");
-        window.closeCourseMasterModal();
-    } catch (e) {
-        window.showToast("Failed to save configuration.", "error");
-    } finally {
-        btn.innerHTML = ogHtml;
-        btn.disabled = false;
-    }
-};
-
-window.switchExamTab = function(tabName) {
-    window.currentExamTab = tabName;
-    window.loadExamDashboard(); 
-};
-
-window.loadExamDashboard = async function () {
-    const loader = document.getElementById('examLoader');
-    const grid = document.getElementById('examApplicationsGrid');
-    const branchLabel = document.getElementById('examBranchLabel');
-
-    if (branchLabel) branchLabel.innerText = `Branch: ${window.currentBranch}`;
-    if (loader) loader.classList.remove('hidden');
-
-    // Ensure we have the Course Master loaded
-    if (Object.keys(window.courseMaster).length === 0) {
-        await window.fetchCourseMaster();
-    }
-
-    // Update Tab Styles Safely
-    const tabActive = document.getElementById('exam-tab-active');
-    const tabHistory = document.getElementById('exam-tab-history');
-    if (tabActive && tabHistory) {
-        tabActive.className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
-        tabHistory.className = `px-5 py-2 text-sm font-bold rounded-lg transition-all ${window.currentExamTab === 'history' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`;
-    }
-
-    try {
-        const response = await window.fetchWithRetry(`${EXAM_API_URL}?action=getExams`, { method: 'GET' });
-        const text = await response.text();
-        const result = JSON.parse(text);
-
-        if (result.status === 'success' && result.data) {
-            let branchData = result.data.filter(req => String(req.branch || "").trim().toLowerCase() === String(window.currentBranch).trim().toLowerCase());
-            
-            // SMART FILTERING: Active vs History
-            if (window.currentExamTab === 'active') {
-                branchData = branchData.filter(req => req.status === 'Pending' || req.status === 'Partial');
-            } else {
-                branchData = branchData.filter(req => req.status === 'Completed');
-            }
-
-            branchData.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
-            renderExamGrid(branchData);
-        }
-    } catch (error) {
-        grid.innerHTML = `<p class="text-red-500 font-medium col-span-full text-center py-10">System encountered an error.</p>`;
-    } finally {
-        if (loader) loader.classList.add('hidden');
-    }
-};
-
-function renderExamGrid(data) {
-    const grid = document.getElementById('examApplicationsGrid');
-    grid.innerHTML = '';
-
-    if (!data || data.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-16 opacity-60"><p class="text-slate-500 font-medium">No ${window.currentExamTab} exam applications found.</p></div>`;
-        return;
-    }
-
-    data.forEach(app => {
-        let dateStr = app.timestamp ? new Date(app.timestamp).toLocaleDateString('en-IN') : "N/A";
-        
-        // Dynamic Status Badge
-        let statusBadge = '';
-        let buttonText = 'Grade Exam';
-        let buttonClass = 'bg-indigo-600 hover:bg-indigo-700';
-
-        let actionFunction = "";
-        
-        if (app.status === 'Partial') {
-            statusBadge = `<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Partially Graded</span>`;
-            buttonText = 'Resume Grading';
-            buttonClass = 'bg-amber-500 hover:bg-amber-600';
-            actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
-        } else if (app.status === 'Completed') {
-            statusBadge = `<span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold uppercase rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Completed</span>`;
-            buttonText = 'View / Edit Marks';
-            buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
-            // NEW: Completed exams open the Beautiful View Modal instead!
-            actionFunction = `window.openViewMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`; 
-        } else {
-            statusBadge = `<span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200">Pending</span>`;
-            actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
-        }
-
-        grid.innerHTML += `
-            <div class="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm relative group">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h4 class="font-bold text-slate-900 dark:text-white">${app.name}</h4>
-                        <p class="text-xs font-mono text-slate-500 mt-1">${app.regNo}</p>
-                    </div>
-                    ${statusBadge}
-                </div>
-                <div class="space-y-2 mb-4">
-                    <p class="text-sm font-medium text-slate-700 dark:text-slate-300"><i data-lucide="book" class="w-4 h-4 inline mr-1"></i> ${app.course}</p>
-                    <p class="text-xs text-slate-500">Term: ${app.semester} | Date: ${dateStr}</p>
-                </div>
-                <button onclick="${actionFunction}" class="w-full py-2.5 ${buttonClass} text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors">
-                    <i data-lucide="pen-tool" class="w-4 h-4"></i> ${buttonText}
-                </button>
-            </div>
-        `;
-    });
-    if (window.lucide) lucide.createIcons();
-}
