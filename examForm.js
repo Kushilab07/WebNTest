@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
     // --- PASTE YOUR URLS HERE ---
-    const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw250AUR58Vk0oOVtFhkhRP4cSJ-FCJW0P489mPLYBi5WEhvFDiYuL_lpOqTgH4DptX/exec";
-    const URL_BAGALS = "https://script.google.com/macros/s/AKfycby6OxZGFFKnYYD6VsWGulfkPIF64YNO_6b8dRT__cKtu3rWnaTY2nxRPFYxcbUnUQEbVg/exec";
+    const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyQxCl4VrIsY-9j--8q180Z-gGVM6jjmRQ8okZUsa9-LB8s1uys0cSFx4AA6xlO3l9E/exec";
+    const URL_BAGALS = "https://script.google.com/macros/s/AKfycbx8KGr7PZzLL_CPaS5fJOhv6sbO956vx53hBv62K8tlqbKdkwm2qnZHZqWDsXBI7CbKPg/exec";
     const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
 
     // 1. UI Elements
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return combinedData.found ? combinedData : null;
 
         } catch (error) {
-            console.error("Verification failed", error);
+            //console.error("Verification failed", error);
             alert("Failed to securely verify your records.");
             return null;
         }
@@ -139,6 +139,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 regnoInput.value = courseDetails.regNo;
                 branchInput.classList.add('filled-input');
                 regnoInput.classList.add('filled-input');
+
+                // --- NEW: EXAM ELIGIBILITY CHECK ---
+                if (courseDetails.examEligibility === "Blocked") {
+                    document.getElementById('exam-blocked-warning').classList.remove('hidden');
+                    document.getElementById('apply-btn').disabled = true;
+                    document.getElementById('apply-btn').classList.add('opacity-50', 'cursor-not-allowed');
+                    semesterWrapper.classList.add('hidden');
+                    semesterSelect.removeAttribute('required');
+                    return; // Stop executing further, keep form locked
+                } else {
+                    document.getElementById('exam-blocked-warning').classList.add('hidden');
+                    document.getElementById('apply-btn').disabled = false;
+                    document.getElementById('apply-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                }
             }
         } else {
             this.classList.remove('filled-input');
@@ -227,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resetButton();
             }
         } catch (error) {
-            console.error("Submit Error:", error);
+            //console.error("Submit Error:", error);
             alert("Network error. Please try again.");
             resetButton();
         }
