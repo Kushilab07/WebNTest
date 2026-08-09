@@ -19,8 +19,8 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw250AUR58Vk0oOVtFhkhRP4cSJ-FCJW0P489mPLYBi5WEhvFDiYuL_lpOqTgH4DptX/exec";
-const URL_BAGALS = "https://script.google.com/macros/s/AKfycby6OxZGFFKnYYD6VsWGulfkPIF64YNO_6b8dRT__cKtu3rWnaTY2nxRPFYxcbUnUQEbVg/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbyQxCl4VrIsY-9j--8q180Z-gGVM6jjmRQ8okZUsa9-LB8s1uys0cSFx4AA6xlO3l9E/exec";
+const URL_BAGALS = "https://script.google.com/macros/s/AKfycbx8KGr7PZzLL_CPaS5fJOhv6sbO956vx53hBv62K8tlqbKdkwm2qnZHZqWDsXBI7CbKPg/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
 
@@ -561,6 +561,8 @@ window.openManageModal = function (regNo) {
     fStatus = fStatus.charAt(0).toUpperCase() + fStatus.slice(1).toLowerCase(); // Capitalize first letter
     if (!['Pending', 'Partial', 'Cleared'].includes(fStatus)) fStatus = 'Pending';
     document.getElementById('modalFeeStatus').value = fStatus;
+    let examElig = student[29] ? String(student[29]).trim() : 'Allowed';
+    document.getElementById('modalExamEligibility').value = examElig;
     document.getElementById('marksheetCurrentStatus').innerText = currentModalState.marksheet.toUpperCase();
     document.getElementById('certCurrentStatus').innerText = currentModalState.cert.toUpperCase();
 
@@ -1108,6 +1110,7 @@ window.saveStudentEdits = async function () {
 
     // NEW: Get the newly selected fee status from the modal
     const newFeeStatus = document.getElementById('modalFeeStatus').value;
+    const newExamElig = document.getElementById('modalExamEligibility').value;
 
     student[21] = window.currentModalState.course;
     student[22] = window.currentModalState.marksheet;
@@ -1115,6 +1118,7 @@ window.saveStudentEdits = async function () {
     student[23] = window.currentModalState.markLink;
     student[25] = window.currentModalState.certLink;
     student[28] = newFeeStatus; // NEW: Update local data array (Index 28)
+    student[29] = newExamElig;  // NEW: Update exam eligibility (Index 29)
 
     const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
 
@@ -1131,6 +1135,7 @@ window.saveStudentEdits = async function () {
                 markLink: student[23], // This safely holds the JSON marks!
                 certLink: student[25],
                 feeStatus: student[28],
+                examEligibility: student[29],
                 generateMS: window.currentModalState.triggerMS ? "true" : "false",
                 generateCert: window.currentModalState.triggerCert ? "true" : "false"
             })
