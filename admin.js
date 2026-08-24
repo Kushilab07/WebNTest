@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 //my config currently
 const firebaseConfig = {
@@ -19,7 +19,7 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbw2ueh7sX3tA_MgfyTRAawgRMzDp8UUublryDwuVG7sPA7KHu6bZ5gFXvA9Pp1V97yj/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbxDHAN_RowYT3CuhWbtdmFYG6OtpMh8-KouYHlsonzDFmVvAyGRX-T4BgwSeJA9RGBu/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbx8KGr7PZzLL_CPaS5fJOhv6sbO956vx53hBv62K8tlqbKdkwm2qnZHZqWDsXBI7CbKPg/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
@@ -47,14 +47,14 @@ window.filters = {
 // ============================================================================
 // --- ADVANCED NETWORK UTILITIES (EXPONENTIAL BACKOFF) ---
 // ============================================================================
-window.fetchWithRetry = async function(url, options = {}, maxRetries = 3) {
+window.fetchWithRetry = async function (url, options = {}, maxRetries = 3) {
     let retries = 0;
     while (retries < maxRetries) {
         try {
             const response = await fetch(url, options);
             if (response.ok) return response;
             if (response.status === 429) throw new Error("Rate Limited");
-            return response; 
+            return response;
         } catch (error) {
             retries++;
             if (retries >= maxRetries) {
@@ -186,7 +186,7 @@ window.switchBranch = function (branch) {
     }
 
     window.setFilterStatus('all'); // Reset filter on branch switch
-    if (window.filters.status === 'fee') window.loadFeeDashboard(); 
+    if (window.filters.status === 'fee') window.loadFeeDashboard();
     if (window.filters.status === 'exam') window.loadExamDashboard(); // NEW: Reload exam data
     window.loadTableData(branch);
 };
@@ -264,11 +264,12 @@ window.setFilterStatus = function (status) {
     const studentsWorkspace = document.getElementById('students-workspace');
     const feesWorkspace = document.getElementById('fees-workspace');
     const supportWorkspace = document.getElementById('support-workspace');
-    const examWorkspace = document.getElementById('exam-workspace'); 
-    const expenseWorkspace = document.getElementById('expense-workspace'); // NEW
+    const examWorkspace = document.getElementById('exam-workspace');
+    const expenseWorkspace = document.getElementById('expense-workspace');
+    const referralWorkspace = document.getElementById('referral-workspace'); // NEW
 
     // WORKSPACE TOGGLE LOGIC
-    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace, examWorkspace, expenseWorkspace];
+    const workspaces = [studentsWorkspace, feesWorkspace, supportWorkspace, examWorkspace, expenseWorkspace, referralWorkspace];
 
     // Hide all workspaces first to ensure a clean transition
     workspaces.forEach(ws => {
@@ -283,19 +284,23 @@ window.setFilterStatus = function (status) {
         if (status === 'fee' && feesWorkspace) {
             feesWorkspace.classList.remove('hidden');
             setTimeout(() => feesWorkspace.classList.remove('opacity-0'), 50);
-            window.loadFeeDashboard(); 
+            window.loadFeeDashboard();
         } else if (status === 'support' && supportWorkspace) {
             supportWorkspace.classList.remove('hidden');
             setTimeout(() => supportWorkspace.classList.remove('opacity-0'), 50);
-        } else if (status === 'exam' && examWorkspace) { 
+        } else if (status === 'exam' && examWorkspace) {
             examWorkspace.classList.remove('hidden');
             setTimeout(() => examWorkspace.classList.remove('opacity-0'), 50);
             window.loadExamDashboard();
-        } else if (status === 'expense' && expenseWorkspace) { // NEW EXPENSE LOGIC
+        } else if (status === 'expense' && expenseWorkspace) {
             expenseWorkspace.classList.remove('hidden');
             setTimeout(() => expenseWorkspace.classList.remove('opacity-0'), 50);
             window.loadExpenseDashboard();
-        } else if (status !== 'fee' && status !== 'support' && status !== 'exam' && status !== 'expense' && studentsWorkspace) {
+        } else if (status === 'referral' && referralWorkspace) { // NEW REFERRAL LOGIC
+            referralWorkspace.classList.remove('hidden');
+            setTimeout(() => referralWorkspace.classList.remove('opacity-0'), 50);
+            window.loadReferralDashboard();
+        } else if (status !== 'fee' && status !== 'support' && status !== 'exam' && status !== 'expense' && status !== 'referral' && studentsWorkspace) {
             studentsWorkspace.classList.remove('hidden');
             setTimeout(() => studentsWorkspace.classList.remove('opacity-0'), 50);
             window.applyFilters();
@@ -546,9 +551,9 @@ window.openManageModal = function (regNo) {
     const certGen = certLinkVal === "MOCK_URL" || certLinkVal.startsWith("http");
 
     let fStatus = student[28] ? String(student[28]).trim() : 'Pending';
-    fStatus = fStatus.charAt(0).toUpperCase() + fStatus.slice(1).toLowerCase(); 
+    fStatus = fStatus.charAt(0).toUpperCase() + fStatus.slice(1).toLowerCase();
     if (!['Pending', 'Partial', 'Cleared'].includes(fStatus)) fStatus = 'Pending';
-    
+
     let examElig = student[29] ? String(student[29]).trim() : 'Allowed';
 
     window.initialModalState = {
@@ -613,7 +618,7 @@ window.closeManageModal = function () {
 window.currentExamTicketId = null;
 
 // === BEAUTIFUL VIEW RESULTS MODAL ENGINE ===
-window.openViewMarksModal = function(regNo, examId, courseName, defaultExamName) {
+window.openViewMarksModal = function (regNo, examId, courseName, defaultExamName) {
     const student = window.adminData.find(s => s[1] === regNo);
     if (!student || !student[23] || !student[23].startsWith('{')) return window.showToast("No marks data found.", "error");
 
@@ -621,13 +626,13 @@ window.openViewMarksModal = function(regNo, examId, courseName, defaultExamName)
     try {
         const parsed = JSON.parse(student[23]);
         res = parsed.results.find(r => r.examId === examId || r.exam === defaultExamName);
-    } catch(e) {}
+    } catch (e) { }
 
     if (!res) return window.showToast("Could not locate this specific exam.", "error");
 
     const isPractice = res.type === 'practice';
     let headerBadges = isPractice ? `<span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[9px] font-extrabold uppercase rounded border border-purple-200 shadow-sm ml-2 relative -top-0.5">Practice</span>` : '';
-    
+
     let colorClass = parseFloat(res.percentage) >= 40 ? "text-emerald-500" : "text-red-500";
     let scoreDisplay = `
         <div class="text-right">
@@ -684,10 +689,10 @@ window.openViewMarksModal = function(regNo, examId, courseName, defaultExamName)
     `;
 
     document.getElementById('viewMarksContent').innerHTML = finalHtml;
-    
+
     // Wire up the "Edit Marks" button to jump right into the editor!
     const editBtn = document.getElementById('btnTriggerEditMarks');
-    editBtn.onclick = function() {
+    editBtn.onclick = function () {
         window.closeViewMarksModal();
         // Slight delay allows the View modal to fade out smoothly before the Edit modal fades in
         setTimeout(() => window.openMarksModal(regNo, examId, courseName, defaultExamName), 300);
@@ -697,7 +702,7 @@ window.openViewMarksModal = function(regNo, examId, courseName, defaultExamName)
     if (window.lucide) lucide.createIcons();
 };
 
-window.closeViewMarksModal = function() {
+window.closeViewMarksModal = function () {
     document.getElementById('viewMarksModal').classList.add('hidden');
 };
 
@@ -705,10 +710,10 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
     const targetRegNo = regNo || window.currentEditingRegNo;
     if (!targetRegNo) return window.showToast("Cannot identify student registration number.", "error");
 
-    window.currentExamTicketId = examId; 
+    window.currentExamTicketId = examId;
     document.getElementById('inputMarksRegNo').value = targetRegNo;
     document.getElementById('inputExamName').value = defaultExamName || '';
-    
+
     if (!document.getElementById('isPracticeExam')) {
         const nameInput = document.getElementById('inputExamName').parentNode;
         nameInput.insertAdjacentHTML('afterend', `
@@ -718,11 +723,11 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
             </div>
         `);
     } else {
-        document.getElementById('isPracticeExam').checked = false; 
+        document.getElementById('isPracticeExam').checked = false;
     }
 
     const container = document.getElementById('subjectRowsContainer');
-    container.innerHTML = ''; 
+    container.innerHTML = '';
 
     // RESTORE EXISTING EXAM MARKS AUTOMATICALLY
     let existingExam = null;
@@ -731,7 +736,7 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
         try {
             const parsed = JSON.parse(student[23]);
             existingExam = parsed.results.find(r => r.examId === examId || r.exam === defaultExamName);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     if (existingExam && existingExam.subjects) {
@@ -756,7 +761,7 @@ window.openMarksModal = function (regNo = null, examId = null, courseName = null
             window.addSubjectRow();
         }
     }
-    
+
     document.getElementById('marksEntryModal').classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
 };
@@ -768,14 +773,14 @@ window.closeMarksModal = function () {
 window.addSubjectRow = function (prefilledName = "", maxVal = 100, thVal = "", prVal = "", type = "both", thMax = "", prMax = "") {
     const container = document.getElementById('subjectRowsContainer');
     const rowId = `sub-row-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    
+
     const safeTh = (thVal === undefined || thVal === null) ? "" : thVal;
     const safePr = (prVal === undefined || prVal === null) ? "" : prVal;
-    
+
     // Disabling logic based on Type constraints from Course Master
     const thDisabled = (type === 'pr') ? 'disabled bg-slate-100 dark:bg-slate-800 opacity-50 cursor-not-allowed text-transparent placeholder-transparent' : 'bg-slate-50 dark:bg-slate-900';
     const prDisabled = (type === 'th') ? 'disabled bg-slate-100 dark:bg-slate-800 opacity-50 cursor-not-allowed text-transparent placeholder-transparent' : 'bg-slate-50 dark:bg-slate-900';
-    
+
     const thPlaceholder = thMax ? `Th (Max ${thMax})` : `Th`;
     const prPlaceholder = prMax ? `Pr (Max ${prMax})` : `Pr`;
 
@@ -814,7 +819,7 @@ window.saveExamMarks = async function () {
     const regNo = document.getElementById('inputMarksRegNo').value;
     const examName = document.getElementById('inputExamName').value.trim();
     const isPractice = document.getElementById('isPracticeExam').checked;
-    
+
     if (!examName) return window.showToast("Please enter an Exam Name.", "error");
 
     const rowElements = document.querySelectorAll('.subject-entry-row');
@@ -831,11 +836,11 @@ window.saveExamMarks = async function () {
         const type = row.querySelector('.sub-type').value;
         const thMax = row.querySelector('.sub-th-max').value;
         const prMax = row.querySelector('.sub-pr-max').value;
-        
+
         let thVal = row.querySelector('.sub-th').value;
         let prVal = row.querySelector('.sub-pr').value;
 
-        if (!name && thVal === '' && prVal === '') return; 
+        if (!name && thVal === '' && prVal === '') return;
         if (!name) hasError = true;
 
         // Smart Partial Checking based on Type Constraints!
@@ -874,8 +879,8 @@ window.saveExamMarks = async function () {
 
     try {
         let marksData = { results: [], marksheetPdf: "" };
-        const existingMarkLink = student[23]; 
-        
+        const existingMarkLink = student[23];
+
         if (existingMarkLink) {
             if (existingMarkLink.startsWith('{')) {
                 try { marksData = JSON.parse(existingMarkLink); } catch (e) { }
@@ -885,10 +890,10 @@ window.saveExamMarks = async function () {
         }
 
         const newResultData = {
-            examId: window.currentExamTicketId || "N/A", 
+            examId: window.currentExamTicketId || "N/A",
             exam: examName,
             type: isPractice ? "practice" : "official",
-            status: ticketStatus, 
+            status: ticketStatus,
             date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
             subjects: subjectsArray,
             grandMax: grandMax,
@@ -908,14 +913,14 @@ window.saveExamMarks = async function () {
         }
 
         if (existingIndex > -1) {
-            marksData.results[existingIndex] = newResultData; 
+            marksData.results[existingIndex] = newResultData;
         } else {
-            marksData.results.push(newResultData); 
+            marksData.results.push(newResultData);
         }
 
         const newMarkLinkString = JSON.stringify(marksData);
         const targetUrl = window.currentBranch === 'Arikuchi' ? URL_ARIKUCHI : URL_BAGALS;
-        
+
         await window.fetchWithRetry(targetUrl, {
             method: 'POST',
             body: new URLSearchParams({
@@ -933,12 +938,12 @@ window.saveExamMarks = async function () {
                         status: ticketStatus
                     })
                 });
-                await new Promise(r => setTimeout(r, 1000)); 
-            } catch(e) {}
+                await new Promise(r => setTimeout(r, 1000));
+            } catch (e) { }
         }
 
         student[23] = newMarkLinkString;
-        window.loadExamDashboard(); 
+        window.loadExamDashboard();
         window.showToast(isPartiallyGraded ? "Marks saved partially. Ticket remains open." : "Exam Fully Graded! Ticket Closed.", "success");
         window.closeMarksModal();
 
@@ -981,7 +986,7 @@ window.evaluateModalState = function () {
     const courseStatus = document.getElementById('modalCourseStatus').value;
     const feeStatus = document.getElementById('modalFeeStatus').value;
     const examElig = document.getElementById('modalExamEligibility').value;
-    
+
     window.currentModalState.course = courseStatus;
     window.currentModalState.feeStatus = feeStatus;
     window.currentModalState.examEligibility = examElig;
@@ -1176,25 +1181,25 @@ window.saveStudentEdits = async function () {
 window.pendingFeeCount = 0;
 window.pendingSupportCount = 0;
 
-window.updateAdminBell = function() {
+window.updateAdminBell = function () {
     const bellDot = document.getElementById('adminNotificationDot');
     const divider = document.getElementById('support-notif-divider');
     const emptyMsg = document.getElementById('empty-notif-msg');
-    
+
     // Manage Divider
     if (window.pendingFeeCount > 0 && window.pendingSupportCount > 0) {
-        if(divider) divider.classList.remove('hidden');
+        if (divider) divider.classList.remove('hidden');
     } else {
-        if(divider) divider.classList.add('hidden');
+        if (divider) divider.classList.add('hidden');
     }
 
     // Manage Empty Message & Red Dot
     if (window.pendingFeeCount === 0 && window.pendingSupportCount === 0) {
-        if(emptyMsg) emptyMsg.classList.remove('hidden');
-        if(bellDot) bellDot.classList.add('hidden');
+        if (emptyMsg) emptyMsg.classList.remove('hidden');
+        if (bellDot) bellDot.classList.add('hidden');
     } else {
-        if(emptyMsg) emptyMsg.classList.add('hidden');
-        if(bellDot) bellDot.classList.remove('hidden');
+        if (emptyMsg) emptyMsg.classList.add('hidden');
+        if (bellDot) bellDot.classList.remove('hidden');
     }
 };
 
@@ -1206,7 +1211,7 @@ window.currentExamTab = 'active';
 window.courseMaster = {};
 
 // 1. Fetch & Auto-Migrate the subjects assigned to each course from Firebase
-window.fetchCourseMaster = async function() {
+window.fetchCourseMaster = async function () {
     try {
         const docRef = doc(db, "admin_settings", "course_master");
         const docSnap = await getDoc(docRef);
@@ -1234,24 +1239,24 @@ window.fetchCourseMaster = async function() {
 };
 
 // === COURSE MASTER UI LOGIC ===
-window.openCourseMasterModal = function() {
+window.openCourseMasterModal = function () {
     const uniqueCourses = [...new Set(window.adminData.map(s => s[11]).filter(c => c && c !== "None"))];
     const select = document.getElementById('cmCourseSelect');
-    select.innerHTML = uniqueCourses.length > 0 
+    select.innerHTML = uniqueCourses.length > 0
         ? uniqueCourses.map(c => `<option value="${c}">${c}</option>`).join('')
         : `<option value="">No Courses Found</option>`;
-    
+
     if (uniqueCourses.length > 0) window.renderCourseMasterSubjects();
 
     document.getElementById('courseMasterModal').classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
 };
 
-window.closeCourseMasterModal = function() {
+window.closeCourseMasterModal = function () {
     document.getElementById('courseMasterModal').classList.add('hidden');
 };
 
-window.renderCourseMasterSubjects = function() {
+window.renderCourseMasterSubjects = function () {
     const course = document.getElementById('cmCourseSelect').value;
     const sem = document.getElementById('cmSemesterSelect').value;
     const container = document.getElementById('cmSubjectsContainer');
@@ -1263,7 +1268,7 @@ window.renderCourseMasterSubjects = function() {
     if (!window.courseMaster[course][sem]) window.courseMaster[course][sem] = [];
 
     const subjects = window.courseMaster[course][sem];
-    
+
     if (subjects.length === 0) {
         window.addCourseMasterRow(); // Add one blank by default
     } else {
@@ -1271,10 +1276,10 @@ window.renderCourseMasterSubjects = function() {
     }
 };
 
-window.addCourseMasterRow = function(name = "", type = "both", max = 100, thMax = 50, prMax = 50) {
+window.addCourseMasterRow = function (name = "", type = "both", max = 100, thMax = 50, prMax = 50) {
     const container = document.getElementById('cmSubjectsContainer');
-    const rowId = `cm-row-${Date.now()}-${Math.floor(Math.random()*1000)}`;
-    
+    const rowId = `cm-row-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
     const html = `
         <div id="${rowId}" class="cm-subject-row grid grid-cols-12 gap-2 items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:border-indigo-300">
             <div class="col-span-4">
@@ -1282,9 +1287,9 @@ window.addCourseMasterRow = function(name = "", type = "both", max = 100, thMax 
             </div>
             <div class="col-span-2">
                 <select class="cm-type w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold dark:text-white outline-none focus:border-indigo-500 cursor-pointer text-indigo-600 dark:text-indigo-400">
-                    <option value="both" ${type==='both'?'selected':''}>Th & Pr</option>
-                    <option value="th" ${type==='th'?'selected':''}>Only Th</option>
-                    <option value="pr" ${type==='pr'?'selected':''}>Only Pr</option>
+                    <option value="both" ${type === 'both' ? 'selected' : ''}>Th & Pr</option>
+                    <option value="th" ${type === 'th' ? 'selected' : ''}>Only Th</option>
+                    <option value="pr" ${type === 'pr' ? 'selected' : ''}>Only Pr</option>
                 </select>
             </div>
             <div class="col-span-2">
@@ -1307,7 +1312,7 @@ window.addCourseMasterRow = function(name = "", type = "both", max = 100, thMax 
     if (window.lucide) lucide.createIcons();
 };
 
-window.saveCourseMasterConfig = async function() {
+window.saveCourseMasterConfig = async function () {
     const course = document.getElementById('cmCourseSelect').value;
     const sem = document.getElementById('cmSemesterSelect').value;
     if (!course || !sem) return;
@@ -1342,8 +1347,8 @@ window.saveCourseMasterConfig = async function() {
         window.courseMaster[course][sem] = subjects;
 
         const docRef = doc(db, "admin_settings", "course_master");
-        await setDoc(docRef, window.courseMaster); 
-        
+        await setDoc(docRef, window.courseMaster);
+
         window.showToast("Course Configuration Saved!", "success");
         window.closeCourseMasterModal();
     } catch (e) {
@@ -1354,9 +1359,9 @@ window.saveCourseMasterConfig = async function() {
     }
 };
 
-window.switchExamTab = function(tabName) {
+window.switchExamTab = function (tabName) {
     window.currentExamTab = tabName;
-    window.loadExamDashboard(); 
+    window.loadExamDashboard();
 };
 
 window.loadExamDashboard = async function () {
@@ -1387,7 +1392,7 @@ window.loadExamDashboard = async function () {
 
         if (result.status === 'success' && result.data) {
             let branchData = result.data.filter(req => String(req.branch || "").trim().toLowerCase() === String(window.currentBranch).trim().toLowerCase());
-            
+
             // SMART FILTERING: Active vs History
             if (window.currentExamTab === 'active') {
                 branchData = branchData.filter(req => req.status === 'Pending' || req.status === 'Partial');
@@ -1416,14 +1421,14 @@ function renderExamGrid(data) {
 
     data.forEach(app => {
         let dateStr = app.timestamp ? new Date(app.timestamp).toLocaleDateString('en-IN') : "N/A";
-        
+
         // Dynamic Status Badge
         let statusBadge = '';
         let buttonText = 'Grade Exam';
         let buttonClass = 'bg-indigo-600 hover:bg-indigo-700';
 
         let actionFunction = "";
-        
+
         if (app.status === 'Partial') {
             statusBadge = `<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200">Partially Graded</span>`;
             buttonText = 'Resume Grading';
@@ -1434,7 +1439,7 @@ function renderExamGrid(data) {
             buttonText = 'View / Edit Marks';
             buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
             // NEW: Completed exams open the Beautiful View Modal instead!
-            actionFunction = `window.openViewMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`; 
+            actionFunction = `window.openViewMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
         } else {
             statusBadge = `<span class="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 text-[10px] font-extrabold uppercase rounded-lg border border-cyan-200">Pending</span>`;
             actionFunction = `window.openMarksModal('${app.regNo}', '${app.id}', '${app.course}', '${app.semester}')`;
@@ -1563,7 +1568,7 @@ window.saveCoursePrice = async function (courseName, inputId) {
 };
 
 // 4. Live Verification Requests Engine & Notification Bell
-window.toggleAdminNotification = function() {
+window.toggleAdminNotification = function () {
     const wrapper = document.getElementById('admin-notification-wrapper');
     const backdrop = document.getElementById('admin-notif-backdrop');
     const panel = document.getElementById('admin-notification-popup');
@@ -1667,7 +1672,7 @@ function startFeeRequestListener() {
             notifList.innerHTML = `<li class="p-3 text-center text-slate-500 text-xs">No pending requests.</li>`;
         }
 
-        window.pendingFeeCount = pendingCount; 
+        window.pendingFeeCount = pendingCount;
         window.updateAdminBell();
         if (window.lucide) lucide.createIcons();
     });
@@ -1779,14 +1784,20 @@ window.closeAdminFeeHistory = function () {
 
 window.expenseDataCache = [];
 
-window.loadExpenseDashboard = async function() {
+window.loadExpenseDashboard = async function () {
     const loader = document.getElementById('expenseLoader');
     if (loader) loader.classList.remove('hidden');
 
     try {
-        // ALWAYS fetch from Arikuchi URL, since it's the global ledger
         const response = await window.fetchWithRetry(`${URL_ARIKUCHI}?action=getExpenses`, { method: 'GET' });
-        const result = await response.json();
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (parseErr) {
+            console.error("GAS HTML Error:", text.substring(0, 100));
+            throw new Error("Server returned HTML instead of JSON.");
+        }
 
         if (result.status === 'success') {
             window.expenseDataCache = result.data || [];
@@ -1795,7 +1806,7 @@ window.loadExpenseDashboard = async function() {
             window.showToast("Failed to fetch expenses.", "error");
         }
     } catch (e) {
-        window.showToast("Network Error loading expenses.", "error");
+        window.showToast("Connection failed loading expenses.", "error");
     } finally {
         if (loader) loader.classList.add('hidden');
     }
@@ -1818,7 +1829,6 @@ if (expenseForm) {
         btn.disabled = true;
 
         try {
-            // Ensure safe email fetching for all browsers
             let activeAdmin = "Admin";
             if (window.currentEditingEmail) activeAdmin = window.currentEditingEmail;
             else if (auth && auth.currentUser && auth.currentUser.email) activeAdmin = auth.currentUser.email;
@@ -1836,18 +1846,25 @@ if (expenseForm) {
                 body: payload
             });
 
-            // STOP FAKE SUCCESS: Actually check if Google accepted the data!
-            const result = await response.json();
+            const text = await response.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (parseErr) {
+                console.error("GAS HTML Error:", text.substring(0, 100));
+                throw new Error("Server returned HTML instead of JSON.");
+            }
+
             if (result.status !== 'success') {
                 throw new Error(result.message || "Google Sheets rejected the request.");
             }
 
             window.showToast("Expense logged successfully!", "success");
             expenseForm.reset();
-            window.loadExpenseDashboard(); // Refresh analysis
+            window.loadExpenseDashboard();
         } catch (err) {
             console.error("Expense Save Error:", err);
-            window.showToast("Failed to save. Did you deploy GAS as a New Version?", "error");
+            window.showToast("Failed to save. Ensure GAS is deployed properly.", "error");
         } finally {
             btnText.classList.remove('opacity-0');
             spinner.classList.add('hidden');
@@ -1857,7 +1874,7 @@ if (expenseForm) {
 }
 
 // PREMIUM MONTHLY ANALYSIS RENDERER
-window.renderExpenseAnalysis = function() {
+window.renderExpenseAnalysis = function () {
     const grid = document.getElementById('expenseAnalysisGrid');
     const totalEl = document.getElementById('expTotalGlobal');
     grid.innerHTML = '';
@@ -1892,7 +1909,7 @@ window.renderExpenseAnalysis = function() {
 
         monthlyGroups[monthYear].total += amount;
         monthlyGroups[monthYear].transactions.push(row);
-        
+
         const cat = row[1];
         if (!monthlyGroups[monthYear].categories[cat]) monthlyGroups[monthYear].categories[cat] = 0;
         monthlyGroups[monthYear].categories[cat] += amount;
@@ -1905,8 +1922,8 @@ window.renderExpenseAnalysis = function() {
 
     // Colors for specific categories to make the breakdown bar look premium
     const catColors = {
-        "House Rent": "bg-blue-500", "Salary": "bg-emerald-500", "Electricity Bill": "bg-amber-400", 
-        "Internet": "bg-cyan-500", "Maintenance": "bg-orange-500", "Servicing": "bg-purple-500", 
+        "House Rent": "bg-blue-500", "Salary": "bg-emerald-500", "Electricity Bill": "bg-amber-400",
+        "Internet": "bg-cyan-500", "Maintenance": "bg-orange-500", "Servicing": "bg-purple-500",
         "Certification": "bg-indigo-500", "Transportation": "bg-teal-500", "Printing": "bg-pink-500", "Others": "bg-slate-400"
     };
 
@@ -1918,13 +1935,13 @@ window.renderExpenseAnalysis = function() {
         // Create the CSS Flex Breakdown Bar
         let breakdownBarHtml = '';
         let legendsHtml = '';
-        
+
         for (const [cat, amt] of Object.entries(group.categories)) {
             const percent = ((amt / group.total) * 100).toFixed(1);
             const colorClass = catColors[cat] || "bg-slate-400";
-            
+
             breakdownBarHtml += `<div class="${colorClass} h-full" style="width: ${percent}%" title="${cat}: ₹${amt} (${percent}%)"></div>`;
-            
+
             legendsHtml += `
                 <div class="flex items-center gap-1.5 shrink-0">
                     <div class="w-2.5 h-2.5 rounded-full ${colorClass}"></div>
@@ -1940,7 +1957,7 @@ window.renderExpenseAnalysis = function() {
             const tDate = new Date(t[0]).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
             const catClass = catColors[t[1]] || "bg-slate-400";
             const detailsText = t[2] && t[2] !== "N/A" ? `<p class="text-[10px] text-slate-400 truncate mt-0.5" title="${t[2]}">${t[2]}</p>` : '';
-            
+
             return `
                 <div class="flex items-center justify-between p-3 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                     <div class="flex items-center gap-3 overflow-hidden">
@@ -1997,6 +2014,194 @@ window.renderExpenseAnalysis = function() {
 };
 
 // ============================================================================
+// --- REFERRALS CRM & REWARD GRANTING ENGINE ---
+// ============================================================================
+
+window.referralAdminUnsubscribe = null;
+
+window.loadReferralDashboard = function () {
+    if (window.referralAdminUnsubscribe) window.referralAdminUnsubscribe();
+
+    const listContainer = document.getElementById('adminReferralLeadsList');
+    listContainer.innerHTML = `<div class="flex justify-center py-10"><div class="w-8 h-8 border-4 border-amber-200 border-t-amber-600 rounded-full animate-spin"></div></div>`;
+
+    const q = query(collection(db, "referral_leads"), orderBy("timestamp", "desc"));
+    window.referralAdminUnsubscribe = onSnapshot(q, (snapshot) => {
+        let pendingHtml = '';
+        let historyHtml = '';
+        let pendingCount = 0;
+
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const id = docSnap.id;
+            const dateStr = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) : 'N/A';
+
+            if (data.status === 'Pending') {
+                pendingCount++;
+                pendingHtml += `
+                    <div class="mb-4 p-5 bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800/50 rounded-2xl shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                        <div class="flex justify-between items-start mb-3 pl-2">
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-lg leading-tight mb-1">${data.leadName}</h4>
+                                <p class="text-xs text-slate-500 font-mono tracking-wider"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${data.leadPhone || 'No phone provided'}</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold uppercase rounded-lg border border-amber-200 animate-pulse">Waitlist</span>
+                        </div>
+                        <div class="pl-2 mb-4 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Referred By</p>
+                            <p class="text-sm font-bold text-slate-800 dark:text-slate-200">${data.referrerName}</p>
+                            <p class="text-xs text-blue-600 dark:text-blue-400 font-medium">${data.referrerEmail}</p>
+                            ${data.leadNote ? `<div class="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700"><p class="text-xs text-slate-600 dark:text-slate-400 italic leading-relaxed">"${data.leadNote}"</p></div>` : ''}
+                        </div>
+                        <div class="flex gap-2 pl-2">
+                            <button onclick="window.verifyReferralLead('${id}', '${data.referrerEmail}', '${data.leadName}')" class="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 border border-emerald-200 dark:border-emerald-800/50 shadow-sm"><i data-lucide="check-circle" class="w-4 h-4"></i> Confirm Admission</button>
+                            <button onclick="window.rejectReferralLead('${id}')" class="px-4 py-2.5 bg-white hover:bg-red-50 text-slate-400 hover:text-red-600 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl transition-all shadow-sm"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const isAppr = data.status === 'Approved';
+                historyHtml += `
+                    <div class="mb-3 p-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl flex justify-between items-center opacity-70 hover:opacity-100 transition-opacity">
+                        <div>
+                            <p class="text-sm font-bold text-slate-800 dark:text-white">${data.leadName}</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">By: <span class="font-medium text-slate-600 dark:text-slate-400">${data.referrerName}</span></p>
+                        </div>
+                        <span class="text-[10px] font-black tracking-wider uppercase ${isAppr ? 'text-emerald-500' : 'text-red-500'}">${data.status}</span>
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById('adminReferralPendingCount').innerText = `${pendingCount} Pending`;
+        listContainer.innerHTML = pendingHtml || `<div class="flex flex-col items-center justify-center text-center py-16 opacity-60"><i data-lucide="ghost" class="w-12 h-12 text-slate-400 mb-3"></i><p class="text-slate-500 text-sm font-bold">Watchlist is clear.</p></div>`;
+        document.getElementById('adminReferralHistoryList').innerHTML = historyHtml || `<p class="text-center text-slate-500 py-4 text-xs font-medium">No history yet.</p>`;
+        if (window.lucide) lucide.createIcons();
+    });
+};
+
+// === THE TWO-WAY DIGITAL BRIDGE BATCH SCRIPT ===
+window.verifyReferralLead = async function (leadId, referrerEmail, leadName) {
+    const newRegNo = prompt(`MATCH FOUND!\n\nEnter the exact Registration Number assigned to ${leadName} to secure the Two-Way Bridge:\n(e.g., NIAT/A/26/00099)`);
+    if (!newRegNo) return;
+
+    try {
+        const batch = writeBatch(db);
+        const safeReferrerEmail = referrerEmail.toLowerCase().trim();
+
+        // 1. Update Lead Status
+        const leadRef = doc(db, "referral_leads", leadId);
+        batch.update(leadRef, { status: 'Approved', enrolledRegNo: newRegNo });
+
+        // 2. Safely Calculate & Update Referrer Wallet
+        const walletRef = doc(db, "student_wallets", safeReferrerEmail);
+        const wSnap = await getDoc(walletRef);
+        let currentSpendable = 0, currentLifetime = 0;
+        if (wSnap.exists()) {
+            currentSpendable = wSnap.data().spendablePoints || 0;
+            currentLifetime = wSnap.data().lifetimePoints || 0;
+        }
+
+        batch.set(walletRef, {
+            spendablePoints: currentSpendable + 1,
+            lifetimePoints: currentLifetime + 1,
+            hasUnseenReward: true // Triggers Confetti in Phase 3!
+        }, { merge: true });
+
+        // 3. Store Bridge Data inside Student A (Admin Only access)
+        const safeRegNoId = newRegNo.replace(/\//g, '-');
+        const bridgeARef = doc(db, `student_wallets/${safeReferrerEmail}/referrals_brought_in`, safeRegNoId);
+        batch.set(bridgeARef, {
+            leadName: leadName,
+            regNo: newRegNo,
+            dateVerified: serverTimestamp()
+        });
+
+        // 4. Store Bridge Data inside Student B
+        const bridgeBRef = doc(db, `student_relations`, safeRegNoId);
+        batch.set(bridgeBRef, {
+            referredByEmail: safeReferrerEmail,
+            verifiedOn: serverTimestamp()
+        });
+
+        await batch.commit(); // Execute everything simultaneously!
+        window.showToast(`Lead Verified! +1 Point added to wallet.`, "success");
+    } catch (e) {
+        console.error("Bridge Error:", e);
+        window.showToast("System failed to execute the Batch Write.", "error");
+    }
+};
+
+window.rejectReferralLead = async function (leadId) {
+    if (!confirm("Are you sure you want to discard this lead?")) return;
+    try {
+        await updateDoc(doc(db, "referral_leads", leadId), { status: 'Rejected' });
+        window.showToast("Lead removed from watchlist.", "success");
+    } catch (e) {
+        window.showToast("Failed to update status.", "error");
+    }
+};
+
+// === ADMIN MANUAL REWARD DISPENSER ===
+const grantRewardForm = document.getElementById('grantRewardForm');
+if (grantRewardForm) {
+    grantRewardForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('rwStudentEmail').value.toLowerCase().trim();
+        const cost = parseInt(document.getElementById('rwPoints').value) || 0;
+        const type = document.getElementById('rwType').value;
+        const desc = document.getElementById('rwDesc').value.trim();
+
+        const btnText = document.getElementById('rwBtnText');
+        const spinner = document.getElementById('rwSpinner');
+        const submitBtn = document.getElementById('rwSubmitBtn');
+
+        btnText.classList.add('opacity-0');
+        spinner.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        try {
+            const walletRef = doc(db, "student_wallets", email);
+            const wSnap = await getDoc(walletRef);
+
+            if (!wSnap.exists()) throw new Error("Wallet not found. Student has no points.");
+
+            const currentSpendable = wSnap.data().spendablePoints || 0;
+            if (currentSpendable < cost) throw new Error(`Insufficient funds. Student only has ${currentSpendable} points.`);
+
+            const batch = writeBatch(db);
+
+            // 1. Deduct points and trigger reward celebration
+            batch.update(walletRef, {
+                spendablePoints: currentSpendable - cost,
+                hasUnseenReward: true
+            });
+
+            // 2. Log to Inventory
+            const rewardRef = doc(collection(db, `student_wallets/${email}/reward_inventory`));
+            batch.set(rewardRef, {
+                type: type,
+                description: desc,
+                cost: cost,
+                timestamp: serverTimestamp()
+            });
+
+            await batch.commit();
+
+            window.showToast("Reward successfully delivered to student!", "success");
+            grantRewardForm.reset();
+        } catch (error) {
+            window.showToast(error.message, "error");
+        } finally {
+            btnText.classList.remove('opacity-0');
+            spinner.classList.add('hidden');
+            submitBtn.disabled = false;
+        }
+    });
+}
+
+// ============================================================================
 // --- SUPPORT ENGINE (ADMIN SIDE) ---
 // ============================================================================
 
@@ -2004,12 +2209,12 @@ window.supportListUnsubscribe = null;
 window.activeChatUnsubscribe = null;
 
 // 1. Start the Background Listener (Fires in loadTableData)
-window.startSupportChatListListener = function() {
-    if(window.supportListUnsubscribe) window.supportListUnsubscribe();
+window.startSupportChatListListener = function () {
+    if (window.supportListUnsubscribe) window.supportListUnsubscribe();
 
     const listContainer = document.getElementById('adminSupportList');
     const notifList = document.getElementById('support-notif-list');
-    
+
     // We listen to all chats, sorted by newest activity
     const q = query(collection(db, "support_chats"), orderBy("timestamp", "desc"));
 
@@ -2018,7 +2223,7 @@ window.startSupportChatListListener = function() {
         notifList.innerHTML = '';
         let unreadCount = 0;
 
-        if(snapshot.empty) {
+        if (snapshot.empty) {
             listContainer.innerHTML = `<div class="text-center text-xs text-slate-500 mt-10">No messages yet.</div>`;
             return;
         }
@@ -2026,9 +2231,9 @@ window.startSupportChatListListener = function() {
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const hasUnread = data.unreadAdmin > 0;
-            if(hasUnread) unreadCount++;
+            if (hasUnread) unreadCount++;
 
-            const timeStr = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+            const timeStr = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
             const activeClass = (document.getElementById('adminActiveChatEmail').value === data.email) ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800' : 'bg-white border-transparent hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800';
             const dotHtml = hasUnread ? `<span class="w-2.5 h-2.5 bg-red-500 rounded-full shrink-0 animate-pulse"></span>` : '';
 
@@ -2047,7 +2252,7 @@ window.startSupportChatListListener = function() {
             `;
 
             // Render Bell Notification Popup
-            if(hasUnread) {
+            if (hasUnread) {
                 notifList.innerHTML += `
                     <li onclick="window.setFilterStatus('support'); window.openAdminChat('${data.email}', '${data.studentName}'); window.toggleAdminNotification();" class="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 cursor-pointer hover:shadow-md transition-all relative">
                         <span class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
@@ -2059,38 +2264,38 @@ window.startSupportChatListListener = function() {
         });
 
         // Manage UI states based on counts
-        window.pendingSupportCount = unreadCount; 
+        window.pendingSupportCount = unreadCount;
         window.updateAdminBell();
         if (window.lucide) lucide.createIcons();
     });
 };
 
 // 2. Open a Chat Window
-window.openAdminChat = async function(email, studentName) {
+window.openAdminChat = async function (email, studentName) {
     document.getElementById('adminChatCover').classList.add('hidden');
     document.getElementById('adminActiveChatEmail').value = email;
     document.getElementById('adminChatHeaderName').innerText = studentName;
     document.getElementById('adminChatHeaderEmail').innerText = email;
 
     // Clear previous listener
-    if(window.activeChatUnsubscribe) window.activeChatUnsubscribe();
+    if (window.activeChatUnsubscribe) window.activeChatUnsubscribe();
 
     const chatArea = document.getElementById('adminSupportChatArea');
-    
+
     // Mark as read in Firebase
     await setDoc(doc(db, "support_chats", email), { unreadAdmin: 0 }, { merge: true });
 
     // Listen to specific messages
     const q = query(collection(db, `support_chats/${email}/messages`), orderBy("timestamp", "asc"));
-    
+
     window.activeChatUnsubscribe = onSnapshot(q, (snapshot) => {
         chatArea.innerHTML = '';
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const isMe = data.sender === 'admin';
-            const time = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '...';
-            
-            if(isMe) {
+            const time = data.timestamp ? new Date(data.timestamp.toMillis()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...';
+
+            if (isMe) {
                 chatArea.innerHTML += `
                     <div class="flex flex-col items-end w-full animate-fade-in-up">
                         <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-sm max-w-[80%] shadow-sm text-sm">${data.text}</div>
@@ -2110,14 +2315,14 @@ window.openAdminChat = async function(email, studentName) {
 
 // 3. Admin Sending a Reply
 const adminChatForm = document.getElementById('adminSupportChatForm');
-if(adminChatForm) {
+if (adminChatForm) {
     adminChatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const input = document.getElementById('adminSupportInput');
         const email = document.getElementById('adminActiveChatEmail').value;
         const text = input.value.trim();
-        
-        if(!text || !email) return;
+
+        if (!text || !email) return;
         input.value = ''; // UI Clear
 
         try {
@@ -2139,11 +2344,11 @@ if(adminChatForm) {
 }
 
 // 4. Close Active Chat Window (Keeps in list)
-window.closeAdminChatView = function() {
+window.closeAdminChatView = function () {
     document.getElementById('adminChatCover').classList.remove('hidden');
     document.getElementById('adminActiveChatEmail').value = '';
-    if(window.activeChatUnsubscribe) window.activeChatUnsubscribe();
-    
+    if (window.activeChatUnsubscribe) window.activeChatUnsubscribe();
+
     // Remove active highlight from the left list
     const activeItems = document.querySelectorAll('#adminSupportList .bg-blue-50');
     activeItems.forEach(item => {
@@ -2153,18 +2358,17 @@ window.closeAdminChatView = function() {
 };
 
 // 5. Resolve Ticket (Removes from list permanently)
-window.resolveSupportTicket = async function() {
+window.resolveSupportTicket = async function () {
     const email = document.getElementById('adminActiveChatEmail').value;
-    if(!email) return;
-    
-    if(!confirm("Resolve this ticket? This will remove the chat from your active list.")) return;
+    if (!email) return;
+
+    if (!confirm("Resolve this ticket? This will remove the chat from your active list.")) return;
 
     try {
         await deleteDoc(doc(db, "support_chats", email));
         window.showToast("Ticket Resolved & Closed", "success");
         window.closeAdminChatView(); // Hide the window
-    } catch(e) {
+    } catch (e) {
         window.showToast("Failed to resolve ticket", "error");
     }
 };
-
