@@ -91,13 +91,13 @@
             <form id="adminLoginForm" class="space-y-5">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Admin Email</label>
-                    <input type="email" id="adminEmail" placeholder="Enter Email Id" required
+                    <input type="email" id="adminEmail" required
                         class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-medium">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Master
                         Password</label>
-                    <input type="password" id="adminPassword" placeholder="Enter Password" required
+                    <input type="password" id="adminPassword" required
                         class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-medium">
                 </div>
                 <button type="submit" id="loginBtn"
@@ -134,25 +134,32 @@
                             class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full hidden border border-white dark:border-slate-800"></span>
                     </button>
                     <div id="admin-notification-wrapper" class="fixed inset-0 z-[1000] hidden">
-                        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="admin-notif-backdrop" onclick="window.toggleAdminNotification()"></div>
-                        
-                        <div id="admin-notification-popup" class="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
-                            
-                            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
+                        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+                            id="admin-notif-backdrop" onclick="window.toggleAdminNotification()"></div>
+
+                        <div id="admin-notification-popup"
+                            class="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+
+                            <div
+                                class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950">
                                 <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                                     <i data-lucide="bell" class="w-5 h-5 text-blue-500"></i> Notifications
                                 </h3>
-                                <button onclick="window.toggleAdminNotification()" class="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                                <button onclick="window.toggleAdminNotification()"
+                                    class="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors">
                                     <i data-lucide="x" class="w-5 h-5"></i>
                                 </button>
                             </div>
-                
-                            <div class="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
+                            <div
+                                class="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                                 <ul id="admin-notif-list" class="space-y-3"></ul>
-                                <div id="support-notif-divider" class="my-5 border-t border-slate-200 dark:border-slate-700 hidden"></div>
+                                <div id="support-notif-divider"
+                                    class="my-5 border-t border-slate-200 dark:border-slate-700 hidden"></div>
                                 <ul id="support-notif-list" class="space-y-3"></ul>
-                                
-                                <div id="empty-notif-msg" class="flex flex-col items-center justify-center text-slate-400 mt-20">
+
+                                <div id="empty-notif-msg"
+                                    class="flex flex-col items-center justify-center text-slate-400 mt-20">
                                     <i data-lucide="bell-off" class="w-12 h-12 mb-3 opacity-20"></i>
                                     <p class="text-sm font-medium">No pending notifications.</p>
                                 </div>
@@ -215,7 +222,8 @@
                 <div onclick="window.setFilterStatus('exam')" id="card-exam"
                     class="metric-card w-full min-w-[65px] p-2 rounded-xl border-2 border-transparent bg-white dark:bg-slate-800 hover:border-cyan-400 cursor-pointer shadow-sm transition-all flex flex-col items-center text-center">
                     <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Exams</p>
-                    <div class="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-full p-1.5 mt-1">
+                    <div
+                        class="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-full p-1.5 mt-1">
                         <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
                     </div>
                 </div>
@@ -234,6 +242,14 @@
                     <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Expenses</p>
                     <div class="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full p-1.5 mt-1">
                         <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                    </div>
+                </div>
+
+                <div onclick="window.setFilterStatus('referral')" id="card-referral"
+                    class="metric-card w-full min-w-[65px] p-2 rounded-xl border-2 border-transparent bg-white dark:bg-slate-800 hover:border-amber-400 cursor-pointer shadow-sm transition-all flex flex-col items-center text-center relative overflow-hidden">
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5 relative z-10">Referrals</p>
+                    <div class="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full p-1.5 mt-1 relative z-10">
+                        <i data-lucide="users" class="w-3.5 h-3.5"></i>
                     </div>
                 </div>
 
@@ -445,53 +461,74 @@
 
             </div>
 
-            <div id="support-workspace" class="hidden opacity-0 transition-opacity duration-300 flex-1 flex flex-col md:flex-row gap-6 mt-6 h-[calc(100vh-200px)] min-h-[500px]">
-                
-                <div class="w-full md:w-1/3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-sm">
-                    <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="messages-square" class="w-5 h-5 text-blue-500"></i> Active Chats</h3>
+            <div id="support-workspace"
+                class="hidden opacity-0 transition-opacity duration-300 flex-1 flex flex-col md:flex-row gap-6 mt-6 h-[calc(100vh-200px)] min-h-[500px]">
+
+                <div
+                    class="w-full md:w-1/3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-sm">
+                    <div
+                        class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i
+                                data-lucide="messages-square" class="w-5 h-5 text-blue-500"></i> Active Chats</h3>
                     </div>
-                    <div id="adminSupportList" class="flex-1 overflow-y-auto p-2 space-y-1 bg-slate-50/50 dark:bg-slate-900/50">
-                        </div>
+                    <div id="adminSupportList"
+                        class="flex-1 overflow-y-auto p-2 space-y-1 bg-slate-50/50 dark:bg-slate-900/50">
+                    </div>
                 </div>
 
-                <div class="w-full md:w-2/3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-sm relative">
-                    
-                    <div id="adminChatCover" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900">
-                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
+                <div
+                    class="w-full md:w-2/3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-sm relative">
+
+                    <div id="adminChatCover"
+                        class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900">
+                        <div
+                            class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
                             <i data-lucide="message-circle" class="w-8 h-8 text-blue-500"></i>
                         </div>
                         <h3 class="text-lg font-bold text-slate-800 dark:text-white">Student Support</h3>
                         <p class="text-sm text-slate-500 mt-1">Select a chat from the left to start messaging.</p>
                     </div>
 
-                    <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-between items-center shadow-sm z-10">
+                    <div
+                        class="p-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-between items-center shadow-sm z-10">
                         <div>
-                            <h3 id="adminChatHeaderName" class="font-bold text-slate-800 dark:text-white leading-tight">Student Name</h3>
+                            <h3 id="adminChatHeaderName" class="font-bold text-slate-800 dark:text-white leading-tight">
+                                Student Name</h3>
                             <p id="adminChatHeaderEmail" class="text-[10px] font-mono text-slate-500">email</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="window.resolveSupportTicket()" class="px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm" title="Mark as Resolved (Removes from list)">
-                                <i data-lucide="check-circle" class="w-4 h-4"></i> <span class="hidden sm:inline">Resolve</span>
+                            <button onclick="window.resolveSupportTicket()"
+                                class="px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm"
+                                title="Mark as Resolved (Removes from list)">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> <span
+                                    class="hidden sm:inline">Resolve</span>
                             </button>
-                            <button onclick="window.closeAdminChatView()" class="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" title="Close Chat Window">
+                            <button onclick="window.closeAdminChatView()"
+                                class="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                title="Close Chat Window">
                                 <i data-lucide="x" class="w-5 h-5"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div id="adminSupportChatArea" class="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-950 flex flex-col gap-3">
-                        </div>
+                    <div id="adminSupportChatArea"
+                        class="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-950 flex flex-col gap-3">
+                    </div>
 
-                    <form id="adminSupportChatForm" class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2">
+                    <form id="adminSupportChatForm"
+                        class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2">
                         <input type="hidden" id="adminActiveChatEmail">
-                        <input type="text" id="adminSupportInput" placeholder="Type your reply here..." required class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-transparent rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white text-sm transition-all">
-                        <button type="submit" class="px-5 py-2 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-md flex items-center gap-2">Send <i data-lucide="send" class="w-4 h-4"></i></button>
+                        <input type="text" id="adminSupportInput" placeholder="Type your reply here..." required
+                            class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-transparent rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white text-sm transition-all">
+                        <button type="submit"
+                            class="px-5 py-2 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-md flex items-center gap-2">Send
+                            <i data-lucide="send" class="w-4 h-4"></i></button>
                     </form>
                 </div>
             </div>
 
-            <div id="exam-workspace" class="hidden flex-1 flex flex-col p-3 sm:p-6 overflow-hidden relative opacity-0 transition-opacity duration-300">
+            <div id="exam-workspace"
+                class="hidden flex-1 flex flex-col p-3 sm:p-6 overflow-hidden relative opacity-0 transition-opacity duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -500,10 +537,12 @@
                         <p class="text-sm text-slate-500 mt-1" id="examBranchLabel">Branch: Arikuchi</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="window.openCourseMasterModal()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 rounded-lg text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all shadow-sm flex items-center gap-2">
+                        <button onclick="window.openCourseMasterModal()"
+                            class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 rounded-lg text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all shadow-sm flex items-center gap-2">
                             <i data-lucide="settings" class="w-4 h-4"></i> Course Settings
                         </button>
-                        <button onclick="window.loadExamDashboard()" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-cyan-600 hover:border-cyan-500 dark:hover:text-cyan-400 transition-all shadow-sm flex items-center gap-2">
+                        <button onclick="window.loadExamDashboard()"
+                            class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-cyan-600 hover:border-cyan-500 dark:hover:text-cyan-400 transition-all shadow-sm flex items-center gap-2">
                             <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
                         </button>
                     </div>
@@ -511,18 +550,25 @@
 
                 <!-- NEW EXAM TABS -->
                 <div class="flex gap-2 mb-4 p-1.5 bg-slate-200 dark:bg-slate-800/50 rounded-xl w-max">
-                    <button id="exam-tab-active" onclick="window.switchExamTab('active')" class="px-5 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all">Active Exams</button>
-                    <button id="exam-tab-history" onclick="window.switchExamTab('history')" class="px-5 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all">Exam History</button>
+                    <button id="exam-tab-active" onclick="window.switchExamTab('active')"
+                        class="px-5 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all">Active
+                        Exams</button>
+                    <button id="exam-tab-history" onclick="window.switchExamTab('history')"
+                        class="px-5 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all">Exam
+                        History</button>
                 </div>
 
-                <div class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
-                    <div id="examLoader" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
-                        <div class="w-8 h-8 border-4 border-cyan-200 border-t-cyan-600 rounded-full animate-spin mb-3"></div>
+                <div
+                    class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
+                    <div id="examLoader"
+                        class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
+                        <div class="w-8 h-8 border-4 border-cyan-200 border-t-cyan-600 rounded-full animate-spin mb-3">
+                        </div>
                         <p class="text-sm font-bold text-slate-500 animate-pulse">Fetching Exam Records...</p>
                     </div>
                     <div class="flex-1 overflow-auto w-full p-6">
                         <div id="examApplicationsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -603,6 +649,84 @@
                 </div>
             </div>
 
+            <!-- NEW: REFERRALS & REWARDS WORKSPACE -->
+            <div id="referral-workspace" class="hidden flex-1 flex flex-col p-3 sm:p-6 overflow-hidden relative opacity-0 transition-opacity duration-300">
+                <div class="flex items-center justify-between mb-4 shrink-0">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="users" class="w-6 h-6 text-amber-500"></i> Referral CRM
+                        </h3>
+                        <p class="text-sm text-slate-500 mt-1">Verify leads and grant student rewards here.</p>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden">
+                    
+                    <!-- Left Column: The Watchlist -->
+                    <div class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col relative">
+                        <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-between items-center shrink-0">
+                            <h4 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                <i data-lucide="eye" class="w-5 h-5 text-amber-500"></i> Lead Watchlist
+                            </h4>
+                            <span id="adminReferralPendingCount" class="bg-amber-100 text-amber-700 px-3 py-1 text-xs font-black rounded-lg">0 Pending</span>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-4 bg-slate-50/50 dark:bg-slate-900/50 custom-scrollbar" id="adminReferralLeadsList">
+                            <!-- Pending Leads injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Grant Reward Console -->
+                    <div class="w-full lg:w-1/3 flex flex-col gap-6 shrink-0 h-max">
+                        
+                        <!-- Manual Reward Form -->
+                        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 border border-indigo-800/50 rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                            <div class="p-5 border-b border-indigo-800/50">
+                                <h4 class="font-bold text-white flex items-center gap-2">
+                                    <i data-lucide="gift" class="w-5 h-5 text-indigo-400"></i> Grant Reward
+                                </h4>
+                            </div>
+                            <form id="grantRewardForm" class="p-5 space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Student Email</label>
+                                    <input type="email" id="rwStudentEmail" required placeholder="referrer@email.com" class="w-full p-3 bg-slate-800/50 border border-indigo-500/30 rounded-xl outline-none focus:border-indigo-400 text-sm text-white transition-colors">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Points Cost</label>
+                                        <input type="number" id="rwPoints" required min="0" value="0" class="w-full p-3 bg-slate-800/50 border border-indigo-500/30 rounded-xl outline-none focus:border-indigo-400 text-sm text-white font-bold text-center">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Reward Type</label>
+                                        <select id="rwType" class="w-full p-3 bg-slate-800/50 border border-indigo-500/30 rounded-xl outline-none focus:border-indigo-400 text-sm text-white font-bold cursor-pointer">
+                                            <option value="Cash">Cash (₹)</option>
+                                            <option value="Course">Premium Course</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2">Reward Details</label>
+                                    <input type="text" id="rwDesc" required placeholder="e.g., ₹500 Payout OR Python Mastery" class="w-full p-3 bg-slate-800/50 border border-indigo-500/30 rounded-xl outline-none focus:border-indigo-400 text-sm text-white transition-colors">
+                                </div>
+                                <button type="submit" id="rwSubmitBtn" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 mt-4 relative overflow-hidden">
+                                    <span id="rwBtnText">Deduct Points & Grant</span>
+                                    <div id="rwSpinner" class="hidden absolute w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Processing History -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col h-64">
+                            <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                                <h4 class="font-bold text-slate-800 dark:text-white text-sm">Lead History</h4>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-4 custom-scrollbar" id="adminReferralHistoryList">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -650,8 +774,10 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fee Status (Override)</label>
-                <select id="modalFeeStatus" onchange="window.evaluateModalState()" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 text-sm dark:text-white font-medium cursor-pointer">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fee Status
+                    (Override)</label>
+                <select id="modalFeeStatus" onchange="window.evaluateModalState()"
+                    class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 text-sm dark:text-white font-medium cursor-pointer">
                     <option value="Pending">Pending</option>
                     <option value="Partial">Partial</option>
                     <option value="Cleared">Cleared</option>
@@ -660,8 +786,10 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-red-500 uppercase tracking-wider mb-2">Exam Eligibility</label>
-                <select id="modalExamEligibility" onchange="window.evaluateModalState()" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-red-500 text-sm font-bold text-slate-800 dark:text-white cursor-pointer">
+                <label class="block text-xs font-bold text-red-500 uppercase tracking-wider mb-2">Exam
+                    Eligibility</label>
+                <select id="modalExamEligibility" onchange="window.evaluateModalState()"
+                    class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-red-500 text-sm font-bold text-slate-800 dark:text-white cursor-pointer">
                     <option value="Allowed" class="text-emerald-600 dark:text-emerald-400">Allowed</option>
                     <option value="Blocked" class="text-red-600 dark:text-red-400">Blocked (Dues Pending)</option>
                 </select>
@@ -752,25 +880,33 @@
     </div>
 
     <!-- Course Master Settings Modal -->
-    <div id="courseMasterModal" class="fixed inset-0 z-[700] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-indigo-600 text-white shadow-md z-10 shrink-0">
+    <div id="courseMasterModal"
+        class="fixed inset-0 z-[700] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
+            <div
+                class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-indigo-600 text-white shadow-md z-10 shrink-0">
                 <h3 class="text-lg font-bold flex items-center gap-2">
                     <i data-lucide="book-open" class="w-5 h-5"></i> Configure Semester Subjects
                 </h3>
-                <button onclick="window.closeCourseMasterModal()" class="text-indigo-200 hover:text-white hover:bg-indigo-700 p-1.5 rounded-full transition-colors">
+                <button onclick="window.closeCourseMasterModal()"
+                    class="text-indigo-200 hover:text-white hover:bg-indigo-700 p-1.5 rounded-full transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
             <div class="p-6 overflow-y-auto grow custom-scrollbar bg-slate-50 dark:bg-slate-950 flex flex-col gap-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Course</label>
-                        <select id="cmCourseSelect" onchange="window.renderCourseMasterSubjects()" class="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-sm dark:text-white font-bold"></select>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select
+                            Course</label>
+                        <select id="cmCourseSelect" onchange="window.renderCourseMasterSubjects()"
+                            class="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-sm dark:text-white font-bold"></select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Semester</label>
-                        <select id="cmSemesterSelect" onchange="window.renderCourseMasterSubjects()" class="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-sm dark:text-white font-bold">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select
+                            Semester</label>
+                        <select id="cmSemesterSelect" onchange="window.renderCourseMasterSubjects()"
+                            class="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-sm dark:text-white font-bold">
                             <option value="1st Semester">1st Semester</option>
                             <option value="2nd Semester">2nd Semester</option>
                             <option value="3rd Semester">3rd Semester</option>
@@ -781,15 +917,19 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mt-2">
-                    <div class="flex justify-between items-center mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
+                <div
+                    class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mt-2">
+                    <div
+                        class="flex justify-between items-center mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
                         <h4 class="font-bold text-slate-700 dark:text-slate-300 text-sm">Subjects for this Term</h4>
-                        <button onclick="window.addCourseMasterRow()" class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-lg border border-indigo-200 dark:border-indigo-800 transition-colors flex items-center gap-1">
+                        <button onclick="window.addCourseMasterRow()"
+                            class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-lg border border-indigo-200 dark:border-indigo-800 transition-colors flex items-center gap-1">
                             <i data-lucide="plus" class="w-3 h-3"></i> Add Subject
                         </button>
                     </div>
-                    
-                    <div class="grid grid-cols-12 gap-2 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
+
+                    <div
+                        class="grid grid-cols-12 gap-2 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
                         <div class="col-span-4">Subject Name</div>
                         <div class="col-span-2">Exam Type</div>
                         <div class="col-span-2 text-center">Max Total</div>
@@ -802,9 +942,12 @@
                     </div>
                 </div>
             </div>
-            <div class="p-5 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 flex gap-3">
-                <button onclick="window.closeCourseMasterModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">Cancel</button>
-                <button onclick="window.saveCourseMasterConfig()" id="btnSaveCourseMaster" class="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+            <div
+                class="p-5 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 flex gap-3">
+                <button onclick="window.closeCourseMasterModal()"
+                    class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">Cancel</button>
+                <button onclick="window.saveCourseMasterConfig()" id="btnSaveCourseMaster"
+                    class="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
                     <i data-lucide="save" class="w-4 h-4"></i> Save Configuration
                 </button>
             </div>
@@ -812,24 +955,32 @@
     </div>
 
     <!-- Beautiful View Results Modal -->
-    <div id="viewMarksModal" class="fixed inset-0 z-[650] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-slate-50 dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-950 shrink-0">
+    <div id="viewMarksModal"
+        class="fixed inset-0 z-[650] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div
+            class="bg-slate-50 dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
+            <div
+                class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-950 shrink-0">
                 <h3 class="text-lg font-bold flex items-center gap-2 dark:text-white">
                     <i data-lucide="award" class="w-5 h-5 text-blue-500"></i> Official Exam Result
                 </h3>
-                <button onclick="window.closeViewMarksModal()" class="text-slate-400 hover:text-red-500 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <button onclick="window.closeViewMarksModal()"
+                    class="text-slate-400 hover:text-red-500 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
-            <div class="p-6 overflow-y-auto grow custom-scrollbar bg-slate-50/50 dark:bg-slate-950/50" id="viewMarksContent">
+
+            <div class="p-6 overflow-y-auto grow custom-scrollbar bg-slate-50/50 dark:bg-slate-950/50"
+                id="viewMarksContent">
                 <!-- Result HTML injected via JS -->
             </div>
 
-            <div class="p-5 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 flex gap-3">
-                <button onclick="window.closeViewMarksModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">Close</button>
-                <button id="btnTriggerEditMarks" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+            <div
+                class="p-5 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 flex gap-3">
+                <button onclick="window.closeViewMarksModal()"
+                    class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">Close</button>
+                <button id="btnTriggerEditMarks"
+                    class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
                     <i data-lucide="edit-3" class="w-4 h-4"></i> Edit Marks
                 </button>
             </div>
@@ -837,35 +988,46 @@
     </div>
 
     <!-- Dynamic Marks Entry Modal -->
-    <div id="marksEntryModal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-indigo-600 text-white shadow-md z-10 shrink-0">
+    <div id="marksEntryModal"
+        class="fixed inset-0 z-[600] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden fade-in relative flex flex-col max-h-[90vh]">
+            <div
+                class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-indigo-600 text-white shadow-md z-10 shrink-0">
                 <h3 class="text-lg font-bold flex items-center gap-2">
                     <i data-lucide="pen-tool" class="w-5 h-5"></i> Enter Detailed Subject Marks
                 </h3>
-                <button onclick="window.closeMarksModal()" class="text-indigo-200 hover:text-white hover:bg-indigo-700 p-1.5 rounded-full transition-colors">
+                <button onclick="window.closeMarksModal()"
+                    class="text-indigo-200 hover:text-white hover:bg-indigo-700 p-1.5 rounded-full transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
+
             <div class="p-6 overflow-y-auto grow space-y-5 custom-scrollbar">
                 <input type="hidden" id="inputMarksRegNo">
-                
-                <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                    <label class="block text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider mb-2">Exam Name / Term</label>
-                    <input type="text" id="inputExamName" placeholder="e.g., 1st Semester Final Exam" class="w-full p-2.5 bg-white dark:bg-slate-950 border border-indigo-200 dark:border-indigo-700 rounded-lg outline-none focus:border-indigo-500 text-sm dark:text-white font-bold transition-colors">
+
+                <div
+                    class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                    <label
+                        class="block text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider mb-2">Exam
+                        Name / Term</label>
+                    <input type="text" id="inputExamName" placeholder="e.g., 1st Semester Final Exam"
+                        class="w-full p-2.5 bg-white dark:bg-slate-950 border border-indigo-200 dark:border-indigo-700 rounded-lg outline-none focus:border-indigo-500 text-sm dark:text-white font-bold transition-colors">
                 </div>
-                
+
                 <div>
                     <div class="flex justify-between items-end mb-3">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Subjects & Scores</label>
-                        <button onclick="window.addSubjectRow()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Subjects &
+                            Scores</label>
+                        <button onclick="window.addSubjectRow()"
+                            class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 border border-slate-200 dark:border-slate-700">
                             <i data-lucide="plus" class="w-3 h-3"></i> Add Subject
                         </button>
                     </div>
 
                     <!-- Header for Subject Grid -->
-                    <div class="grid grid-cols-12 gap-2 px-2 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <div
+                        class="grid grid-cols-12 gap-2 px-2 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         <div class="col-span-5">Subject Name</div>
                         <div class="col-span-2 text-center">Max</div>
                         <div class="col-span-2 text-center">Theory</div>
@@ -881,7 +1043,8 @@
             </div>
 
             <div class="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shrink-0">
-                <button id="btnSaveMarksModal" onclick="window.saveExamMarks()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                <button id="btnSaveMarksModal" onclick="window.saveExamMarks()"
+                    class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
                     <i data-lucide="save" class="w-4 h-4"></i> Save to Database
                 </button>
             </div>
