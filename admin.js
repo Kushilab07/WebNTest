@@ -19,7 +19,7 @@ const db = getFirestore(app);
 
 
 // REPLACE THESE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URLs
-const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbxDHAN_RowYT3CuhWbtdmFYG6OtpMh8-KouYHlsonzDFmVvAyGRX-T4BgwSeJA9RGBu/exec";
+const URL_ARIKUCHI = "https://script.google.com/macros/s/AKfycbxv3Y6WNUFSoZljKZ6AwJ48OFM5imAZMYdBpDgVnCNIp2BgUnSbVedCTduyL9YIN2dH/exec";
 const URL_BAGALS = "https://script.google.com/macros/s/AKfycbx8KGr7PZzLL_CPaS5fJOhv6sbO956vx53hBv62K8tlqbKdkwm2qnZHZqWDsXBI7CbKPg/exec";
 //my url currently
 const EXAM_API_URL = "https://script.google.com/macros/s/AKfycbw1snUBsoy3hH0ntEwy05xenJBAZvAMBUXwIHhCz60vUej1BR6hAFcHOb0-mRrlS2v-_Q/exec";
@@ -1784,9 +1784,16 @@ window.closeAdminFeeHistory = function () {
 
 window.expenseDataCache = [];
 
-window.loadExpenseDashboard = async function () {
+window.loadExpenseDashboard = async function() {
     const loader = document.getElementById('expenseLoader');
     if (loader) loader.classList.remove('hidden');
+
+    // NEW: Auto-fill Today's Date into the Calendar Picker
+    const dateInput = document.getElementById('expDate');
+    if (dateInput && !dateInput.value) {
+        // Formats the current date to YYYY-MM-DD so HTML5 date pickers understand it
+        dateInput.value = new Date().toISOString().split('T')[0];
+    }
 
     try {
         const response = await window.fetchWithRetry(`${URL_ARIKUCHI}?action=getExpenses`, { method: 'GET' });
@@ -1816,6 +1823,7 @@ const expenseForm = document.getElementById('expenseForm');
 if (expenseForm) {
     expenseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const expDate = document.getElementById('expDate').value; // Grab the selected date
         const particular = document.getElementById('expParticular').value;
         const details = document.getElementById('expDetails').value.trim();
         const amount = document.getElementById('expAmount').value;
@@ -1835,6 +1843,7 @@ if (expenseForm) {
 
             const payload = new URLSearchParams({
                 action: 'addExpense',
+                date: expDate,          // NEW: Send the date securely
                 particular: particular,
                 details: details,
                 amount: amount,
